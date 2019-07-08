@@ -8,11 +8,11 @@ import lvesp32
 
 #Import ILI9341, initialize it and register it with LittlevGL
 
-import ILI9341 as ili
+import HX8357 as hx
 
 th_sensor = SI7021(22,23)
 
-d = ili.display(mhz=24, miso=19, mosi=18, clk=5, cs=15, dc=33, rst=4, backlight=13)
+d = hx.display(mhz=24, miso=19, mosi=18, clk=5, cs=15, dc=33, rst=4, backlight=13)
 d.init()
 disp_buf1 = lv.disp_buf_t()
 buf1_1 = bytes(480*10)
