@@ -1,6 +1,8 @@
 import lvgl as lv
 import utime
 
+import lvesp32
+
 #Import TFTFeatherWing, initialize it and register it with LittlevGL
 import TFTFeatherWing as tftWing
 
@@ -21,10 +23,11 @@ disp_drv.hor_res = 480
 disp_drv.ver_res = 320
 lv.disp_drv_register(disp_drv)
 
-"""
+
 th=lv.theme_night_init(210, lv.font_roboto_16)
 lv.theme_set_current(th)
 scr = lv.obj()
+"""
 header = lv.cont(scr)
 header.set_width(480)
 sym = lv.label(header)
