@@ -41,8 +41,4 @@ header.set_pos(0, 0)
 
 lv.scr_load(scr)
 
-while True:
-    #header_text.set_text("T: " + str(th_sensor.read_temperature) + " R: " + str(th_sensor.read_relative_humidity))
-    sym.set_text(lv.SYMBOL.WIFI + " " + str(utime.localtime()))
-    utime.sleep(0.5)
 
