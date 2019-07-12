@@ -8,7 +8,7 @@ import TFTFeatherWing as tftWing
 import HX8357 as hx
 lv.init()
 
-tft = hx.display(miso=19,mosi=18,clk=5,cs=15,dc=33)
+tft = hx.display(mhz=24,miso=19,mosi=18,clk=5,cs=15,dc=33)
 tft.init()
 
 disp_buf1 = lv.disp_buf_t()
