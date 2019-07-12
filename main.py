@@ -5,10 +5,10 @@ import lvesp32
 
 #Import TFTFeatherWing, initialize it and register it with LittlevGL
 import TFTFeatherWing as tftWing
-
+import HX8357 as hx
 lv.init()
 
-tft = tftWing.TFTFeatherWing()
+tft = hx.display(miso=19,mosi=18,clk=5,cs=15,dc=33)
 tft.init()
 
 disp_buf1 = lv.disp_buf_t()
