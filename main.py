@@ -21,6 +21,7 @@ disp_drv.hor_res = 480
 disp_drv.ver_res = 320
 lv.disp_drv_register(disp_drv)
 
+"""
 th=lv.theme_night_init(210, lv.font_roboto_16)
 lv.theme_set_current(th)
 scr = lv.obj()
@@ -36,6 +37,7 @@ header_text.align(header, lv.ALIGN.IN_LEFT_MID, 10, 0)
 sym.align(header, lv.ALIGN.IN_RIGHT_MID, -10, 0)
 header.set_fit2(lv.FIT.NONE, lv.FIT.TIGHT)
 header.set_pos(0, 0)
+"""
 
 # Load the screen
 
