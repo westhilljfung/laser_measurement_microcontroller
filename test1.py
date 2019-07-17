@@ -20,6 +20,7 @@ class driver:
         buf_1 = bytearray(480*10)
         buf_2 = bytearray(480*10)
         lv.disp_buf_init(disp_buf, buf_1, buf_2, len(buf_1)//4)
+        print(len(buf_1)//4)
 
         disp_drv = lv.disp_drv_t()
         lv.disp_drv_init(disp_drv)
