@@ -4,7 +4,7 @@ import lvgl as lv
 lv.init()
 
 class driver:       
-    def init_gui_esp32(self):
+    def init_gui(self):
 
         import lvesp32
         import TFTFeatherWing as tftWing
@@ -16,9 +16,11 @@ class driver:
 
         # Register display driver 
 
-        disp_buf1 = lv.disp_buf_t()
-        buf1_1 = bytearray(480*10)
-        lv.disp_buf_init(disp_buf1,buf1_1, None, len(buf1_1)//4)
+        disp_buf = lv.disp_buf_t()
+        buf_1 = bytearray(480*10)
+        buf_2 = bytearray(480*10)
+        lv.disp_buf_init(disp_buf1,buf_1, buf_2, 480*10)
+
         disp_drv = lv.disp_drv_t()
         lv.disp_drv_init(disp_drv)
         disp_drv.buffer = disp_buf1
@@ -33,12 +35,6 @@ class driver:
         indev_drv.type = lv.INDEV_TYPE.POINTER;
         indev_drv.read_cb = tft.read;
         lv.indev_drv_register(indev_drv);
-
-    
-    def init_gui(self):
-        
-        # Identify platform and initialize it
-        self.init_gui_esp32()
 
 drv = driver()
 drv.init_gui()
