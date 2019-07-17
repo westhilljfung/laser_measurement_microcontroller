@@ -128,6 +128,8 @@ chart.set_margin(30)
 # Create a slider that controls the chart animation speed
 
 def on_slider_changed(self, obj=None, event=-1):
+    sym.set_text(lv.SYMBOL.WIFI + " " + str(utime.localtime()))
+    sym.align(header, lv.ALIGN.IN_RIGHT_MID, -10, 0)
     chart.factor = slider.get_value()
 
 slider = lv.slider(scr)
@@ -142,7 +144,3 @@ slider.set_event_cb(on_slider_changed)
 
 lv.scr_load(scr)
 
-while(True):
-    sym.set_text(lv.SYMBOL.WIFI + " " + str(utime.localtime()))
-    sym.align(header, lv.ALIGN.IN_RIGHT_MID, -10, 0)
-    utime.sleep_ms(5)
