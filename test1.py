@@ -23,7 +23,7 @@ class driver:
 
         disp_drv = lv.disp_drv_t()
         lv.disp_drv_init(disp_drv)
-        disp_drv.buffer = disp_buf1
+        disp_drv.buffer = disp_buf
         disp_drv.flush_cb = tft.flush
         disp_drv.hor_res = 480
         disp_drv.ver_res = 320
