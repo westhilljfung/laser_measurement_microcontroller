@@ -23,6 +23,13 @@ disp_drv.hor_res = 480
 disp_drv.ver_res = 320
 lv.disp_drv_register(disp_drv)
 
+# Attach input touch screen
+indev_drv = lv.indev_drv_t()
+lv.indev_drv_init(indev_drv)
+indev_drv.type = lv.INDEV_TYPE.POINTER
+indev_drv.read_cd = tft.read
+lv.indev_drv_register(indev_drv)
+
 # Create screen obj
 th=lv.theme_night_init(210, lv.font_roboto_16)
 lv.theme_set_current(th)
@@ -44,5 +51,8 @@ header.set_pos(0, 0)
 
 # Load the screen
 lv.scr_load(scr)
+while(True):
+    sym.set_text(lv.SYMBOL.WIFI + " " + str(utime.localtime()))
+    utime_sleep_ms(50)
 
 
