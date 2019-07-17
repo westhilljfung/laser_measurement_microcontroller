@@ -3,14 +3,14 @@ import utime
 
 import lvesp32
 
-#Import TFTFeatherWing, initialize it and register it with LittlevGL
 import TFTFeatherWing as tftWing
-# import HX8357 as hx
+
 lv.init()
 
 tft = tftWing.TFTFeatherWing()
 tft.init()
 
+# Init and register buffer for disp 
 disp_buf1 = lv.disp_buf_t()
 buf1_1 = bytes(480*10)
 lv.disp_buf_init(disp_buf1,buf1_1, None, len(buf1_1)//4)
@@ -23,10 +23,12 @@ disp_drv.hor_res = 480
 disp_drv.ver_res = 320
 lv.disp_drv_register(disp_drv)
 
+# Create screen obj
 th=lv.theme_night_init(210, lv.font_roboto_16)
 lv.theme_set_current(th)
 scr = lv.obj()
 
+# Add header
 header = lv.cont(scr)
 header.set_width(480)
 sym = lv.label(header)
