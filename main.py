@@ -51,6 +51,7 @@ header.set_pos(0, 0)
 
 # Load the screen
 lv.scr_load(scr)
+print("Post Load screen")
 
 while(True):
     print(str(utime.localtime()))
