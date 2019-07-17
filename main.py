@@ -54,8 +54,8 @@ lv.scr_load(scr)
 print("Post Load screen")
 
 while(True):
-    print(str(utime.localtime()))
     sym.set_text(lv.SYMBOL.WIFI + " " + str(utime.localtime()))
-    utime.sleep_ms(50)
+    sym.align(header, lv.ALIGN.IN_RIGHT_MID, -10, 0)
+    utime.sleep_ms(5)
 
 
