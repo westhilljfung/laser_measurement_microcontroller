@@ -27,7 +27,7 @@ lv.disp_drv_register(disp_drv)
 indev_drv = lv.indev_drv_t()
 lv.indev_drv_init(indev_drv)
 indev_drv.type = lv.INDEV_TYPE.POINTER
-indev_drv.read_cd = tft.read
+indev_drv.read_cb = tft.read
 lv.indev_drv_register(indev_drv)
 
 # Create screen obj
