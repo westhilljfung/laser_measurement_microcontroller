@@ -7,7 +7,7 @@ class driver:
     def init_gui_esp32(self):
 
         import lvesp32
-        import TFTFeatherWing as tft
+        import TFTFeatherWing as tftWing
 
         # Initialize ILI9341 display
 
