@@ -53,7 +53,7 @@ header.set_pos(0, 0)
 lv.scr_load(scr)
 
 while(True):
-    print((utime.localtime())
+    print(str(utime.localtime()))
     sym.set_text(lv.SYMBOL.WIFI + " " + str(utime.localtime()))
     utime_sleep_ms(50)
 
