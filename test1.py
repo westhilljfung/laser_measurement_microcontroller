@@ -1,6 +1,7 @@
 # init
 
 import lvgl as lv
+import utime
 lv.init()
 
 class driver:       
