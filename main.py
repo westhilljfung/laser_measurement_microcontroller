@@ -56,6 +56,6 @@ print("Post Load screen")
 while(True):
     print(str(utime.localtime()))
     sym.set_text(lv.SYMBOL.WIFI + " " + str(utime.localtime()))
-    utime_sleep_ms(50)
+    utime.sleep_ms(50)
 
 
