@@ -142,3 +142,7 @@ slider.set_event_cb(on_slider_changed)
 
 lv.scr_load(scr)
 
+while(True):
+    sym.set_text(lv.SYMBOL.WIFI + " " + str(utime.localtime()))
+    sym.align(header, lv.ALIGN.IN_RIGHT_MID, -10, 0)
+    utime.sleep_ms(5)
