@@ -3,8 +3,8 @@
 class Module1:
     def __init__(self):
         self.name = "Module 1"
-        print(pkg1.const_init)
-        print(pkg1.const_a)
+        print(.const_init)
+        print(.const_a)
         print(const_init)
         print(const_a)
 
