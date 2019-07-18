@@ -15,7 +15,7 @@ class LaserMCU:
     def connect_wifi(self):
         if not self.is_connected():
             self.wlan.active(True)
-            self.wlan.connect(sys_status.ssid, sys_status.wp2_pass)
+            self.wlan.connect(lasermcu.ssid, lasermcu.wp2_pass)
             while not self.is_connected():
                 utime.sleep(1)
         return
@@ -33,7 +33,8 @@ class LaserMCU:
     def get_local_time_str(self):
         # TODO Daylight Saving Time
         dt = utime.localtime(utime.time() - 14400)
-        dt_str = str(dt[0]) + "-" + str(dt[1]) + "-" + str(dt[2]) + " " + str(int(dt[3])) + ":" + str(dt[4]) + ":" + str(dt[5])
+        dt_str = str(dt[0]) + "-" + str(dt[1]) + "-" + str(dt[2]) + " " \
+            + str(int(dt[3])) + ":" + str(dt[4]) + ":" + str(dt[5])
         return dt_str
     
     def is_connected(self):
