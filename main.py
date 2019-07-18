@@ -1,4 +1,4 @@
 #main.py
-import sys_status.Sys
+import sys_status
 
 laserMeasure = sys_status.Sys()
