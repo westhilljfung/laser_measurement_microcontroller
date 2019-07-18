@@ -1,4 +1,8 @@
 # laser_sys.py
+import network
+import ntptime
+import utime
+
 class Sys:
 
     def __init__(self):
