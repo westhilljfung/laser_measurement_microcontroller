@@ -14,7 +14,7 @@ class Sys:
     def connect_wifi(self):
         if not self.is_connected():
             self.wlan.active(True)
-            self.connect(ssid,wp2_pass)            
+            self.wlan.connect(ssid,wp2_pass)            
         return
         
     def set_time(self):
