@@ -25,11 +25,12 @@ class LaserGui:
 
     def register_disp_drv(self):
         # Init buffer
+        # TODO don't use len()
         lv.disp_buf_init(self.disp_buf, self.buf_1, None, len(self.buf_1)//4)
 
         # Register display driver
         lv.disp_drv_init(self.disp_drv)
-        disp_drv.buffer = disp_buf
+        disp_drv.buffer = self.disp_buf
         disp_drv.flush_cb = self.tft.flush
         disp_drv.hor_res = 480
         disp_drv.ver_res = 320
