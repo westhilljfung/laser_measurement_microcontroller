@@ -1,4 +1,4 @@
 #main.py
 import sys_status.Sys
 
-laserMeasure = Sys()
+laserMeasure = sys_status.Sys()

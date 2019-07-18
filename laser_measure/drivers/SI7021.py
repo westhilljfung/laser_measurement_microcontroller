@@ -21,6 +21,13 @@
 # THE SOFTWARE.
 
 """
+``SI7021``
+==========
+This is a Micropython driver for the SI7021 temeratire and humidity sensor.
+*Author(s): Joshua Fung
+
+Modified from below:
+
 ``adafruit_si7021``
 ===================
 This is a CircuitPython driver for the SI7021 temperature and humidity sensor.
@@ -34,6 +41,8 @@ Implementation Notes
 * Adafruit CircuitPython firmware for the ESP8622 and M0-based boards:
   https://github.com/adafruit/circuitpython/releases
 * Adafruit's Bus Device library: https://github.com/adafruit/Adafruit_CircuitPython_BusDevice
+__version__ = "0.0.0-auto.0"
+__repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_SI7021.git"
 """
 try:
     import struct
@@ -43,27 +52,11 @@ except ImportError:
 from machine import I2C, Pin
 from micropython import const
 
-__version__ = "0.0.0-auto.0"
-__repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_SI7021.git"
-
 HUMIDITY = const(0xf5)
 TEMPERATURE = const(0xf3)
 _RESET = const(0xfe)
 _READ_USER1 = const(0xe7)
 _USER1_VAL = const(0x3a)
-
-
-def _crc(data):
-    crc = 0
-    for byte in data:
-        crc ^= byte
-        for _ in range(8):
-            if crc & 0x80:
-                crc <<= 1
-                crc ^= 0x131
-            else:
-                crc <<= 1
-    return crc
 
 class SI7021:
     """
@@ -113,7 +106,6 @@ class SI7021:
             raise ValueError("CRC mismatch")
         return value
 
-    @property
     def read_relative_humidity(self):
         """The measured relative humidity in percent."""
         self.start_measurement(HUMIDITY)
@@ -121,7 +113,6 @@ class SI7021:
         self._measurement = 0
         return (((value * 125.0) / 65536.0) - 6.0)
 
-    @property
     def read_temperature(self):
         """The measured temperature in degrees Celcius."""
         self.start_measurement(TEMPERATURE)
