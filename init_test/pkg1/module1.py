@@ -1,4 +1,5 @@
 # pkg1/module1.py
+import .
 
 class Module1:
     def __init__(self):
