@@ -6,6 +6,7 @@ deploy: main boot $(MODULES)
 
 main: main.py
 	ampy -p $(PORT) rm $<
+	sleep 5
 	ampy -p $(PORT) put $<
 
 boot: boot.py
