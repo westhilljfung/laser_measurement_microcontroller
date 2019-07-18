@@ -6,8 +6,8 @@ import utime
 class Sys:
 
     def __init__(self):
-        name = "Westhill Laser Measument System"
-        wlan =  network.WLAN(network.STA_IF)
+        self.name = "Westhill Laser Measument System"
+        self.wlan =  network.WLAN(network.STA_IF)
         self.connect_wifi()
         self.set_time()
 
@@ -28,5 +28,5 @@ class Sys:
         return self.wlan.isconnected()
 
     def __str__(self):
-        return name
+        return self.name
         
