@@ -1,7 +1,4 @@
-import network
-import ntptime
-import utime
-
+# sys.py
 class Sys:
 
     def __init__(self):

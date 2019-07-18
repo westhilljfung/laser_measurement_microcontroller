@@ -1,4 +1,9 @@
+#__init__.py
 ssid = 'Westhill_2.4G'
 wp2_pass = 'Radoslav13'
 
-from .Sys import Sys
+import network
+import ntptime
+import utime
+
+from .sys import sys.Sys as Sys
