@@ -33,8 +33,7 @@ class LaserMCU:
     def get_local_time_str(self):
         # TODO Daylight Saving Time
         dt = utime.localtime(utime.time() - 14400)
-        dt_str = str(dt[0]) + "-" + str(dt[1]) + "-" + str(dt[2]) + " " \
-            + str(int(dt[3])) + ":" + str(dt[4]) + ":" + str(dt[5])
+        dt_str = str(dt[0]) + "-" + str(dt[1]) + "-" + str(dt[2]) + " " + str(int(dt[3])) + ":" + str(dt[4]) + ":" + str(dt[5])
         return dt_str
     
     def is_connected(self):
