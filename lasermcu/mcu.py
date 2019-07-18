@@ -4,7 +4,7 @@ import ntptime
 import utime
 import lasermcu
 
-class LaserSys:
+class LaserMCU:
 
     def __init__(self):
         self.name = "Westhill Laser Measument System"

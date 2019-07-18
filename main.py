@@ -1,4 +1,4 @@
 #main.py
-import sys_status
+import lasermcu
 
-laserMeasure = sys_status.Sys()
+laser_mcu = lasermcu.LaserMCU()
