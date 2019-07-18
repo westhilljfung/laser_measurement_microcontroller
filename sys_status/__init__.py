@@ -6,4 +6,4 @@ import network
 import ntptime
 import utime
 
-from .laser_sys import laser_sys
+from .laser_sys import Sys
