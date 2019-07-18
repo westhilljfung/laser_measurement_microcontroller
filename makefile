@@ -5,12 +5,12 @@ deploy: main boot $(MODULES)
 	picocom -b 115200 $(PORT)
 
 main: main.py
-      ampy -p $(PORT) rm $<
-      ampy -p $(PORT) put $<
+	ampy -p $(PORT) rm $<
+	ampy -p $(PORT) put $<
 
 boot: boot.py
-      ampy -p $(PORT) rm $<
-      ampy -p $(PORT) put $<
+	ampy -p $(PORT) rm $<
+	ampy -p $(PORT) put $<
 
 %:
 	echo($@)
