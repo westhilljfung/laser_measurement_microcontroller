@@ -30,18 +30,18 @@ class LaserGui:
 
         # Register display driver
         lv.disp_drv_init(self.disp_drv)
-        disp_drv.buffer = self.disp_buf
-        disp_drv.flush_cb = self.tft.flush
-        disp_drv.hor_res = 480
-        disp_drv.ver_res = 320
+        self.disp_drv.buffer = self.disp_buf
+        self.disp_drv.flush_cb = self.tft.flush
+        self.disp_drv.hor_res = 480
+        self.disp_drv.ver_res = 320
         self.disp = lv.disp_drv_register(disp_drv)
         return
 
     def register_indev_drv(self):
         # Register touch screen driver
         lv.indev_drv_init(self.indev_drv)
-        indev_drv.type = lv.INDEV_TYPE.POINTER
-        indev_drv.read_cb = self.tft.read
+        self.indev_drv.type = lv.INDEV_TYPE.POINTER
+        self.indev_drv.read_cb = self.tft.read
         self.indev = lv.indev_drv_register(indev_drv)
         return
 
