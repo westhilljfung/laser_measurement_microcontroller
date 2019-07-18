@@ -4,7 +4,7 @@ import lvgl as lv
 import utime
 lv.init()
 
-class driver:       
+class driver:
     def init_gui(self):
 
         import lvesp32
@@ -15,7 +15,7 @@ class driver:
         tft = tftWing.TFTFeatherWing()
         tft.init()
 
-        # Register display driver 
+        # Register display driver
 
         disp_buf = lv.disp_buf_t()
         buf_1 = bytearray(480*10*2)
@@ -32,7 +32,7 @@ class driver:
 
         # Register raw resistive touch driver
         indev_drv = lv.indev_drv_t()
-        lv.indev_drv_init(indev_drv) 
+        lv.indev_drv_init(indev_drv)
         indev_drv.type = lv.INDEV_TYPE.POINTER;
         indev_drv.read_cb = tft.read;
         lv.indev_drv_register(indev_drv);
@@ -52,7 +52,7 @@ class Anim(lv.anim_t):
             lv.anim_set_exec_cb(self, obj, exec_cb)
         except TypeError:
             lv.anim_set_custom_exec_cb(self, exec_cb)
-        lv.anim_set_path_cb(self, path_cb )
+            lv.anim_set_path_cb(self, path_cb )
         if playback: lv.anim_set_playback(self, 0)
         if ready_cb: lv.anim_set_ready_cb(self, ready_cb)
         lv.anim_create(self)
@@ -60,7 +60,7 @@ class Anim(lv.anim_t):
 # An animated chart
 
 class AnimatedChart(lv.chart):
-    def __init__(self, parent, val, size):            
+    def __init__(self, parent, val, size):
         super().__init__(parent)
         self.val = val
         self.size = size
@@ -71,21 +71,21 @@ class AnimatedChart(lv.chart):
 
     def anim_phase1(self):
         Anim(
-            self, 
-            self.val, 
-            self.size, 
-            lambda a, val: self.set_range(0, val), 
-            lv.anim_path_ease_in, 
+            self,
+            self.val,
+            self.size,
+            lambda a, val: self.set_range(0, val),
+            lv.anim_path_ease_in,
             ready_cb=lambda a:self.anim_phase2(),
             time=(self.max * self.factor) // 100)
 
     def anim_phase2(self):
         Anim(
-            self, 
-            self.val+self.size, 
-            -self.size, 
-            lambda a, val: self.set_range(0, val), 
-            lv.anim_path_ease_out, 
+            self,
+            self.val+self.size,
+            -self.size,
+            lambda a, val: self.set_range(0, val),
+            lv.anim_path_ease_out,
             ready_cb=lambda a:self.anim_phase1(),
             time=(self.min * self.factor) // 100)
 
