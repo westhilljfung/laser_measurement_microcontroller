@@ -19,9 +19,9 @@ class LaserGui:
         self.indev_drv = lv.indev_drv_t()
         self.indev = None
 
-        register_disp_drv()
-        register_indev_drv()
-        load_screen()
+        self.register_disp_drv()
+        self.register_indev_drv()
+        self.load_screen()
 
     def register_disp_drv(self):
         # Init buffer
