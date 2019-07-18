@@ -25,7 +25,7 @@ class LaserGui:
 
     def register_disp_drv(self):
         # Init buffer
-        lv.disp_buf_init(self.disp_buf, self.buf_1, None, len(buf_1)//4)
+        lv.disp_buf_init(self.disp_buf, self.buf_1, None, len(self.buf_1)//4)
 
         # Register display driver
         lv.disp_drv_init(self.disp_drv)
