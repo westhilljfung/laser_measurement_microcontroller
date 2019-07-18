@@ -1,4 +1,4 @@
-#__init__.py
+# sys_staus/__init__.py
 
 from .laser_sys import Sys
-from . import wifi_config
+from .wifi_config import *

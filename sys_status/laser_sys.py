@@ -1,7 +1,8 @@
-# laser_sys.py
+# sys_status/laser_sys.py
 import network
 import ntptime
 import utime
+import sys_status
 
 class Sys:
 
@@ -14,7 +15,7 @@ class Sys:
     def connect_wifi(self):
         if not self.is_connected():
             self.wlan.active(True)
-            self.wlan.connect(ssid,wp2_pass)            
+            self.wlan.connect(sys_status.ssid, sys_status.wp2_pass)            
         return
         
     def set_time(self):
