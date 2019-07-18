@@ -1,3 +1,7 @@
 # main.py
 import pkg1
-dir(pkg1)
+
+print(dir(pkg1))
+print(dir(pkg1.module1))
+print(dir(pkg1.module2))
+

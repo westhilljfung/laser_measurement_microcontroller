@@ -1,4 +1,4 @@
 # pkg1/__init__.py
 
-import module1
-import module2
+from .module1 import Module1
+from .module2 import *
