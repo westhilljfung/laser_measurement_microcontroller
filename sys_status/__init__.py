@@ -6,4 +6,4 @@ import network
 import ntptime
 import utime
 
-from .sys import Sys
+from .sys import sys
