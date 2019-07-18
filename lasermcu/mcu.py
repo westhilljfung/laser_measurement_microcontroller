@@ -28,7 +28,7 @@ class LaserMCU:
         return
 
     def get_time(self):
-        return utime.locatime()
+        return utime.localtime()
 
     def get_local_time_str(self):
         # TODO Daylight Saving Time
