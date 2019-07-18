@@ -1,10 +1,10 @@
-# sys_status/laser_sys.py
+# lasermcu/mcu.py
 import network
 import ntptime
 import utime
-import sys_status
+import lasermcu
 
-class Sys:
+class LaserSys:
 
     def __init__(self):
         self.name = "Westhill Laser Measument System"
@@ -26,6 +26,16 @@ class Sys:
         else:
             raise RuntimeError("Wifi is diconnected")
         return
+
+    def get_time(self):
+        return utime.locatime()
+
+    def get_local_time_str(self):
+        # TODO Daylight Saving Time
+        dt = utime.locatime()
+        dt_str = str(dt[0]) + "-" + str(dt[1]) + "-" str(dt[2]) + " "\
+            + str(dt[3] - 4) + ":" str(dt[4]) + " " + str(dt[5])
+        return dt_str
     
     def is_connected(self):
         return self.wlan.isconnected()
