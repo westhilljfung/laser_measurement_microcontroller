@@ -3,4 +3,5 @@
 const_init = "This is constant in init"
 
 from .module1 import Module1
-#from .module2 import *
+from .module2 import *
+import pkg1.pkg1_1
