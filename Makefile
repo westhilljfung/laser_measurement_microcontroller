@@ -5,20 +5,20 @@ MPY_CROSS = ~/new/micropython/mpy-cross/mpy-cross
 MPY_CROSS_FLAG=
 
 MAIN = main.py boot.py
+CLEAN_MAIN = $(patsubst %,CLEAN/%,$(MAIN))
 
 _MODULES = gui_ctrl.py laser_mcu.py si7021.py
 _MODULES_MPY =  $(patsubst %.py,%.mpy,$(_MODULES))
 MODULES_MPY = $(patsubst %,$(BUILD_DIR)/%,$(_MODULES_MPY))
-CLEAN_MODULES_MPY = $(patsubst %,CLEAN/%,$(_MODULES_MPY))
+CLEAN = $(CLEAN_MAIN)
+CLEAN += $(patsubst %,CLEAN/%,$(_MODULES_MPY))
 
 PORT = /dev/ttyS4
 BAUDRATE = 115200
 
-.PHONY: deploy git dir rm_main $(CLEAN_MODULES_MPY) con
+.PHONY: deploy git dir $(CLEAN_MAIN) $(CLEAN_MODULES_MPY) con
 
-deploy: git dir rm_main $(MODULES_MPY) $(MAIN) con
-rm_main:
-	ampy -p $(PORT) rm $(_MAIN) && sleep 1 || sleep 1
+deploy: git dir $(CLEAN_MAIN) $(MODULES_MPY) $(MAIN) con
 
 dir: $(BUILD_DIR)
 $(BUILD_DIR):
@@ -34,10 +34,10 @@ $(MAIN): %:
 git:
 	git pull
 
-clean: $(CLEAN_MODULES_MPY)
+clean: $(CLEAN)
 	rm -rf $(BUILD_DIR)
 
-$(CLEAN_MODULES_MPY): CLEAN/%:
+$(CLEAN): CLEAN/%:
 	ampy -p $(PORT) rm $* && sleep 1 || sleep 1
 
 list:
