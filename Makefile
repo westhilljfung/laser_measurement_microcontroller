@@ -41,7 +41,7 @@ clean: $(CLEAN)
 
 $(CLEAN): CLEAN/%:
 	ampy -p $(PORT) rm $* && sleep 1 || sleep 1
-	rm $(BUILD_DIR)/$@
+	rm $(BUILD_DIR)/$*
 
 list:
 	ampy -p $(PORT) ls
