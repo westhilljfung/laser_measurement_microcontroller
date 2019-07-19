@@ -13,15 +13,18 @@ _BOOT_MPY = $(patsubst %.py,%.mpy,$(_BOOT))
 BOOT_MPY = $(patsubst %,$(BUILD_DIR)/%,$(_BOOT_MPY))
 
 _MODULES = gui data_save laser_ctrl sensors_ctrl drivers lasermcu
+
+_MODULES_INIT= $(patsubst %,%/__init__.py,$(_MODULES))
+_MODULES_INIT_MPY= $(patsubst %,%/__init__.mpy,$(_MODULES))
 MODULES = $(patsubst %,$(BUILD_DIR)/%,$(_MODULES))
-MODULES_INIT = $(patsubst %,%/__init__.py,$(MODULES))
+MODULES_INIT_MPY = $(patsubst %,$BUILD_DIR)/%,$(_MODULES_INIT_MPY))
 
 PORT = /dev/ttyS4
 BAUDRATE = 115200
 
 .PHONY: git dir rm_main
 
-all: git dir rm_main $(BOOT_MPY) $(MAIN_MPY)
+all: git dir rm_main $(BOOT_MPY) $(MAIN_MPY) $(MODULES_INIT_MPY)
 	picocom -b$(BAUDRATE) $(PORT)
 
 rm_main:
@@ -39,8 +42,7 @@ $(MODULES): %:
 $(BUILD_DIR)/%.mpy: %.py
 	$(MPY_CROSS) $(MPY_CROSS_FLAG) -o $@ $*.py
 	ampy -p $(PORT) rm $< && sleep 1 || sleep 1
-	ampy -p $(PORT) put $@ || true
-	sleep 1
+	ampy -p $(PORT) put $@ && sleep 1 || sleep 1
 
 git:
 	git pull
