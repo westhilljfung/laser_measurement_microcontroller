@@ -68,13 +68,13 @@ class LaserGui:
         self._sym.set_text(self._laser_mcu.get_local_time_str() + " " + lv.SYMBOL.WIFI)
         header_text = lv.label(self._header)
         header_text.set_text("T: ")
-        header_text.align(self.header, lv.ALIGN.IN_LEFT_MID, 10, 0)
+        header_text.align(self._header, lv.ALIGN.IN_LEFT_MID, 10, 0)
 
         self._sym.align(self._header, lv.ALIGN.IN_RIGHT_MID, -10, 0)
         self._header.set_fit2(lv.FIT.NONE, lv.FIT.TIGHT)
         self._header.set_pos(0, 0)
         
-        lv.scr_load(scr)
+        lv.scr_load(self._scr)
         return
 
     def update_screen(self):
