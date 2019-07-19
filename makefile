@@ -7,13 +7,13 @@ deploy: git main boot $(MODULES)
 	picocom -b 115200 $(PORT)
 
 main: main.py
-	ampy -p $(PORT) get $< && ampy-p $(PORT) rm $<
+	ampy -p $(PORT) get $< && ampy -p $(PORT) rm $<
 	sleep 1
 	ampy -p $(PORT) put $<
 	sleep 1
 
 boot: boot.py
-	ampy -p $(PORT) get $< && ampy-p $(PORT) rm $<
+	ampy -p $(PORT) get $< && ampy -p $(PORT) rm $<
 	sleep 1
 	ampy -p $(PORT) put $<
 	sleep 1
