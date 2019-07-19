@@ -4,7 +4,8 @@ BUILD_DIR = build
 MPY_CROSS = ~/new/micropython/mpy-cross/mpy-cross
 MPY_CROSS_FLAG=
 
-MAIN = main.py boot.py
+_MAIN = main.py boot.py
+MAIN = $(patsubst %,$(BUILD_DIR)/%,$(_MAIN))
 CLEAN_MAIN = $(patsubst %,CLEAN/%,$(MAIN))
 
 _MODULES = gui_ctrl.py laser_mcu.py si7021.py
@@ -28,7 +29,8 @@ $(BUILD_DIR)/%.mpy: %.py
 	$(MPY_CROSS) $(MPY_CROSS_FLAG) -o $@ $*.py
 	ampy -p $(PORT) put $@ && sleep 1 || sleep 1
 
-$(MAIN): %:
+$(MAIN): $(BUILD_DIR)/%.py: %.py
+	cp $< $@
 	ampy -p $(PORT) put $@ && sleep 1 || sleep 1
 
 git:
