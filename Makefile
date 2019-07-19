@@ -20,7 +20,7 @@ all: git Makefile dir rm_main $(MODULES_MPY) $(MAIN_MPY)
 	picocom -b$(BAUDRATE) $(PORT)
 
 rm_main:
-	ampy -p $(PORT) rm $(_MAIN) && sleep 1 || sleep 1
+	ampy -p $(PORT) rm $(_MAIN_MPY) && sleep 1 || sleep 1
 	rm -f $(MAIN_MPY)
 
 dir: $(BUILD_DIR)
