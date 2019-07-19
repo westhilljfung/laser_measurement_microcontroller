@@ -27,11 +27,11 @@ class LaserGui:
 
         lv.task_core_init()
         self._task1 = lv.task_create_basic()
-        lv.task_set_cb(task1, test_task)
-        lv.task_set_period(task1, 500)
-        lv.task_set_prio(task1, lv.TASK_PRIO.MID)
+        lv.task_set_cb(self._task1, test_task)
+        lv.task_set_period(self._task1, 500)
+        lv.task_set_prio(self._task1, lv.TASK_PRIO.MID)
 
-        lv.task_read(task1)
+        lv.task_read(self._task1)
 
         self._disp_buf = lv.disp_buf_t()
         self._buf_1 = bytearray(DISP_BUF_SIZE)
