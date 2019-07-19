@@ -32,7 +32,6 @@ $(BUILD_DIR):
 
 $(BUILD_DIR)/%.mpy: %.py
 	$(MPY_CROSS) $(MPY_CROSS_FLAG) -o $@ $*.py
-	ampy -p $(PORT) rm $*.mpy && sleep 1 || sleep 1
 	ampy -p $(PORT) put $@ && sleep 1 || sleep 1
 
 git:
