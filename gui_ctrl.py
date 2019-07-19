@@ -6,13 +6,14 @@ import lvesp32
 import TFTFeatherWing as tftwing
 import laser_mcu
 import th_ctrl
+import uctypes
 import gc
 
 DISP_BUF_SIZE = const(9600)
 
 def test_task(data):
     print("test_task called")
-    #data.user_data.update_screen()
+    print(data)
 
 class LaserGui:
     def __init__(self):
@@ -30,7 +31,6 @@ class LaserGui:
         lv.task_set_cb(self._task1, test_task)
         lv.task_set_period(self._task1, 500)
         lv.task_set_prio(self._task1, lv.TASK_PRIO.MID)
-        self._task1.user_data = self
 
         lv.task_ready(self._task1)
 
