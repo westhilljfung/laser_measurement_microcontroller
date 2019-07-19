@@ -40,7 +40,7 @@ clean: $(CLEAN_MODULES_MPY)
 	rm -rf $(BUILD_DIR)
 
 $(CLEAN_MODULES_MPY): CLEAN/%:
-	echo $*
+	ampy -p $(PORT) rm $* && sleep 1 || sleep 1echo $*
 
 list:
 	ampy -p $(PORT) ls
