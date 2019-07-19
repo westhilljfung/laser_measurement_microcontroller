@@ -26,7 +26,7 @@ class LaserGui:
         self._th_ctrl = th_ctrl.THCtrl()
 
         lv.task_core_init()
-        self._task1 = lv.task_create(test_task, 500, lv.TASK_PRIO.MID, self)
+        self._task1 = lv.task_create(test_task, 500, lv.TASK_PRIO.MID, None)
 
         lv.task_ready(self._task1)
 
