@@ -7,10 +7,16 @@ deploy: git main boot $(MODULES)
 	picocom -b 115200 $(PORT)
 
 main: main.py
-	echo $@
+	ampy -p $(PORT) get $< && ampy-p $(PORT) rm $<
+	sleep 1
+	smpy -p $(PORT) put $<
+	sleep 1
 
 boot: boot.py
-	echo $@
+	ampy -p $(PORT) get $< && ampy-p $(PORT) rm $<
+	sleep 1
+	smpy -p $(PORT) put $<
+	sleep 1
 
 %:
 	echo $@
