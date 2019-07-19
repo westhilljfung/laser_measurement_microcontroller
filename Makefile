@@ -15,10 +15,12 @@ CLEAN_MODULES_MPY = $(patsubst %,CLEAN/%,$(_MODULES_MPY))
 PORT = /dev/ttyS4
 BAUDRATE = 115200
 
-.PHONY: git dir rm_main $(CLEAN_MODULES_MPY)
+.PHONY: deploy git dir rm_main $(CLEAN_MODULES_MPY)
 
-all: git Makefile dir rm_main $(MODULES_MPY) $(MAIN_MPY)
+all: deploy
 	picocom -b$(BAUDRATE) $(PORT)
+
+deploy: git Makefile dir rm_main $(MODULES_MPY) $(MAIN_MPY)
 
 rm_main:
 	ampy -p $(PORT) rm $(_MAIN_MPY) && sleep 1 || sleep 1
