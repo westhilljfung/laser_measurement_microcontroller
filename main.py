@@ -1,4 +1,5 @@
 #main.py
+# Test makefile
 import lasermcu
 import gui.lv_driver
 
