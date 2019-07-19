@@ -15,10 +15,7 @@ CLEAN_MODULES_MPY = $(patsubst %,CLEAN/%,$(_MODULES_MPY))
 PORT = /dev/ttyS4
 BAUDRATE = 115200
 
-.PHONY: deploy git dir rm_main $(CLEAN_MODULES_MPY)
-
-all: deploy
-	picocom -b$(BAUDRATE) $(PORT)
+.PHONY: deploy git dir rm_main $(CLEAN_MODULES_MPY) con
 
 deploy: git dir rm_main $(MODULES_MPY) $(MAIN_MPY)
 
@@ -46,3 +43,5 @@ $(CLEAN_MODULES_MPY): CLEAN/%:
 list:
 	ampy -p $(PORT) ls
 
+con:
+	picocom -b$(BAUDRATE) $(PORT)
