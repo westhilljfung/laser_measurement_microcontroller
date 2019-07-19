@@ -58,14 +58,14 @@ class LaserGui:
         # Add header
         self.header = lv.cont(scr)
         self.header.set_width(480)
-        self.sym = lv.label(header)
-        self.sym.set_text(lv.SYMBOL.WIFI + " " + str(utime.localtime()))
-        header_text = lv.label(header)
+        self.sym = lv.label(self.header)
+        self.sym.set_text(lv.SYMBOL.WIFI + " " + self.laser_mcu.get_local_time_str())
+        header_text = lv.label(self.header)
         header_text.set_text("T: ")
 
-        header_text.align(header, lv.ALIGN.IN_LEFT_MID, 10, 0)
+        header_text.align(self.header, lv.ALIGN.IN_LEFT_MID, 10, 0)
 
-        self.sym.align(header, lv.ALIGN.IN_RIGHT_MID, -10, 0)
+        self.sym.align(self.header, lv.ALIGN.IN_RIGHT_MID, -10, 0)
         self.header.set_fit2(lv.FIT.NONE, lv.FIT.TIGHT)
         self.header.set_pos(0, 0)
         
