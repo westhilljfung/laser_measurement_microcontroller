@@ -19,6 +19,8 @@ class LaserGui:
         self._tft.init()
         self._laser_mcu = laser_mcu.LaserMCU()
 
+        self._th_sensor = si7021.SI7021(22, 23)
+
         self._disp_buf = lv.disp_buf_t()
         self._buf_1 = bytearray(DISP_BUF_SIZE)
         self._buf_2 = bytearray(DISP_BUF_SIZE)
@@ -66,9 +68,9 @@ class LaserGui:
         self._sym = lv.label(self._header)
     
         self._sym.set_text(self._laser_mcu.get_local_time_str() + " " + lv.SYMBOL.WIFI)
-        header_text = lv.label(self._header)
-        header_text.set_text("T: ")
-        header_text.align(self._header, lv.ALIGN.IN_LEFT_MID, 10, 0)
+        self._header_text = lv.label(self._header)
+        self._header_text.set_text("T: " + self._th_sensors.read_temperature())
+        self._header_text.align(self._header, lv.ALIGN.IN_LEFT_MID, 10, 0)
 
         self._sym.align(self._header, lv.ALIGN.IN_RIGHT_MID, -10, 0)
         self._header.set_fit2(lv.FIT.NONE, lv.FIT.TIGHT)
@@ -83,6 +85,8 @@ class LaserGui:
         else:
             self._sym.set_text(self._laser_mcu.get_local_time_str())
         self._sym.align(self._header, lv.ALIGN.IN_RIGHT_MID, -10, 0)
+        self._header_text.set_text("T: ")
+        self._header_text.align(self._header, lv.ALIGN.IN_LEFT_MID, 10, 0)
         gc.collect()
         return
         
