@@ -12,12 +12,7 @@ deploy: git main.touch boot.touch $(MODULES)
 	ampy -p $(PORT) put $<
 	sleep 1
 
-boot.py:
-	ampy -p $(PORT) rm $< && sleep 1 || sleep 1
-	ampy -p $(PORT) put $<
-	sleep 1
-
-%:
+%: %
 	ampy -p $(PORT) rmdir $@ && sleep 1 || sleep 1
 	ampy -p $(PORT) put $@
 	sleep 1
