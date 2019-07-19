@@ -8,13 +8,15 @@ deploy: git main boot $(MODULES)
 
 main: main.py
 	ampy -p $(PORT) rm $<
-	sleep 5
+	sleep 3
 	ampy -p $(PORT) put $<
+	sleep 3
 
 boot: boot.py
 	ampy -p $(PORT) rm $<
-	sleep 5
+	sleep 3
 	ampy -p $(PORT) put $<
+	sleep 3
 
 %:
 	echo($@)
