@@ -1,4 +1,4 @@
-PWD = $(pwd)
+PWD = $(shell pwd)
 _BUID_DIR = build
 BUID_DIR = $(patsubst %,$(PWD)/%,$(_BUILD_DIR))
 MPY_CROSS = ~/new/micropython/mpy-cross/mpy-cross
