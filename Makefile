@@ -14,9 +14,9 @@ MODULES_MPY = $(patsubst %,$(BUILD_DIR)/%,$(_MODULES_MPY))
 PORT = /dev/ttyS4
 BAUDRATE = 115200
 
-.PHONY: git dir rm_main
+.PHONY: git dir rm_main reload
 
-all: git makefile dir rm_main $(MODULES_INIT_MPY) $(MAIN_MPY)
+all: git Makefile dir rm_main $(MODULES_INIT_MPY) $(MAIN_MPY)
 	picocom -b$(BAUDRATE) $(PORT)
 
 rm_main:
@@ -37,4 +37,4 @@ git:
 
 clean:
 	rm -rf $(BUILD_DIR)
-	ampy -p $(PORT) rm $(_MAIN_MPY) $(_MODULES_MPY)
+	$(foreach file, $(_MODULES_MPY), $(echo $(file))
