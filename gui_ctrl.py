@@ -4,6 +4,7 @@ import utime
 import lvesp32
 import TFTFeatherWing as tftwing
 import laser_mcu
+import si7021
 import gc
 
 class LaserGui:
