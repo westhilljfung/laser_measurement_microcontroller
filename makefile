@@ -9,13 +9,13 @@ deploy: git main boot $(MODULES)
 main: main.py
 	ampy -p $(PORT) get $< && ampy-p $(PORT) rm $<
 	sleep 1
-	smpy -p $(PORT) put $<
+	ampy -p $(PORT) put $<
 	sleep 1
 
 boot: boot.py
 	ampy -p $(PORT) get $< && ampy-p $(PORT) rm $<
 	sleep 1
-	smpy -p $(PORT) put $<
+	ampy -p $(PORT) put $<
 	sleep 1
 
 %:
