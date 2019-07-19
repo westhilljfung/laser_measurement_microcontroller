@@ -7,13 +7,14 @@ deploy: git main.touch boot.touch $(MODULES)
 	picocom -b 115200 $(PORT)
 
 %.touch: %.py
-	ampy -p $(PORT) rm $@ && sleep 1 || sleep 1
-	ampy -p $(PORT) put $@
+	touch $@
+	ampy -p $(PORT) rm $< && sleep 1 || sleep 1
+	ampy -p $(PORT) put $<
 	sleep 1
 
 boot.py:
-	ampy -p $(PORT) rm $@ && sleep 1 || sleep 1
-	ampy -p $(PORT) put $@
+	ampy -p $(PORT) rm $< && sleep 1 || sleep 1
+	ampy -p $(PORT) put $<
 	sleep 1
 
 %:
