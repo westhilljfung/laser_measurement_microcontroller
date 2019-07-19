@@ -6,7 +6,7 @@ MPY_CROSS_FLAG=
 
 _MAIN = main.py boot.py
 MAIN = $(patsubst %,$(BUILD_DIR)/%,$(_MAIN))
-CLEAN_MAIN = $(patsubst %,CLEAN/%,$(MAIN))
+CLEAN_MAIN = $(patsubst %,CLEAN/%,$(_MAIN))
 
 _MODULES = gui_ctrl.py laser_mcu.py si7021.py
 _MODULES_MPY =  $(patsubst %.py,%.mpy,$(_MODULES))
@@ -41,7 +41,7 @@ clean: $(CLEAN)
 
 $(CLEAN): CLEAN/%:
 	ampy -p $(PORT) rm $* && sleep 1 || sleep 1
-	rm -f $*
+	rm -f $(BUILD_DIR)/$*
 
 list:
 	ampy -p $(PORT) ls
