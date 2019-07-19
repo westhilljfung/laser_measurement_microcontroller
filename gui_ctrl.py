@@ -19,7 +19,7 @@ class LaserGui:
         self._tft.init()
         self._laser_mcu = laser_mcu.LaserMCU()
 
-        self._th_ctrl = th_ctrl()
+        self._th_ctrl = th_ctrl.THCtrl()
 
         self._disp_buf = lv.disp_buf_t()
         self._buf_1 = bytearray(DISP_BUF_SIZE)
