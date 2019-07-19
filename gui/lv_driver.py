@@ -3,11 +3,11 @@ import utime
 import lvesp32
 import TFTFeatherWing as tftwing
 
-lv.init()
-
 class LaserGui:
     def __init__(self):
         # Initialize TFT Feather Wing Display and Touch Screen
+        lv.init()
+        
         self.tft = tftwing.TFTFeatherWing()
         self.tft.init()
 
