@@ -45,4 +45,7 @@ git:
 	git pull
 
 clean:
+	echo $(MKFILE_PATH)
+	echo $(_BDIR)
+	echo $(BDIR)
 	rm -rf $(BDIR)
