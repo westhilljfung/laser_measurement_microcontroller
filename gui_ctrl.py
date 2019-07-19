@@ -10,6 +10,10 @@ import gc
 
 DISP_BUF_SIZE = const(9600)
 
+def test_task(data):
+    print("test_task called")
+    print(data)
+
 class LaserGui:
     def __init__(self):
         # Initialize TFT Feather Wing Display and Touch Screen
@@ -20,6 +24,14 @@ class LaserGui:
         self._laser_mcu = laser_mcu.LaserMCU()
 
         self._th_ctrl = th_ctrl.THCtrl()
+
+        lv.task_core_init()
+        self._task1 = lv.task_create_basic()
+        lv.task_set_cb(task, test_task)
+        lv.task_set_period(task, 500)
+        lv.task_set_prio(task, lv.TASK_PRIO.MID)
+
+        lv.task_read(task)
 
         self._disp_buf = lv.disp_buf_t()
         self._buf_1 = bytearray(DISP_BUF_SIZE)
@@ -79,6 +91,9 @@ class LaserGui:
         lv.scr_load(self._scr)
         return
 
+    def call_task_handle(self):
+        lv.task_handler()
+
     def update_screen(self):
         if self._laser_mcu.is_connected():
             self._sym.set_text(self._laser_mcu.get_local_time_str() + " " + lv.SYMBOL.WIFI)
@@ -88,6 +103,8 @@ class LaserGui:
                                    
         self._header_text.set_text(self._th_ctrl.get_th_str())
         self._header_text.align(self._header, lv.ALIGN.IN_LEFT_MID, 10, 0)
+        
+        lv.task_handler()
         gc.collect()
         return
         
