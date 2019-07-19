@@ -2,6 +2,7 @@ import lvgl as lv
 import utime
 import lvesp32
 import TFTFeatherWing as tftwing
+import ..lasermcu
 
 class LaserGui:
     def __init__(self):
@@ -11,8 +12,12 @@ class LaserGui:
         self.tft = tftwing.TFTFeatherWing()
         self.tft.init()
 
+        self.lser_mcu = lasermcu.LaserMCU()
+        
+
         self.disp_buf = lv.disp_buf_t()
         self.buf_1 = bytearray(480*20)
+        self.buf_2 = bytearray(480*20)
         self.disp_drv = lv.disp_drv_t()
         self.disp = None
 
@@ -26,7 +31,7 @@ class LaserGui:
     def register_disp_drv(self):
         # Init buffer
         # TODO don't use len()
-        lv.disp_buf_init(self.disp_buf, self.buf_1, None, len(self.buf_1)//4)
+        lv.disp_buf_init(self.disp_buf, self.buf_1, self.buf_2, len(self.buf_1)//4)
 
         # Register display driver
         lv.disp_drv_init(self.disp_drv)
