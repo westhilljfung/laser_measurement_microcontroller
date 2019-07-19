@@ -12,7 +12,7 @@ DISP_BUF_SIZE = const(9600)
 
 def test_task(data, laser_gui):
     print("test_task called")
-    data.user_data.update_screen()
+    #data.user_data.update_screen()
 
 class LaserGui:
     def __init__(self):
