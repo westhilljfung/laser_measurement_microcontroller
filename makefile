@@ -18,7 +18,9 @@ boot.py:
 	sleep 1
 
 %:
-	echo $@
+	ampy -p $(PORT) rmdir $@ && sleep 1 || sleep 1
+	ampy -p $(PORT) put $@
+	sleep 1
 
 git:
 	git pull
