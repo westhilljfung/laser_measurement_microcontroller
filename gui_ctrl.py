@@ -31,7 +31,7 @@ class LaserGui:
         lv.task_set_period(self._task1, 500)
         lv.task_set_prio(self._task1, lv.TASK_PRIO.MID)
 
-        lv.task_reay(self._task1)
+        lv.task_ready(self._task1)
 
         self._disp_buf = lv.disp_buf_t()
         self._buf_1 = bytearray(DISP_BUF_SIZE)
