@@ -2,9 +2,12 @@
 import network
 import ntptime
 import utime
+from micropython import const
 
 ssid = 'Westhill_2.4G'
 wp2_pass = 'Radoslav13'
+
+TIME_ZONE_OFFSET = const(14400)
 
 class LaserMCU:
 
@@ -35,9 +38,10 @@ class LaserMCU:
 
     def get_local_time_str(self):
         # TODO Daylight Saving Time
-        dt = utime.localtime(utime.time() - 14400)
-        dt_str = "Created: " + str(self.time_created[1]) + "-" + str(self.time_created[2]) \
-            + " " + str(self.time_created[3]) + ":" + str(self.time_created[4]) + ":" \
+        dt = utime.localtime(utime.time() - TIME_ZONE_OFFSET)
+        ct = utime.localtime(utime.mktime(self.time_created) - TIME_ZONE_OFFSET)
+        dt_str = "Created: " + str(ct[1]) + "-" + str(ct[2]) \
+            + " " + str(ct[3]) + ":" + str(ct[4]) + ":" \
             + " " + str(dt[0]) + "-" + str(dt[1]) + "-" + str(dt[2]) + " " \
             + str(int(dt[3])) + ":" + str(dt[4]) + ":" + str(dt[5])
         return dt_str
