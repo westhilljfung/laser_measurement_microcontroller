@@ -34,9 +34,9 @@ $(MODULES): %:
 	mkdir -p $@ || true
 
 $(BUID_DIR)/%.mpy: %.py
-	$(MPY_CROSS) $(MPY_CROSS_FLAG) -o $(BUILD_DIR)/$*.mpy $*.py
-	ampy -p $(PORT) rm $* && sleep 1 || sleep 1
-	ampy -p $(PORT) put $(BUILD_DIR)/$* || true
+	$(MPY_CROSS) $(MPY_CROSS_FLAG) -o $@ .mpy $*.py
+	ampy -p $(PORT) rm $< && sleep 1 || sleep 1
+	ampy -p $(PORT) put $@ || true
 	sleep 1
 
 git:
