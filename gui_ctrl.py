@@ -69,7 +69,8 @@ class LaserGui:
     
         self._sym.set_text(self._laser_mcu.get_local_time_str() + " " + lv.SYMBOL.WIFI)
         self._header_text = lv.label(self._header)
-        self._header_text.set_text("T: " + str("%0.2f" % self._th_sensor.read_temperature()))
+        self._header_text.set_text("T: " + str("%0.2f" % self._th_sensor.read_temperature())
+                                   + " H: " + str("%0.2f" % self._th_sensor.read_relative_humidity())
         self._header_text.align(self._header, lv.ALIGN.IN_LEFT_MID, 10, 0)
 
         self._sym.align(self._header, lv.ALIGN.IN_RIGHT_MID, -10, 0)
@@ -85,7 +86,9 @@ class LaserGui:
         else:
             self._sym.set_text(self._laser_mcu.get_local_time_str())
         self._sym.align(self._header, lv.ALIGN.IN_RIGHT_MID, -10, 0)
-        self._header_text.set_text("T: " + str("%0.2f" % self._th_sensor.read_temperature()))
+                                   
+        self._header_text.set_text("T: " + str("%0.2f" % self._th_sensor.read_temperature())
+                                   + " H: " + str("%0.2f" % self._th_sensor.read_relative_humidity())
         self._header_text.align(self._header, lv.ALIGN.IN_LEFT_MID, 10, 0)
         gc.collect()
         return

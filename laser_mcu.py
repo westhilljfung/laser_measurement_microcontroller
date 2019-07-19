@@ -40,10 +40,10 @@ class LaserMCU:
         # TODO Daylight Saving Time
         dt = utime.localtime(utime.time() - TIME_ZONE_OFFSET)
         ct = utime.localtime(utime.mktime(self.time_created) - TIME_ZONE_OFFSET)
-        dt_str = "Created: " + str(ct[1]) + "-" + str(ct[2]) \
-            + " " + str(ct[3]) + ":" + str(ct[4]) + ":" \
-            + " " + str(dt[0]) + "-" + str(dt[1]) + "-" + str(dt[2]) + " " \
-            + str(int(dt[3])) + ":" + str(dt[4]) + ":" + str(dt[5])
+        
+        dt_str = "Created: " + str(ct[1]) + "-" + str(ct[2]) + " " + str(ct[3]) \
+            + ":" + str(ct[4]) + " " + str(dt[0]) + "-" + str(dt[1]) + "-" \
+            + str(dt[2]) + " " + str(int(dt[3])) + ":" + str(dt[4]) + ":" + str(dt[5])
         return dt_str
     
     def is_connected(self):
