@@ -2,7 +2,7 @@ import lvgl as lv
 import utime
 import lvesp32
 import TFTFeatherWing as tftwing
-import gui.lasermcu
+import lasermcu
 
 class LaserGui:
     def __init__(self):
