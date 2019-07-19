@@ -38,3 +38,6 @@ git:
 clean:
 	rm -rf $(BUILD_DIR)
 	$(foreach file, $(_MODULES_MPY), $(echo $(file))
+
+list:
+	ampy -p $(PORT) ls
