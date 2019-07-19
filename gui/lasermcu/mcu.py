@@ -11,6 +11,7 @@ class LaserMCU:
         self.wlan =  network.WLAN(network.STA_IF)
         self.connect_wifi()
         self.set_time()
+        self.time_created = self.get_time()
 
     def connect_wifi(self):
         if not self.is_connected():
@@ -33,8 +34,8 @@ class LaserMCU:
     def get_local_time_str(self):
         # TODO Daylight Saving Time
         dt = utime.localtime(utime.time() - 14400)
-        dt_str = str(dt[0]) + "-" + str(dt[1]) + "-" + str(dt[2]) + " " \
-            + str(int(dt[3])) + ":" + str(dt[4]) + ":" + str(dt[5])
+        dt_str = "Time Created: " + self.time_created() + " " + str(dt[0]) + "-" + str(dt[1]) \
+            + "-" + str(dt[2]) + " " + str(int(dt[3])) + ":" + str(dt[4]) + ":" + str(dt[5])
         return dt_str
     
     def is_connected(self):
