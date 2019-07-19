@@ -10,7 +10,7 @@ import gc
 
 DISP_BUF_SIZE = const(9600)
 
-def test_task(data, laser_gui):
+def test_task(data):
     print("test_task called")
     #data.user_data.update_screen()
 
@@ -26,12 +26,11 @@ class LaserGui:
         self._th_ctrl = th_ctrl.THCtrl()
 
         lv.task_core_init()
-        self._user_data = bytes(1)
         self._task1 = lv.task_create_basic()
         lv.task_set_cb(self._task1, test_task)
         lv.task_set_period(self._task1, 500)
         lv.task_set_prio(self._task1, lv.TASK_PRIO.MID)
-        self._task1.user_data = self._user_data
+        self._task1.user_data = byref(self)
 
         lv.task_ready(self._task1)
 
