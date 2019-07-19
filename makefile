@@ -1,5 +1,5 @@
 BUID_DIR = build
-MPY_CROSS = ~/micropython/mpy-cross/mpy-cross
+MPY_CROSS = ~/new/micropython/mpy-cross/mpy-cross
 MPY_CROSS_FLAG=
 
 _MAIN = main.py
@@ -10,8 +10,9 @@ _BOOT = boot.py
 _BOOT_MPY = $(patsubst %.py,%.mpy,$(_BOOT))
 BOOT_MPY = $(patsubst %,$(BUID_DIR)/%,$(_BOOT_MPY))
 
-MODULES = gui data_save laser_ctrl sensors_ctrl drivers lasermcu
-
+_MODULES = gui data_save laser_ctrl sensors_ctrl drivers lasermcu
+MODULES = $(patsubst %,$(BUILD_DIR)/%,$(_MODULES))
+MODULES_INIT = $(patsubst %,%/__init__.py,$(MODULES))
 PORT = /dev/ttyS4
 BAUDRATE = 115200
 
@@ -22,17 +23,20 @@ all: git dir rm_main $(MODULES) $(BOOT_MPY) $(MAIN_MPY)
 
 rm_main:
 	ampy -p $(PORT) rm $(_MAIN) && sleep 1 || sleep 1
-	rm $(MAIN_MPY)
+	rm $(MAIN_MPY) || true
 
-dir: $(BUID_DIR)
+dir: $(BUID_DIR) $(MODULES)
 
 $(BUID_DIR):
-	mkdir -p $@
+	mkdir -p $@ || true
+
+$(MODULES): %:
+	mkdir -p $@ || true
 
 $(BUID_DIR)/%.mpy: %.py
 	$(MPY_CROSS) $(MPY_CROSS_FLAG) -o $(BUILD_DIR)/$*.mpy $*.py
 	ampy -p $(PORT) rm $* && sleep 1 || sleep 1
-	ampy -p $(PORT) put $(BUILD_DIR)/$*
+	ampy -p $(PORT) put $(BUILD_DIR)/$* || true
 	sleep 1
 
 git:
