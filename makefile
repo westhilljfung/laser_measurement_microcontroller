@@ -23,7 +23,7 @@ all: git dir rm_main $(MODULES) $(BOOT_MPY) $(MAIN_MPY)
 
 rm_main:
 	ampy -p $(PORT) rm $(_MAIN) && sleep 1 || sleep 1
-	rm $(MAIN_MPY) || true
+	rm -f $(MAIN_MPY)
 
 dir: $(BUID_DIR) $(MODULES)
 
