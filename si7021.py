@@ -80,8 +80,6 @@ class SI7021:
                 if data[0] != 0xff: # Check if read succeeded.
                     break
         value, checksum = struct.unpack('>HB', data)
-        if checksum != _crc(data[:2]):
-            raise ValueError("CRC mismatch")
         return value
 
     def read_relative_humidity(self):
