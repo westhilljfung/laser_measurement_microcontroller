@@ -10,11 +10,12 @@ MAIN_MPY = $(patsubst %,$(BUILD_DIR)/%,$(_MAIN_MPY))
 _MODULES = boot.py gui_ctrl.py laser_mcu.py si7021.py
 _MODULES_MPY =  $(patsubst %.py,%.mpy,$(_MODULES))
 MODULES_MPY = $(patsubst %,$(BUILD_DIR)/%,$(_MODULES_MPY))
+CLEAN_MODULES_MPY = $(patsubst %,CLEAN/%,$(_MODULES_MPY))
 
 PORT = /dev/ttyS4
 BAUDRATE = 115200
 
-.PHONY: git dir rm_main
+.PHONY: git dir rm_main $(CLEAN_MODULES_MPY)
 
 all: git Makefile dir rm_main $(MODULES_MPY) $(MAIN_MPY)
 	picocom -b$(BAUDRATE) $(PORT)
@@ -35,9 +36,11 @@ $(BUILD_DIR)/%.mpy: %.py
 git:
 	git pull
 
-clean:
+clean: $(CLEAN_MODULES_MPY)
 	rm -rf $(BUILD_DIR)
-	$(echo $(foreach file, $(_MODULES_MPY), $(file)))
+
+$(CLEAN_MODULES_MPY): CLEAN/%:
+	echo $*
 
 list:
 	ampy -p $(PORT) ls
