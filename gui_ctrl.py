@@ -6,7 +6,6 @@ import lvesp32
 import TFTFeatherWing as tftwing
 import laser_mcu
 import th_ctrl
-import uctypes
 import gc
 
 DISP_BUF_SIZE = const(9600)
