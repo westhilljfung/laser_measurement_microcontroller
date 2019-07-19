@@ -12,8 +12,7 @@ main: main.py
 	sleep 1
 
 boot: boot.py
-	ampy -p $(PORT) get $< && ampy -p $(PORT) rm $<
-	sleep 1
+	ampy -p $(PORT) rm $< && sleep 1 || sleep 1
 	ampy -p $(PORT) put $<
 	sleep 1
 
