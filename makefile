@@ -6,7 +6,7 @@ PORT = /dev/ttyS4
 deploy: git main boot $(MODULES)
 	picocom -b 115200 $(PORT)
 
-%:
+%: $@.py
 	echo $@
 
 git:
