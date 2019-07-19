@@ -1,6 +1,6 @@
 MKFILE_PATH = $(abspath $(lastword $(MAKEFILE_LIST)))
 _BDIR = build
-BDIR = $(patsubst %,$(MKFILE_PATH)/%,$(_BUILD_DIR))
+BDIR = $(patsubst %,$(MKFILE_PATH)/%,$(_B_DIR))
 MPY_CROSS = ~/new/micropython/mpy-cross/mpy-cross
 MPY_CROSS_FLAG=
 
