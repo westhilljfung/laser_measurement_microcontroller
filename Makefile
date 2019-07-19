@@ -20,7 +20,7 @@ BAUDRATE = 115200
 all: deploy
 	picocom -b$(BAUDRATE) $(PORT)
 
-deploy: git Makefile dir rm_main $(MODULES_MPY) $(MAIN_MPY)
+deploy: git dir rm_main $(MODULES_MPY) $(MAIN_MPY)
 
 rm_main:
 	ampy -p $(PORT) rm $(_MAIN_MPY) && sleep 1 || sleep 1
@@ -41,9 +41,8 @@ clean: $(CLEAN_MODULES_MPY)
 	rm -rf $(BUILD_DIR)
 
 $(CLEAN_MODULES_MPY): CLEAN/%:
-	ampy -p $(PORT) rm $* && sleep 1 || sleep 1echo $*
+	ampy -p $(PORT) rm $* && sleep 1 || sleep 1
 
 list:
 	ampy -p $(PORT) ls
 
-Makefile:
