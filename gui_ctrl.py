@@ -13,7 +13,7 @@ class LaserGui:
         self.tft = tftwing.TFTFeatherWing()
         self.tft.init()
 
-        self.laser_mcu = lasermcu.LaserMCU()
+        self.laser_mcu = laser_mcu.LaserMCU()
         
         self.disp_buf = lv.disp_buf_t()
         self.buf_1 = bytearray(480*20)
