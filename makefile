@@ -3,7 +3,7 @@ PORT = /dev/ttyS4
 
 .PHONY = git main boot
 
-deploy: git main.py boot.py $(MODULES)
+deploy: git main boot $(MODULES)
 	picocom -b 115200 $(PORT)
 
 main: main.py
