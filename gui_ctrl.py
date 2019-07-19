@@ -109,5 +109,5 @@ class LaserGui:
 
     def test_task(self, data):
         print("test_task called")
-        print(data.user_data)
+        print(self)
         
