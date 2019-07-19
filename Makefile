@@ -16,7 +16,7 @@ BAUDRATE = 115200
 
 .PHONY: git dir rm_main reload
 
-all: git Makefile dir rm_main $(MODULES_INIT_MPY) $(MAIN_MPY)
+all: git Makefile dir rm_main $(MODULES_MPY) $(MAIN_MPY)
 	picocom -b$(BAUDRATE) $(PORT)
 
 rm_main:
