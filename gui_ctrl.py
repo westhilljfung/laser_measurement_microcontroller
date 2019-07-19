@@ -5,7 +5,7 @@ import utime
 import lvesp32
 import TFTFeatherWing as tftwing
 import laser_mcu
-import si7021
+import th_ctrl
 import gc
 
 DISP_BUF_SIZE = const(9600)
@@ -19,7 +19,7 @@ class LaserGui:
         self._tft.init()
         self._laser_mcu = laser_mcu.LaserMCU()
 
-        self._th_sensor = si7021.SI7021(22, 23)
+        self._th_ctrl = th_ctrl()
 
         self._disp_buf = lv.disp_buf_t()
         self._buf_1 = bytearray(DISP_BUF_SIZE)
@@ -69,8 +69,7 @@ class LaserGui:
     
         self._sym.set_text(self._laser_mcu.get_local_time_str() + " " + lv.SYMBOL.WIFI)
         self._header_text = lv.label(self._header)
-        self._header_text.set_text("T: " + str("%0.2f" % self._th_sensor.read_temperature())
-                                   + " H: " + str("%0.2f" % self._th_sensor.read_relative_humidity()))
+        self._header_text.set_text(self._th_ctrl.get_th_str())
         self._header_text.align(self._header, lv.ALIGN.IN_LEFT_MID, 10, 0)
 
         self._sym.align(self._header, lv.ALIGN.IN_RIGHT_MID, -10, 0)
@@ -87,8 +86,7 @@ class LaserGui:
             self._sym.set_text(self._laser_mcu.get_local_time_str())
         self._sym.align(self._header, lv.ALIGN.IN_RIGHT_MID, -10, 0)
                                    
-        self._header_text.set_text("T: " + str("%0.2f" % self._th_sensor.read_temperature())
-                                   + " H: " + str("%0.2f" % self._th_sensor.read_relative_humidity()))
+        self._header_text.set_text(self._th_ctrl.get_th_str())
         self._header_text.align(self._header, lv.ALIGN.IN_LEFT_MID, 10, 0)
         gc.collect()
         return

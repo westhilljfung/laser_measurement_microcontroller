@@ -10,7 +10,7 @@ _MAIN = main.py boot.py
 MAIN = $(patsubst %,$(BUILD_DIR)/%,$(call reverse,$(_MAIN)))
 CLEAN_MAIN = $(patsubst %,CLEAN/%,$(_MAIN))
 
-_MODULES = gui_ctrl.py laser_mcu.py si7021.py
+_MODULES = gui_ctrl.py laser_mcu.py si7021.py th_ctrl.py
 _MODULES_MPY =  $(patsubst %.py,%.mpy,$(_MODULES))
 MODULES_MPY = $(patsubst %,$(BUILD_DIR)/%,$(_MODULES_MPY))
 CLEAN = $(CLEAN_MAIN)
