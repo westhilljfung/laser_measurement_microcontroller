@@ -31,7 +31,7 @@ class LaserGui:
         lv.task_set_cb(self._task1, test_task)
         lv.task_set_period(self.task1,, 500)
         lv.task_set_prio(self.task1, lv.TASK_PRIO.MID)
-        self._task1.user_data = self._user_data)
+        self._task1.user_data = self._user_data
 
         lv.task_ready(self._task1)
 
