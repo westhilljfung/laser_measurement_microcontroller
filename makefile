@@ -1,4 +1,4 @@
-MODULES = gui.f~ drivers.f~ data_save.f~ laser_ctrl.f~ lasermcu.f~ sensors_ctrl.f~
+MODULES = gui.f~ drivers.f~ data_save.f~ laser_ctrl.f~ sensors_ctrl.f~
 PORT = /dev/ttyS4
 
 .PHONY = git
