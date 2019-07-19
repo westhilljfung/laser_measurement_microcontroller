@@ -10,9 +10,9 @@ import gc
 
 DISP_BUF_SIZE = const(9600)
 
-def test_task(data):
+def test_task(data, laser_gui):
     print("test_task called")
-    print(data)
+    laser_gui.update_screen()
 
 class LaserGui:
     def __init__(self):
@@ -91,7 +91,7 @@ class LaserGui:
         lv.scr_load(self._scr)
         return
 
-    def call_task_handle(self):
+    def call_task_handler(self):
         lv.task_handler()
 
     def update_screen(self):
@@ -103,8 +103,6 @@ class LaserGui:
                                    
         self._header_text.set_text(self._th_ctrl.get_th_str())
         self._header_text.align(self._header, lv.ALIGN.IN_LEFT_MID, 10, 0)
-        
-        lv.task_handler()
         gc.collect()
         return
         
