@@ -19,6 +19,7 @@ class LaserGui:
         self.buf_2 = bytearray(480*20)
         self.disp_drv = lv.disp_drv_t()
         self.disp = None
+        
 
         self.indev_drv = lv.indev_drv_t()
         self.indev = None
