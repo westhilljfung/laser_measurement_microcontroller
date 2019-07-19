@@ -1,16 +1,19 @@
 MODULES = gui drivers data_save laser_ctrl lasermcu sensor_ctrl
 PORT = /dev/ttyS4
 
-deploy: main boot $(MODULES)
+.PHONY = git
+
+deploy: git main boot $(MODULES)
 	picocom -b 115200 $(PORT)
 
 main: main.py
 	ampy -p $(PORT) rm $<
-	sleep 5
+	sleep 3
 	ampy -p $(PORT) put $<
 
 boot: boot.py
 	ampy -p $(PORT) rm $<
+	sleep 3
 	ampy -p $(PORT) put $<
 
 %:
