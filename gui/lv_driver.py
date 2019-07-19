@@ -12,9 +12,8 @@ class LaserGui:
         self.tft = tftwing.TFTFeatherWing()
         self.tft.init()
 
-        self.lser_mcu = lasermcu.LaserMCU()
+        self.laser_mcu = lasermcu.LaserMCU()
         
-
         self.disp_buf = lv.disp_buf_t()
         self.buf_1 = bytearray(480*20)
         self.buf_2 = bytearray(480*20)
@@ -59,16 +58,21 @@ class LaserGui:
         # Add header
         header = lv.cont(scr)
         header.set_width(480)
-        sym = lv.label(header)
-        sym.set_text(lv.SYMBOL.WIFI + " " + str(utime.localtime()))
+        self.sym = lv.label(header)
+        self.sym.set_text(lv.SYMBOL.WIFI + " " + str(utime.localtime()))
         header_text = lv.label(header)
         header_text.set_text("T: ")
 
         header_text.align(header, lv.ALIGN.IN_LEFT_MID, 10, 0)
 
-        sym.align(header, lv.ALIGN.IN_RIGHT_MID, -10, 0)
+        self.sym.align(header, lv.ALIGN.IN_RIGHT_MID, -10, 0)
         header.set_fit2(lv.FIT.NONE, lv.FIT.TIGHT)
         header.set_pos(0, 0)
         
         lv.scr_load(scr)
         return
+
+    def update_screen(self):        
+        self.sym.set_text(lv.SYMBOL.WIFI + " " + self.laser_mcu.get_localtime_str()))
+        self.sym.align(header, lv.ALIGN.IN_RIGHT_MID, -10, 0)
+        
