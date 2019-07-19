@@ -77,6 +77,7 @@ class LaserGui:
             self.sym.set_text(self.laser_mcu.get_local_time_str() + " " + lv.SYMBOL.WIFI)
         else:
             self.sym.set_text(self.laser_mcu.get_local_time_str())
+            
         self.sym.align(self.header, lv.ALIGN.IN_RIGHT_MID, -10, 0)
         return
         
