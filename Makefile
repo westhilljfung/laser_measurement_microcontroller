@@ -1,3 +1,4 @@
+# By Joshua Fung 2019/07/19
 BUILD_DIR = build
 
 MPY_CROSS = ~/new/micropython/mpy-cross/mpy-cross
