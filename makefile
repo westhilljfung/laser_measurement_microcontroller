@@ -1,6 +1,6 @@
-PWD = $(shell pwd)
+MKFILE_PATH = $(abspath $(lastword $(MAKEFILE_LIST)))
 _BDIR = build
-BDIR = $(patsubst %,$(PWD)/%,$(_BUILD_DIR))
+BDIR = $(patsubst %,$(MKFILE_PATH)/%,$(_BUILD_DIR))
 MPY_CROSS = ~/new/micropython/mpy-cross/mpy-cross
 MPY_CROSS_FLAG=
 
@@ -45,4 +45,4 @@ git:
 	git pull
 
 clean:
-	rm -rf $(_BDIR)
+	rm -rf $(BDIR)
