@@ -73,7 +73,7 @@ class LaserGui:
         return
 
     def update_screen(self):        
-        self.sym.set_text(lv.SYMBOL.WIFI + " " + self.laser_mcu.get_localtime_str())
+        self.sym.set_text(lv.SYMBOL.WIFI + " " + self.laser_mcu.get_local_time_str())
         self.sym.align(header, lv.ALIGN.IN_RIGHT_MID, -10, 0)
         return
         
