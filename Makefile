@@ -17,7 +17,7 @@ CLEAN += $(patsubst %,CLEAN/%,$(_MODULES_MPY))
 PORT = /dev/ttyS4
 BAUDRATE = 115200
 
-.PHONY: deploy git dir $(CLEAN_MAIN) $(CLEAN_MODULES_MPY) con
+.PHONY: deploy git dir $(CLEAN) con
 
 deploy: git dir $(CLEAN_MAIN) $(MODULES_MPY) $(MAIN) con
 
