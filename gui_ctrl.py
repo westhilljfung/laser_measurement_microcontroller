@@ -11,10 +11,6 @@ import gc
 
 DISP_BUF_SIZE = const(9600)
 
-def test_task(data):
-    print("test_task called")
-    print(data.user_data)
-
 class LaserGui:
     def __init__(self):
         # Initialize TFT Feather Wing Display and Touch Screen
@@ -108,6 +104,5 @@ class LaserGui:
         return
 
     def test_task(self, data):
-        print("test_task called")
-        print(self)
+        self.update_screen()
         
