@@ -12,7 +12,7 @@ DISP_BUF_SIZE = const(9600)
 
 def test_task(data, laser_gui):
     print("test_task called")
-    laser_gui.update_screen()
+    data.user_data.update_screen()
 
 class LaserGui:
     def __init__(self):
@@ -27,6 +27,7 @@ class LaserGui:
 
         lv.task_core_init()
         self._task1 = lv.task_create_basic()
+        self._task1.user_data = self
         lv.task_set_cb(self._task1, test_task)
         lv.task_set_period(self._task1, 500)
         lv.task_set_prio(self._task1, lv.TASK_PRIO.MID)
