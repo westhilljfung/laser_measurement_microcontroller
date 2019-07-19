@@ -13,10 +13,12 @@ deploy: git $(MODULES)  boot.touch~ main.touch~
 	sleep 1
 
 %.f~: %
+	ampy -p $(PORT) rm main.py && sleep 1
 	touch $@
 	ampy -p $(PORT) rmdir $< && sleep 1 || sleep 1
 	ampy -p $(PORT) put $<
 	sleep 1
+	ampy -p $(PORT) put main.py
 
 git:
 	git pull

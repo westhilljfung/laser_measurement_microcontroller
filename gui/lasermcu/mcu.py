@@ -2,7 +2,7 @@
 import network
 import ntptime
 import utime
-import lasermcu
+from gui import lasermcu
 
 class LaserMCU:
 
