@@ -12,7 +12,8 @@ deploy: git main.touch~ boot.touch~ $(MODULES)
 	ampy -p $(PORT) put $<
 	sleep 1
 
-%.f~: % 
+%.f~: %
+	touch $@
 	ampy -p $(PORT) rmdir $< && sleep 1 || sleep 1
 	ampy -p $(PORT) put $<
 	sleep 1
