@@ -1,20 +1,20 @@
-MODULES = gui drivers data_save laser_ctrl lasermcu sensors_ctrl
+MODULES = gui.f~ drivers.f~ data_save.f~ laser_ctrl.f~ lasermcu.f~ sensors_ctrl.f~
 PORT = /dev/ttyS4
 
 .PHONY = git
 
-deploy: git main.touch boot.touch $(MODULES)
+deploy: git main.touch~ boot.touch~ 
 	picocom -b 115200 $(PORT)
 
-%.touch: %.py
+%.touch~: %.py
 	touch $@
 	ampy -p $(PORT) rm $< && sleep 1 || sleep 1
 	ampy -p $(PORT) put $<
 	sleep 1
 
-%: %
-	ampy -p $(PORT) rmdir $@ && sleep 1 || sleep 1
-	ampy -p $(PORT) put $@
+%.f~: % 
+	ampy -p $(PORT) rmdir $< && sleep 1 || sleep 1
+	ampy -p $(PORT) put $<
 	sleep 1
 
 git:
