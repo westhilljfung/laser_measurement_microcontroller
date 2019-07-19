@@ -15,6 +15,7 @@ BOOT_MPY = $(patsubst %,$(BUID_DIR)/%,$(_BOOT_MPY))
 _MODULES = gui data_save laser_ctrl sensors_ctrl drivers lasermcu
 MODULES = $(patsubst %,$(BUILD_DIR)/%,$(_MODULES))
 MODULES_INIT = $(patsubst %,%/__init__.py,$(MODULES))
+
 PORT = /dev/ttyS4
 BAUDRATE = 115200
 
@@ -30,19 +31,20 @@ rm_main:
 dir: $(BUID_DIR) $(MODULES)
 
 $(BUID_DIR):
-	mkdir -p $@ || true
+	mkdir -p $@
 
 $(MODULES): %:
-	mkdir -p $@ || true
+	mkdir -p $@
 
 $(BUID_DIR)/%.mpy: %.py
-	$(MPY_CROSS) $(MPY_CROSS_FLAG) -o $@ .mpy $*.py
+	$(MPY_CROSS) $(MPY_CROSS_FLAG) -o $@ $*.py
 	ampy -p $(PORT) rm $< && sleep 1 || sleep 1
 	ampy -p $(PORT) put $@ || true
 	sleep 1
 
 git:
 	git pull
+	echo $(MODULE) 
 
 clean:
 	rm -rf $(BDIR)
