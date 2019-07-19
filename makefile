@@ -19,7 +19,7 @@ boot: boot.py
 	sleep 3
 
 %:
-	echo($@)
+	echo $@
 
 git:
 	git pull
