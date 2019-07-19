@@ -28,7 +28,7 @@ class LaserGui:
 
         lv.task_core_init()
         self._task1 = lv.task_create_basic()
-        lv.task_set_cb(self._task1, test_task)
+        lv.task_set_cb(self._task1, self.test_task)
         lv.task_set_period(self._task1, 500)
         lv.task_set_prio(self._task1, lv.TASK_PRIO.MID)
 
@@ -106,4 +106,8 @@ class LaserGui:
         self._header_text.align(self._header, lv.ALIGN.IN_LEFT_MID, 10, 0)
         gc.collect()
         return
+
+    def test_task(self, data):
+        print("test_task called")
+        print(data.user_data)
         
