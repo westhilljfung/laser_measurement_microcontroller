@@ -17,7 +17,7 @@ _MODULES = gui data_save laser_ctrl sensors_ctrl drivers lasermcu
 _MODULES_INIT= $(patsubst %,%/__init__.py,$(_MODULES))
 _MODULES_INIT_MPY= $(patsubst %,%/__init__.mpy,$(_MODULES))
 MODULES = $(patsubst %,$(BUILD_DIR)/%,$(_MODULES))
-MODULES_INIT_MPY = $(patsubst %,$BUILD_DIR)/%,$(_MODULES_INIT_MPY))
+MODULES_INIT_MPY = $(patsubst %,$(BUILD_DIR)/%,$(_MODULES_INIT_MPY))
 
 PORT = /dev/ttyS4
 BAUDRATE = 115200
