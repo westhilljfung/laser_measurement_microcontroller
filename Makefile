@@ -4,8 +4,10 @@ BUILD_DIR = build
 MPY_CROSS = ~/new/micropython/mpy-cross/mpy-cross
 MPY_CROSS_FLAG=
 
+reverse = $(if $(1),$(call reverse,$(wordlist 2,$(words $(1)),$(1)))) $(firstword $(1))
+
 _MAIN = main.py boot.py
-MAIN = $(patsubst %,$(BUILD_DIR)/%,$(_MAIN))
+MAIN = $(patsubst %,$(BUILD_DIR)/%,$(call reverse,$(_MAIN)))
 CLEAN_MAIN = $(patsubst %,CLEAN/%,$(_MAIN))
 
 _MODULES = gui_ctrl.py laser_mcu.py si7021.py
