@@ -37,7 +37,7 @@ git:
 
 clean:
 	rm -rf $(BUILD_DIR)
-	$(for file in $(_MODULES_MPY); do $(echo $(file))
+	$(for file in $(_MODULES_MPY); do $(echo $(file); done)
 
 list:
 	ampy -p $(PORT) ls
