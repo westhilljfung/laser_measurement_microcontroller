@@ -1,8 +1,9 @@
+# gui_ctrl.py
 import lvgl as lv
 import utime
 import lvesp32
 import TFTFeatherWing as tftwing
-from gui import lasermcu
+import laser_mcu
 
 class LaserGui:
     def __init__(self):

@@ -1,8 +1,10 @@
-# lasermcu/mcu.py
+# laser_mcu.py
 import network
 import ntptime
 import utime
-from gui import lasermcu
+
+ssid = 'Westhill_2.4G'
+wp2_pass = 'Radoslav13'
 
 class LaserMCU:
 
@@ -16,7 +18,7 @@ class LaserMCU:
     def connect_wifi(self):
         if not self.is_connected():
             self.wlan.active(True)
-            self.wlan.connect(lasermcu.ssid, lasermcu.wp2_pass)
+            self.wlan.connect(ssid, wp2_pass)
             while not self.is_connected():
                 utime.sleep(1)
         return

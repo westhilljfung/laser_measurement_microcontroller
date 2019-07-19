@@ -1,5 +1,5 @@
 #main.py
-import gui
+import gui_ctrl
 import utime
 
 laser_gui = gui.LaserGui()
