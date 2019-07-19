@@ -4,6 +4,7 @@ import utime
 import lvesp32
 import TFTFeatherWing as tftwing
 import laser_mcu
+import gc
 
 class LaserGui:
     def __init__(self):
@@ -64,7 +65,6 @@ class LaserGui:
         self.sym.set_text(self.laser_mcu.get_local_time_str() + " " + lv.SYMBOL.WIFI)
         header_text = lv.label(self.header)
         header_text.set_text("T: ")
-
         header_text.align(self.header, lv.ALIGN.IN_LEFT_MID, 10, 0)
 
         self.sym.align(self.header, lv.ALIGN.IN_RIGHT_MID, -10, 0)
@@ -80,5 +80,6 @@ class LaserGui:
         else:
             self.sym.set_text(self.laser_mcu.get_local_time_str())
         self.sym.align(self.header, lv.ALIGN.IN_RIGHT_MID, -10, 0)
+        gc.collect()
         return
         
