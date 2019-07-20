@@ -15,10 +15,11 @@ class LaserGui:
         # Initialize TFT Feather Wing Display and Touch Screen
         lv.init()
         
+        self._laser_mcu = laser_mcu.LaserMCU()
+
         self._tft = tftwing.TFTFeatherWing()
         self._tft.init()
-        
-        self._laser_mcu = laser_mcu.LaserMCU()
+                
         if self._laser_mcu.is_connected():
             self._laser_mcu.set_time_ntp()
         else:
@@ -29,13 +30,6 @@ class LaserGui:
             
         self._th_ctrl = th_ctrl.THCtrl()
 
-        lv.task_core_init()
-        self._task1 = lv.task_create_basic()
-        lv.task_set_cb(self._task1, self.test_task)
-        lv.task_set_period(self._task1, 500)
-        lv.task_set_prio(self._task1, lv.TASK_PRIO.MID)
-
-        lv.task_ready(self._task1)
 
         self._disp_buf = lv.disp_buf_t()
         self._buf_1 = bytearray(DISP_BUF_SIZE)
@@ -48,6 +42,15 @@ class LaserGui:
 
         self._register_disp_drv()
         self._register_indev_drv()
+
+        lv.task_core_init()
+        self._task_update_header = lv.task_create_basic()
+        lv.task_set_cb(self._task1, self.update_header)
+        lv.task_set_period(self._task1, 500)
+        lv.task_set_prio(self._task1, lv.TASK_PRIO.MID)
+
+        lv.task_ready(self._task_update_header)
+        
         self._load_screen()
 
     def _register_disp_drv(self):
@@ -114,6 +117,6 @@ class LaserGui:
         gc.collect()
         return
 
-    def test_task(self, data):
+    def update_header(self, data):
         self.update_screen()
         
