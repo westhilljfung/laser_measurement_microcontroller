@@ -3,7 +3,7 @@ import network
 import ntptime
 import utime
 from micropython import const
-#from machine import RTC, SDCard, Pin
+from machine import RTC, SDCard, Pin
 
 ssid = 'Westhill_2.4G'
 wp2_pass = 'Radoslav13'
