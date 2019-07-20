@@ -23,6 +23,8 @@ class LaserGui:
             self._laser_mcu.set_time_ntp()
         else:
             #self._set_datetime_gui()
+            pass
+        
         self._laser_mcu.set_creation_time()
             
         self._th_ctrl = th_ctrl.THCtrl()
