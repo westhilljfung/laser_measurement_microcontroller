@@ -9,7 +9,7 @@ ssid = 'Westhill_2.4G'
 wp2_pass = 'Radoslav13'
 
 TIME_ZONE_OFFSET = const(14400)
-WIFI_CON_TIMEOUT = const(60000)
+WIFI_CON_TIMEOUT = const(60)
 
 class LaserMCU:
 
