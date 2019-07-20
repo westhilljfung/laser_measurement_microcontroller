@@ -16,6 +16,8 @@ class LaserMCU:
         self.name = "Westhill Laser Measument System"
         self.wlan =  network.WLAN(network.STA_IF)
         self.connect_wifi()
+        self.set_time()
+        self.set_creation_time()
 
     def connect_wifi(self):
         if not self.is_connected():
