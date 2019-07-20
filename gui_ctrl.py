@@ -20,7 +20,7 @@ class LaserGui:
         
         self._laser_mcu = laser_mcu.LaserMCU()
         if self._laser_mcu.is_connected():
-            self._laser_mcu.set_time()
+            self._laser_mcu.set_time_ntp()
         else:
             _set_datetime_gui()
         self._laser_mcu.set_creation_time()
