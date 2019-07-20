@@ -3,7 +3,7 @@ import network
 import ntptime
 import utime
 from micropython import const
-from machine import RTC, SDCard, Pin
+import machine
 
 ssid = 'Westhill_2.4G'
 wp2_pass = 'Radoslav13'
@@ -39,10 +39,11 @@ class LaserMCU:
         except:
             pass
         return
+    """
     def set_time(self, datetime):
         RTC().datetime(datetime)
         return
-    
+    """
     def set_creation_time(self):
         self.time_created =  utime.time()
         return
