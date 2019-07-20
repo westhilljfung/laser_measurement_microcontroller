@@ -94,7 +94,7 @@ class LaserGui:
         return
     def _set_datetime_gui(self):
         self._datetime_gui =lv.obj()
-        self._cal = lv.calendar_create(self._datetime_gui)
+        self._cal = lv.calendar(self._datetime_gui)
         lv.scr_load(self._datetime_gui)
         
     def call_task_handler(self):
