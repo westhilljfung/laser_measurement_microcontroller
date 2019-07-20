@@ -17,7 +17,7 @@ class LaserMCU:
         self.name = "Westhill Laser Measument System"
         self.wlan =  network.WLAN(network.STA_IF)
         self.connect_wifi()
-        #self.sd = SDCard(slot=2,sck=Pin(5),miso=Pin(19),mosi=Pin(18),cs=Pin(14))
+        self.sd = machine.SDCard(slot=2,sck=machine.Pin(5),miso=machine.Pin(19),mosi=machine.Pin(18),cs=machine.Pin(14))
         #uos.mount(self.sd, "/sd")
 
     def connect_wifi(self):
