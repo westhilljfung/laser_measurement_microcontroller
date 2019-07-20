@@ -33,6 +33,8 @@ class LaserMCU:
     def set_time(self):
         try:
             ntptime.settime()
+        except:
+            pass
         return
 
     def set_creation_time(self):
