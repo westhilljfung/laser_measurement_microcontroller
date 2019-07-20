@@ -25,13 +25,14 @@ class LaserMCU:
             break_loop = False
             while not break_loop:
                 utime.sleep_ms(5)
-                if utime.ticks_diff(utime.ticks_ms, start) >= WIFI_CONTIMEOUT\
+                if utime.ticks_diff(utime.ticks_ms, start) >= WIFI_CON_TIMEOUT\
                    or self.is_connected():
                     break_loop = True
         return
         
     def set_time(self):
-        ntptime.settime()
+        try:
+            ntptime.settime()
         return
 
     def set_creation_time(self):
