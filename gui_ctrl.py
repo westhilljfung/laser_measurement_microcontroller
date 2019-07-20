@@ -17,8 +17,14 @@ class LaserGui:
         
         self._tft = tftwing.TFTFeatherWing()
         self._tft.init()
+        
         self._laser_mcu = laser_mcu.LaserMCU()
-
+        if self._laser_mcu.is_connected():
+            self._laser_mcu.set_time()
+        else:
+            _set_datetime_gui()
+        self._laser_mcu.set_creation_time()
+            
         self._th_ctrl = th_ctrl.THCtrl()
 
         lv.task_core_init()
@@ -86,7 +92,11 @@ class LaserGui:
         
         lv.scr_load(self._scr)
         return
-
+    def _set_datetime_gui(self):
+        self._datetime_gui =lv.obj()
+        self._cal = lv.calendar_create(self._datetime_gui)
+        lv.scr_load(self._datetime_gui)
+        
     def call_task_handler(self):
         lv.task_handler()
 
