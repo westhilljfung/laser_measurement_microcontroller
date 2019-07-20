@@ -3,7 +3,7 @@ import network
 import ntptime
 import utime
 from micropython import const
-from machine import RTC, SDCard, Pin
+#from machine import RTC, SDCard, Pin
 
 ssid = 'Westhill_2.4G'
 wp2_pass = 'Radoslav13'
@@ -17,8 +17,8 @@ class LaserMCU:
         self.name = "Westhill Laser Measument System"
         self.wlan =  network.WLAN(network.STA_IF)
         self.connect_wifi()
-        self.sd = SDCard(slot=2,sck=Pin(5),miso=Pin(19),mosi=Pin(18),cs=Pin(14))
-        uos.mount(self.sd, "/sd")
+        #self.sd = SDCard(slot=2,sck=Pin(5),miso=Pin(19),mosi=Pin(18),cs=Pin(14))
+        #uos.mount(self.sd, "/sd")
 
     def connect_wifi(self):
         if not self.is_connected():
