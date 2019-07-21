@@ -1,6 +1,9 @@
 #main.py
 import gui_ctrl
 import utime
+import esp
+
+esp.osdebug(0)  
 
 laser_gui = gui_ctrl.LaserGui()
 
