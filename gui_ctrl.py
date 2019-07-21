@@ -119,6 +119,6 @@ class LaserGui:
         return
 
     def update_header(self, data):
-        print("Update Header")
+        #print("Update Header")
         self.update_screen()
         
