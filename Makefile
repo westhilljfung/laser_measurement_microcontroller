@@ -21,7 +21,7 @@ BAUDRATE = 115200
 
 .PHONY: deploy git dir $(CLEAN) con
 
-deploy: git dir $(CLEAN_MAIN) $(MODULES_MPY) $(MAIN) con
+deploy: dir $(CLEAN_MAIN) $(MODULES_MPY) $(MAIN) con
 
 dir: $(BUILD_DIR)
 $(BUILD_DIR):
