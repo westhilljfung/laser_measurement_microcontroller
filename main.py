@@ -3,7 +3,7 @@ import gui_ctrl
 import utime
 import esp
 
-esp.osdebug(0, 5)  
+esp.osdebug(0, esp.LOG_DEBUG)  
 
 laser_gui = gui_ctrl.LaserGui()
 
