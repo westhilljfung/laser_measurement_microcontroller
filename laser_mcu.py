@@ -45,7 +45,7 @@ class LaserMCU:
         return
     """
     def set_creation_time(self):
-        self.time_created =  utime.time()
+        self.time_created = utime.time()
         return
     
     def get_local_time_str(self):
