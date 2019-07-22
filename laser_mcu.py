@@ -20,6 +20,7 @@ class LaserMCU:
         #self.connect_wifi()
         self.sd = machine.SDCard(slot=3,sck=machine.Pin(14),miso=machine.Pin(12),mosi=machine.Pin(13),cs=machine.Pin(15))
         uos.mount(self.sd, "/sd")
+        uos.listdir("/sd/DCIM")
 
     def connect_wifi(self):
         if not self.is_connected():
