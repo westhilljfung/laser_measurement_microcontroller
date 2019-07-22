@@ -30,6 +30,12 @@ class LaserGui:
             
         self._th_ctrl = th_ctrl.THCtrl()
 
+        lv.task_core_init()
+        self._task_update_header = lv.task_create_basic()
+        lv.task_set_cb(self._task_update_header, self.update_header)
+        lv.task_set_period(self._task_update_header, 500)
+        lv.task_set_prio(self._task_update_header, lv.TASK_PRIO.MID)
+        
 
         self._disp_buf = lv.disp_buf_t()
         self._buf_1 = bytearray(DISP_BUF_SIZE)
@@ -45,12 +51,7 @@ class LaserGui:
         
         self._load_screen()
 
-        lv.task_core_init()
-        self._task_update_header = lv.task_create_basic()
-        lv.task_set_cb(self._task_update_header, self.update_header)
-        lv.task_set_period(self._task_update_header, 500)
-        lv.task_set_prio(self._task_update_header, lv.TASK_PRIO.MID)
-        
+    
         lv.task_ready(self._task_update_header)
 
     def _register_disp_drv(self):
@@ -118,6 +119,6 @@ class LaserGui:
         return
 
     def update_header(self, data):
-        #print("Update Header")
+        print("Update Header")
         self.update_screen()
         
