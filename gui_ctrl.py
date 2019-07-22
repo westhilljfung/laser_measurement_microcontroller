@@ -19,13 +19,6 @@ class LaserGui:
 
         self._tft = tftwing.TFTFeatherWing()
         self._tft.init()
-
-
-        lv.task_core_init()
-        self._task_update_header = lv.task_create_basic()
-        lv.task_set_cb(self._task_update_header, self.update_header)
-        lv.task_set_period(self._task_update_header, 500)
-        lv.task_set_prio(self._task_update_header, lv.TASK_PRIO.MID)
         
         if self._laser_mcu.is_connected():
             self._laser_mcu.set_time_ntp()
@@ -52,6 +45,12 @@ class LaserGui:
         
         self._load_screen()
 
+        lv.task_core_init()
+        self._task_update_header = lv.task_create_basic()
+        lv.task_set_cb(self._task_update_header, self.update_header)
+        lv.task_set_period(self._task_update_header, 500)
+        lv.task_set_prio(self._task_update_header, lv.TASK_PRIO.MID)
+        
         lv.task_ready(self._task_update_header)
 
     def _register_disp_drv(self):
