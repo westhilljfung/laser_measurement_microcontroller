@@ -26,9 +26,12 @@ class LaserCtrl:
             utime.sleep_us(1)
         print(utime.ticks_diff(utime.ticks_us(), start))
         start = utime.ticks_us()
-        print(self._laser.readline())
+        pv_str = self._laser.readline()
+        self._pv_s = pv_str.strip("\r\n").strip("M0,").split(",")
         print(utime.ticks_diff(utime.ticks_us(), start))
-
+        print(pv_str)
+        print(self._pv_s)
+        
     def write_all(self, cmd, data):
         start = utime.ticks_us()
         self._laser.write("AW,%s,%s\r\n" % (cmd, data))
@@ -54,3 +57,15 @@ class LaserCtrl:
                 start = utime.ticks_us()
                 print(self._laser.readline())
                 print(utime.ticks_diff(utime.ticks_us(), start))
+
+    def write_amp(self, amp, cmd, data):
+        start = utime.ticks_us()
+        self._laser.write("SW,%02d,%s,%s\r\n" % (amp, cmd, data))
+        print(utime.ticks_diff(utime.ticks_us(), start))
+        start = utime.ticks_us()
+        while not self._laser.any():
+            utime.sleep_us(1)
+        print(utime.ticks_diff(utime.ticks_us(), start))  
+        start = utime.ticks_us()
+        print(self._laser.readline())
+        print(utime.ticks_diff(utime.ticks_us(), start))
