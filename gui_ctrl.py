@@ -31,8 +31,8 @@ class LaserGui:
             
         self._th_ctrl = th_ctrl.THCtrl()
 
-        self._laser = laser_ctrl.LaserCtrl()
-        self._laser.reset_all()
+        #self._laser = laser_ctrl.LaserCtrl()
+        #self._laser.reset_all()
 
         lv.task_core_init()
         self._task_update_header = lv.task_create_basic()
