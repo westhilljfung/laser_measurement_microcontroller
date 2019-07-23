@@ -69,6 +69,7 @@ class LaserGui:
         
 
     def _save_time(self):
+        print("save Time")
         self._laser_mcu.save_time()
         
     def _register_disp_drv(self):
