@@ -44,11 +44,11 @@ class LaserCtrl:
         print(self._laser.readline())
         print(utime.ticks_diff(utime.ticks_us(), start))
 
-    def write_command_all(self, cmd):
+    def read__all(self, cmd):
         for laser_pair in self._amp_stack:
             for amp in laser_pair:
                 start = utime.ticks_us()
-                self._laser.write(str % amp)
+                self._laser.write("SR,%02d,%s\r\n" % (amp, cmd))
                 print(utime.ticks_diff(utime.ticks_us(), start))
                 start = utime.ticks_us()
                 while not self._laser.any():
