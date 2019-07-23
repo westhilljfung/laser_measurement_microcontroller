@@ -33,7 +33,6 @@ class LaserGui:
 
         self._laser = laser_ctrl.LaserCtrl()
         self._laser.reset_all()
-        self._laser.read_all("038")
 
         lv.task_core_init()
         self._task_update_header = lv.task_create_basic()
