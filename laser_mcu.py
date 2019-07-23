@@ -18,7 +18,8 @@ class LaserMCU:
         self.name = "Westhill Laser Measument System"
         self.wlan =  network.WLAN(network.STA_IF)
         self.connect_wifi()
-        self.sd = machine.SDCard(slot=3,sck=machine.Pin(14),miso=machine.Pin(12),mosi=machine.Pin(13),cs=machine.Pin(15))
+        self.sd = machine.SDCard(slot=3, sck=machine.Pin(14), miso=machine.Pin(12)
+                                 ,mosi=machine.Pin(13),cs=machine.Pin(15))
         uos.mount(self.sd, "/sd")
         print(uos.listdir("/sd/DCIM"))
 
