@@ -23,7 +23,7 @@ class LaserMCU:
         self.sd = machine.SDCard(slot=3, sck=machine.Pin(14), miso=machine.Pin(12)
                                  ,mosi=machine.Pin(13),cs=machine.Pin(15))
         uos.mount(self.sd, "/sd")
-        print(uos.listdir("/sd/DCIM"))
+        #print(uos.listdir("/sd/DCIM"))
 
     def connect_wifi(self):
         if not self.is_connected():
@@ -32,7 +32,7 @@ class LaserMCU:
             start = utime.ticks_ms()
             while True:
                 utime.sleep_ms(5)
-                print(utime.ticks_diff(utime.ticks_ms(), start))
+                #print(utime.ticks_diff(utime.ticks_ms(), start))
                 if utime.ticks_diff(utime.ticks_ms(), start) >= WIFI_CON_TIMEOUT:
                     print("Fail to connect WIFI")
                     break
@@ -46,11 +46,7 @@ class LaserMCU:
         except:
             pass
         return
-    """
-    def set_time(self, datetime):
-        RTC().datetime(datetime)
-        return
-    """
+
     def set_creation_time(self):
         self.time_created = utime.time()
         return
