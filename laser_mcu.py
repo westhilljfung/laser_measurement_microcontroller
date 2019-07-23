@@ -5,12 +5,14 @@ import utime
 from micropython import const
 import machine
 import uos
+import ujson
 
 ssid = 'Westhill_2.4G'
 wp2_pass = 'Radoslav13'
 
 TIME_ZONE_OFFSET = const(14400)
-WIFI_CON_TIMEOUT = const(60)
+WIFI_CON_TIMEOUT = const(60000)
+TIME_FILE = "/time"
 
 class LaserMCU:
 
@@ -28,12 +30,13 @@ class LaserMCU:
             self.wlan.active(True)
             self.wlan.connect(ssid, wp2_pass)
             start = utime.ticks_ms()
-            break_loop = False
-            while not break_loop:
+            while True:
                 utime.sleep_ms(5)
-                if utime.ticks_diff(utime.ticks_ms, start) >= WIFI_CON_TIMEOUT\
-                   or self.is_connected():
-                    break_loop = True
+                if utime.ticks_diff(utime.ticks_ms, start) >= WIFI_CON_TIMEOUT:
+                    print("Fail to connect WIFI")
+                    break
+                elif self.is_connected():
+                    break
         return
         
     def set_time_ntp(self):
@@ -49,6 +52,18 @@ class LaserMCU:
     """
     def set_creation_time(self):
         self.time_created = utime.time()
+        return
+
+    def save_time(self):
+        file = open(TIME_FILE, "w")
+        file.write(ujson.dumps(utime.localtime()))
+        file.close()
+        return
+
+    def load_time(self):
+        file = open(TIME_FILE, "r")
+        machine.RTC().datetime(ujson.loads(file.readline()))
+        file.close()
         return
     
     def get_local_time_str(self):

@@ -24,7 +24,7 @@ class LaserGui:
         if self._laser_mcu.is_connected():
             self._laser_mcu.set_time_ntp()
         else:
-            #self._set_datetime_gui()
+            self._laser_mcu.load_time()
             pass
         
         self._laser_mcu.set_creation_time()
@@ -39,6 +39,11 @@ class LaserGui:
         self._task_update_header = lv.task_create_basic()
         lv.task_set_cb(self._task_update_header, self.update_header)
         lv.task_set_period(self._task_update_header, 500)
+        lv.task_set_prio(self._task_update_header, lv.TASK_PRIO.MID)
+
+        self._task_save_time = lv.task_create_basic()
+        lv.task_set_cb(self._task_save_time, self._laser_mcu.save_time)
+        lv.task_set_period(self._task_update_header, 60000)
         lv.task_set_prio(self._task_update_header, lv.TASK_PRIO.MID)
         
 
@@ -58,6 +63,7 @@ class LaserGui:
 
     
         lv.task_ready(self._task_update_header)
+        lv.task_ready(self._task_save_time)
 
     def _register_disp_drv(self):
         # Init buffer
