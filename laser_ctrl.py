@@ -26,7 +26,7 @@ class LaserCtrl:
             utime.sleep_us(1)
         print(utime.ticks_diff(utime.ticks_us(), start))
         start = utime.ticks_us()
-        pv_str = self._laser.readline()
+        pv_str = self._laser.readline().decode("ascii")
         self._pv_s = pv_str.strip("\r\n").strip("M0,").split(",")
         print(utime.ticks_diff(utime.ticks_us(), start))
         print(pv_str)
