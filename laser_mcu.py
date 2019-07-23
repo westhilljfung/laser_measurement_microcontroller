@@ -52,14 +52,16 @@ class LaserMCU:
         return
 
     def save_time(self):
+        print("save time")
         file = open(TIME_FILE, "w")
-        file.write(ujson.dumps(utime.localtime()))
+        ujson.dumps(utime.localtime(), file)
         file.close()
         return
 
     def load_time(self):
+        print("load time")
         file = open(TIME_FILE, "r")
-        machine.RTC().datetime(ujson.loads(file.readline()))
+        machine.RTC().datetime(ujson.load(file))
         file.close()
         return
     
