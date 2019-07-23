@@ -7,7 +7,7 @@ import machine
 import uos
 import ujson
 
-ssid = 'Westhill_2.4'
+ssid = 'Westhill_2.4G'
 wp2_pass = 'Radoslav13'
 
 TIME_ZONE_OFFSET = const(14400)
