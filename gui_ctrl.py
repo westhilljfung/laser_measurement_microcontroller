@@ -68,7 +68,7 @@ class LaserGui:
         lv.task_ready(self._task_save_time)
         
 
-    def _save_time(self):
+    def _save_time(self, data):
         print("save Time")
         self._laser_mcu.save_time()
         
