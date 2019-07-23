@@ -48,6 +48,7 @@ class LaserCtrl:
         for laser_pair in self._amp_stack:
             for amp in laser_pair:
                 start = utime.ticks_us()
+                print("SR,%02d,%s\r\n" % (amp, cmd))
                 self._laser.write("SR,%02d,%s\r\n" % (amp, cmd))
                 print(utime.ticks_diff(utime.ticks_us(), start))
                 start = utime.ticks_us()
