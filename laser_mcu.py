@@ -7,11 +7,11 @@ import machine
 import uos
 import ujson
 
-ssid = 'Westhill_2.4G'
+ssid = 'Westhill_2.4'
 wp2_pass = 'Radoslav13'
 
 TIME_ZONE_OFFSET = const(14400)
-WIFI_CON_TIMEOUT = const(60000)
+WIFI_CON_TIMEOUT = const(6000)
 TIME_FILE = "/time"
 
 class LaserMCU:
@@ -30,13 +30,17 @@ class LaserMCU:
             self.wlan.active(True)
             self.wlan.connect(ssid, wp2_pass)
             start = utime.ticks_ms()
+            print("Connecting Wifi", end = "")
             while True:
-                utime.sleep_ms(5)
+                utime.sleep(5)
+                print("-", end="")
                 #print(utime.ticks_diff(utime.ticks_ms(), start))
                 if utime.ticks_diff(utime.ticks_ms(), start) >= WIFI_CON_TIMEOUT:
+                    print("")
                     print("Fail to connect WIFI")
                     break
                 elif self.is_connected():
+                    print("")
                     break
         return
         
