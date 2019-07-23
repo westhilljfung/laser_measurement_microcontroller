@@ -43,10 +43,9 @@ class LaserGui:
 
         self._task_save_time = lv.task_create_basic()
         lv.task_set_cb(self._task_save_time, self._laser_mcu.save_time)
-        lv.task_set_period(self._task_update_header, 60000)
-        lv.task_set_prio(self._task_update_header, lv.TASK_PRIO.MID)
+        lv.task_set_period(self._task_save_time, 60000)
+        lv.task_set_prio(self._task_save_time, lv.TASK_PRIO.MID)
         
-
         self._disp_buf = lv.disp_buf_t()
         self._buf_1 = bytearray(DISP_BUF_SIZE)
         self._buf_2 = bytearray(DISP_BUF_SIZE)
@@ -61,7 +60,6 @@ class LaserGui:
         
         self._load_screen()
 
-    
         lv.task_ready(self._task_update_header)
         lv.task_ready(self._task_save_time)
 
