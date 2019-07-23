@@ -14,6 +14,8 @@ class LaserCtrl:
     def reset_all(self):
         self.write_all("005","0")
         self.write_all("005","1")
+        self.write_all("065","+99.999")
+        self.write_all("066","-99.999")
         
     def get_all_pv(self):
         start = utime.ticks_us()
@@ -34,7 +36,10 @@ class LaserCtrl:
         start = utime.ticks_us()
         while not self._laser.any():
             utime.sleep_us(1)
-        print(utime.ticks_diff(utime.ticks_us(), start)) 
+        print(utime.ticks_diff(utime.ticks_us(), start))  
+        start = utime.ticks_us()
+        print(self._laser.readline())
+        print(utime.ticks_diff(utime.ticks_us(), start))
         
     def read_all(self, cmd):
         for laser_pair in self._amp_stack:
