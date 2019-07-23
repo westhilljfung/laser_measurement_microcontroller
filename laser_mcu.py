@@ -33,7 +33,7 @@ class LaserMCU:
             while True:
                 utime.sleep_ms(5)
                 print(utime.ticks_diff(utime.ticks_ms(), start))
-                if utime.ticks_diff(utime.ticks_ms, start) >= WIFI_CON_TIMEOUT:
+                if utime.ticks_diff(utime.ticks_ms(), start) >= WIFI_CON_TIMEOUT:
                     print("Fail to connect WIFI")
                     break
                 elif self.is_connected():
