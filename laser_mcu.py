@@ -7,7 +7,7 @@ import machine
 import uos
 import ujson
 
-ssid = 'Westhill_2.4G'
+ssid = 'Westhill_2.4'
 wp2_pass = 'Radoslav13'
 
 TIME_ZONE_OFFSET = const(14400)
@@ -56,7 +56,6 @@ class LaserMCU:
         file = open(TIME_FILE, "w")
         ujson.dump(utime.localtime(), file)
         file.close()
-        return
 
     def load_time(self):
         print("load time")
