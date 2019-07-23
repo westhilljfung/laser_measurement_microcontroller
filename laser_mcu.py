@@ -60,7 +60,9 @@ class LaserMCU:
     def load_time(self):
         print("load time")
         file = open(TIME_FILE, "r")
-        machine.RTC().datetime(ujson.load(file))
+        old_time = ujson.load(file)
+        print(old_time)
+        machine.RTC().datetime(old_time)
         file.close()
         return
     
