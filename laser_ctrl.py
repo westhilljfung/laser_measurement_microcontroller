@@ -12,29 +12,9 @@ class LaserCtrl:
         self.get_all_pv()
 
     def reset_all(self):
-        for laser_pair in self._amp_stack:
-            for amp in laser_pair:
-                start = utime.ticks_us()
-                self._laser.write("SW,%02d,005,0\r\n" % amp)
-                print(utime.ticks_diff(utime.ticks_us(), start))
-                start = utime.ticks_us()
-                while not self._laser.any():
-                    utime.sleep_us(1)
-                print(utime.ticks_diff(utime.ticks_us(), start))  
-                start = utime.ticks_us()
-                print(self._laser.readline())
-                print(utime.ticks_diff(utime.ticks_us(), start))
-                start = utime.ticks_us()
-                self._laser.write("SW,%02d,005,1\r\n" % amp)
-                print(utime.ticks_diff(utime.ticks_us(), start))
-                start = utime.ticks_us()
-                while not self._laser.any():
-                    utime.sleep_us(1)
-                print(utime.ticks_diff(utime.ticks_us(), start))
-                start = utime.ticks_us()
-                print(self._laser.readline())
-                print(utime.ticks_diff(utime.ticks_us(), start))
-
+        self.write_all("005","0")
+        self.write_all("005","1")
+        
     def get_all_pv(self):
         start = utime.ticks_us()
         self._laser.write("M0\r\n")
@@ -47,9 +27,9 @@ class LaserCtrl:
         print(self._laser.readline())
         print(utime.ticks_diff(utime.ticks_us(), start))
 
-    def write_all(self, cmd):
+    def write_all(self, cmd, data):
         start = utime.ticks_us()
-        self._laser.write("AW,%s\r\n" % (amp, cmd))
+        self._laser.write("AW,%s,%s\r\n" % (cmd, data))
         print(utime.ticks_diff(utime.ticks_us(), start))
         start = utime.ticks_us()
         while not self._laser.any():
