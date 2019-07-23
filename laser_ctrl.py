@@ -13,8 +13,8 @@ class LaserCtrl:
                 self._laser.write("SW,%02d,005,0\r\n" % amp)
                 while not self._laser.any():
                     utime.sleep_us(1)
-                print(laser.readline())
+                print(self._laser.readline())
                 self._laser.write("SW,%02d,005,1\r\n" % amp)
                 while not self._laser.any():
                     utime.sleep_us(1)
-                print(laser.readline())
+                print(self._laser.readline())
