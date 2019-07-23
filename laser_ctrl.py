@@ -54,7 +54,7 @@ class LaserCtrl:
                 start = utime.ticks_us()
                 while not self._laser.any():
                     utime.sleep_us(1)
-                    print(utime.ticks_diff(utime.ticks_us(), start))  
-                    start = utime.ticks_us()
-                    print(self._laser.readline())
-                    print(utime.ticks_diff(utime.ticks_us(), start))
+                print(utime.ticks_diff(utime.ticks_us(), start))  
+                start = utime.ticks_us()
+                print(self._laser.readline())
+                print(utime.ticks_diff(utime.ticks_us(), start))
