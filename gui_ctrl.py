@@ -7,6 +7,7 @@ import TFTFeatherWing as tftwing
 import laser_mcu
 import th_ctrl
 import gc
+import laser_ctrl
 
 DISP_BUF_SIZE = const(9600)
 
@@ -29,6 +30,10 @@ class LaserGui:
         self._laser_mcu.set_creation_time()
             
         self._th_ctrl = th_ctrl.THCtrl()
+
+        self._laser = laser_ctrl.LaserStrl()
+        self._laser.reset_all()
+        self._laser.read_all("038")
 
         lv.task_core_init()
         self._task_update_header = lv.task_create_basic()
