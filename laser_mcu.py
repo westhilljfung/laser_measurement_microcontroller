@@ -56,7 +56,7 @@ class LaserMCU:
         return
 
     def save_time(self):
-        print("save time")
+        #print("save time")
         file = open(TIME_FILE, "w")
         ujson.dump(utime.localtime(), file)
         file.close()

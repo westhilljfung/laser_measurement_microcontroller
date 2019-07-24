@@ -71,8 +71,8 @@ class LaserCtrl:
         print(utime.ticks_diff(utime.ticks_us(), start))
 
 
-    def laser_off(self):
-        self.write_all("100", "0")
-
-    def laser_on(self):
+    def off(self):
         self.write_all("100", "1")
+
+    def on(self):
+        self.write_all("100", "0")
