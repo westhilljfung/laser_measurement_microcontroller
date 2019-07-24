@@ -16,7 +16,7 @@ class LaserGui:
         # LVGL
         lv.init()
         lv.task_core_init()
-        
+
         # MCU Control
         self._laser_mcu = laser_mcu.LaserMCU()
 
@@ -38,7 +38,7 @@ class LaserGui:
             self._laser_mcu.load_time()
 
         self._laser_mcu.set_creation_time()
-        
+
         # Register display buffer, driver and input device driver
         self._register_disp_drv()
         self._register_indev_drv()
@@ -59,10 +59,10 @@ class LaserGui:
         lv.task_set_prio(self._task_save_time, lv.TASK_PRIO.MID)
 
         # Make task to run if not yet
-        lv.task_ready(self._task_update_header)        
+        lv.task_ready(self._task_update_header)
         lv.task_ready(self._task_save_time)
         return
-        
+
     def _register_disp_drv(self):
         # Init buffer
         self._disp_buf = lv.disp_buf_t()
@@ -99,7 +99,7 @@ class LaserGui:
         self._header = lv.cont(self._scr)
         self._header.set_width(480)
         self._sym = lv.label(self._header)
-    
+
         self._sym.set_text(self._laser_mcu.get_local_time_str() + " " + lv.SYMBOL.WIFI)
         self._header_text = lv.label(self._header)
         self._header_text.set_text(self._th_ctrl.get_th_str())
@@ -108,10 +108,10 @@ class LaserGui:
         self._sym.align(self._header, lv.ALIGN.IN_RIGHT_MID, -10, 0)
         self._header.set_fit2(lv.FIT.NONE, lv.FIT.TIGHT)
         self._header.set_pos(0, 0)
-        
+
         lv.scr_load(self._scr)
         return
-        
+
     def call_task_handler(self):
         print("LaserGui call_task_handler")
         lv.task_handler()
@@ -123,7 +123,7 @@ class LaserGui:
         else:
             self._sym.set_text(self._laser_mcu.get_local_time_str())
         self._sym.align(self._header, lv.ALIGN.IN_RIGHT_MID, -10, 0)
-                                   
+
         self._header_text.set_text(self._th_ctrl.get_th_str())
         self._header_text.align(self._header, lv.ALIGN.IN_LEFT_MID, 10, 0)
         gc.collect()
@@ -136,4 +136,3 @@ class LaserGui:
     def _save_time_cb(self, data):
         self._laser_mcu.save_time()
         return
-        
