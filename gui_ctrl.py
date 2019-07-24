@@ -38,19 +38,6 @@ class LaserGui:
             self._laser_mcu.load_time()
 
         self._laser_mcu.set_creation_time()
-
-        
-        # Task to update header, time and th value
-        self._task_update_header = lv.task_create_basic()
-        lv.task_set_cb(self._task_update_header, self.update_header)
-        lv.task_set_period(self._task_update_header, 500)
-        lv.task_set_prio(self._task_update_header, lv.TASK_PRIO.MID)
-
-        # Task to save time to flash
-        self._task_save_time = lv.task_create_basic()
-        lv.task_set_cb(self._task_save_time, self._save_time)
-        lv.task_set_period(self._task_save_time, 60000)
-        lv.task_set_prio(self._task_save_time, lv.TASK_PRIO.MID)
         
         # Register display buffer, driver and input device driver
         self._disp_buf = lv.disp_buf_t()
@@ -67,6 +54,18 @@ class LaserGui:
 
         # Create screen
         self._load_screen()
+
+        # Task to update header, time and th value
+        self._task_update_header = lv.task_create_basic()
+        lv.task_set_cb(self._task_update_header, self._update_header)
+        lv.task_set_period(self._task_update_header, 500)
+        lv.task_set_prio(self._task_update_header, lv.TASK_PRIO.MID)
+
+        # Task to save time to flash
+        self._task_save_time = lv.task_create_basic()
+        lv.task_set_cb(self._task_save_time, self._save_time)
+        lv.task_set_period(self._task_save_time, 60000)
+        lv.task_set_prio(self._task_save_time, lv.TASK_PRIO.MID)
 
         # Make task to run if not yet
         lv.task_ready(self._task_update_header)        
@@ -125,6 +124,7 @@ class LaserGui:
     def call_task_handler(self):
         print("LaserGui call_task_handler")
         lv.task_handler()
+        return
 
     def update_screen(self):
         if self._laser_mcu.is_connected():
@@ -138,7 +138,8 @@ class LaserGui:
         gc.collect()
         return
 
-    def update_header(self, data):
+    def _update_header(self, data):
         #print("Update Header")
         self.update_screen()
+        return
         
