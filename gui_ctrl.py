@@ -32,8 +32,7 @@ class LaserGui:
         self._th_ctrl = th_ctrl.THCtrl()
 
         self._laser = laser_ctrl.LaserCtrl()
-        self._laser.laser_off()
-        #self._laser.reset_all()
+        self._laser.off()
 
         lv.task_core_init()
         print("task1")
