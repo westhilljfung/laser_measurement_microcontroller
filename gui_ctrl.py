@@ -102,7 +102,6 @@ class LaserGui:
         th=lv.theme_night_init(210, lv.font_roboto_16)
         lv.theme_set_current(th)
         self._scr = lv.obj()
-        return
 
         # Add header
         self._header = lv.cont(self._scr)
