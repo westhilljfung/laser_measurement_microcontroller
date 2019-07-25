@@ -161,13 +161,16 @@ class LaserGui:
         return
     
     def _gc_collect_cb(self, data):
+        print("gc")
         gc.collect()
         return
 
     def _update_header_cb(self, data):
+        print("screen")
         self._update_screen()
         return
 
     def _save_time_cb(self, data):
+        print("save time")
         self._laser_mcu.save_time()
         return
