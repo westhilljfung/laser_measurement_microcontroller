@@ -84,9 +84,6 @@ class LaserGui:
         lv.task_set_period(self._task_read_laser, 5)
         lv.task_set_prio(self._task_read_laser, lv.TASK_PRIO.HIGH)
 
-        # Make task to run if not yet
-        lv.task_ready(self._task_update_header)
-        lv.task_ready(self._task_save_time)
         return
 
     def _register_disp_drv(self):
