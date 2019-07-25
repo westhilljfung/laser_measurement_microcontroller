@@ -3,13 +3,14 @@ import utime
 from micropython import const
 
 DEFAULT_PANEL_WIDTH_MM = const(1245)
+MAX_AMP_NUM = const(4)
 
 class LaserCtrl:
     def __init__(self):
         self._laser = UART(2)
         self._laser.init(baudrate=38400)
         self._amp_stack = ((00,01),(02,03))
-        self._read_buf = bytearray(53)
+        self._read_buf = bytearray(MAX_AMP_NUM*8+4)
         self._laser_on = True
         self.get_all_pv()
 
@@ -25,7 +26,7 @@ class LaserCtrl:
         #print("Read M0:" + str(utime.ticks_diff(utime.ticks_us(), start)))
         start = utime.ticks_us()
         for amp in range(0,4):
-            self._pv = float(self._read_buf[amp*8 + 3: amp*8+10]) 
+            self._pv[amp] = float(self._read_buf[amp*8 + 3: amp*8+10]) 
         print("Decode M0:" + str(utime.ticks_diff(utime.ticks_us(), start)))
         return str(self._pv)
         
