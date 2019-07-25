@@ -13,7 +13,10 @@ class LaserCtrl:
         self._read_buf = bytearray(MAX_AMP_NUM*8+4)
         self._pv = [0.0] * 4
         self._laser_on = True
-        self.get_all_pv()
+        self._laser.write("M0\r\n")
+        while not self._laser.any():
+            utime.sleep_us(1)
+        self._laser.readinto(self._read_buf)
 
     def reset_all(self):
         self.write_all("005","0")
