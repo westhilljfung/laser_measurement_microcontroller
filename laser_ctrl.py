@@ -14,7 +14,6 @@ class LaserCtrl:
         self._pv = [0.0] * 4
         self._laser_on = True
         self.get_pvs()
-        self.get_pvs()
         print("init laser ctrl")
 
     def reset_all(self):
@@ -31,11 +30,11 @@ class LaserCtrl:
 
     def get_phrase_pvs(self):
         self._laser.write("M0\r\n")
-        for amp in range(0,4):
-            self._pv[amp] = float(self._read_buf[amp*8+3:amp*8+10])
         while not self._laser.any():
             utime.sleep_us(1)
         self._laser.readinto(self._read_buf)
+        for amp in range(0,4):
+            self._pv[amp] = float(self._read_buf[amp*8+3:amp*8+10])
     
     def get_pvs(self):
         self._laser.write("M0\r\n")
