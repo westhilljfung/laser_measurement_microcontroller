@@ -15,6 +15,7 @@ class LaserCtrl:
         self._laser_on = True
         self.get_pvs()
         self.get_pvs()
+        print("init laser ctrl")
 
     def reset_all(self):
         self.write_all("005","0")
