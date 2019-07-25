@@ -165,7 +165,7 @@ class LaserGui:
         self._laser_output.set_text(self._laser.get_values_str())
         return
 
-    def _read_laser_value_cb(self, data):
+    def _read_laser_cb(self, data):
         self._laser.get_phrase_pvs()
         self.start=utime.ticks_us()
         return
