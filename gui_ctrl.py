@@ -55,8 +55,20 @@ class LaserGui:
         # Task to save time to flash
         self._task_save_time = lv.task_create_basic()
         lv.task_set_cb(self._task_save_time, self._save_time_cb)
-        lv.task_set_period(self._task_save_time, 60000)
+        lv.task_set_period(self._task_save_time, 10000)
         lv.task_set_prio(self._task_save_time, lv.TASK_PRIO.MID)
+
+        # Task to gc collect
+        self._task_gc_collect = lv.task_create_basic()
+        lv.task_set_cb(self._task_gc_collecte, self._gc_collect_cb)
+        lv.task_set_period(self._task_gc_collect, 5000)
+        lv.task_set_prio(self._task_gc_collect, lv.TASK_PRIO.MID)
+
+        # Task to get laser output
+        self._task_update_laser_output = lv.task_create_basic()
+        lv.task_set_cb(self._task_update_laser_output, self._update_laser_output_cb)
+        lv.task_set_period(self._task_update_laser_output, 5000)
+        lv.task_set_prio(self._task_update_laser_output, lv.TASK_PRIO.MID)
 
         # Make task to run if not yet
         lv.task_ready(self._task_update_header)
@@ -135,7 +147,14 @@ class LaserGui:
 
         self._header_text.set_text(self._th_ctrl.get_th_str())
         self._header_text.align(self._header, lv.ALIGN.IN_LEFT_MID, 10, 0)
+        
+        return
+
+    def _update_laser_output_cb(self, data):
         self._laser_output.set_text(self._laser.get_values_str())
+        return
+    
+    def _gc_collect_cb(self, data):
         gc.collect()
         return
 
