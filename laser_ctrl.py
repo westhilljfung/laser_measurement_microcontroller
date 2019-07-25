@@ -36,7 +36,7 @@ class LaserCtrl:
         
     def get_all_pv(self):
         self._laser.write("M0\r\n")
-        for amp in range(0,3):
+        for amp in range(0,4):
             self._pv[amp] = 0.0#float(self._read_buf[((amp * 8) + 3) : ((amp * 8) + 10)]) 
         while not self._laser.any():
             utime.sleep_us(1)
