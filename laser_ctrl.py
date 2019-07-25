@@ -9,7 +9,7 @@ class LaserCtrl:
     def __init__(self):
         self._laser = UART(2)
         self._laser.init(baudrate=38400)
-        self._read_buf = bytearray("0"*(MAX_AMP_NUM*8+4))
+        self._read_buf = bytearray("0"*36)
         self._pvs = [0.0] * MAX_AMP_NUM
         self._cals = [0.0] * (MAX_AMP_NUM // 2)
         self._laser_on = True
