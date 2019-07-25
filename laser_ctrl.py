@@ -23,7 +23,10 @@ class LaserCtrl:
         start = utime.ticks_us()
         self.get_all_pv()
         print("Read M0:" + str(utime.ticks_diff(utime.ticks_us(), start)))
-        return self._read_buf.decode("ascii")
+        start = utime.ticks_us()
+        pv_str = self._read_buf.decode("ascii")
+        print("Decode M0:" + str(utime.ticks_diff(utime.ticks_us(), start)))
+        return pv_str
         
     def get_all_pv(self):
         self._laser.write("M0\r\n")
