@@ -94,10 +94,13 @@ class LaserGui:
         th=lv.theme_night_init(210, lv.font_roboto_16)
         lv.theme_set_current(th)
         self._scr = lv.obj()
+        self._cont = lv.cont(self._scr)
+        self._cont.set_fit(lv.FIT.FILL)
 
         # Add header
-        self._header = lv.cont(self._scr)
-        self._header.set_width(480)
+        self._header = lv.cont(self._cont)
+        self._body = lv.cont(self._cont)
+        
         self._sym = lv.label(self._header)
 
         self._sym.set_text(self._laser_mcu.get_local_time_str() + " " + lv.SYMBOL.WIFI)
@@ -109,7 +112,6 @@ class LaserGui:
         self._header.set_fit2(lv.FIT.NONE, lv.FIT.TIGHT)
         self._header.set_pos(0, 0)
 
-        self._body = lv.cont(self._scr)
         
         self._laser_output = lv.label(self._body)
         self._body.set_width(480)
