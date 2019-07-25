@@ -23,25 +23,16 @@ class LaserCtrl:
         self.write_all("066","-99.999")
 
     def get_values_str(self):        
-        start = utime.ticks_us()
+        start = utime.ticks_ms()
         self.get_phrase_pvs()
-        print("Total Read Phrase:" + str(utime.ticks_diff(utime.ticks_us(), start)))
+        print("Total Read Phrase:" + str(utime.ticks_diff(utime.ticks_ms(), start)))
         return str(self._pv)
 
     def get_phrase_pvs(self):
-        start = utime.ticks_us()
         self._laser.write("M0\r\n")
-        end = utime.ticks_us()
-        print("Write:" + str(utime.ticks_diff(end, start)))
-        start = utime.ticks_us()
         for amp in range(0,4):
             self._pv[amp] = float(self._read_buf[amp*8+3:amp*8+10])
-        end = utime.ticks_us()
-        print("Wait:" + str(utime.ticks_diff(end, start)))
-        start = utime.ticks_us()
         self._laser.readinto(self._read_buf)
-        end = utime.ticks_us()
-        print("Read:" + str(utime.ticks_diff(end, start)))
     
     def get_pvs(self):
         self._laser.write("M0\r\n")
