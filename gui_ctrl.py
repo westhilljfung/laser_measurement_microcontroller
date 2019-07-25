@@ -94,7 +94,6 @@ class LaserGui:
         th=lv.theme_night_init(210, lv.font_roboto_16)
         lv.theme_set_current(th)
         self._scr = lv.obj()
-        self._cont = lv.cont(self._scr)
         
         # Add header and body
         self._header = lv.cont(self._scr)
@@ -116,7 +115,7 @@ class LaserGui:
         self._laser_output.set_text("Waiting Output")
         
         self._body.set_fit2(lv.FIT.FLOOD, lv.FIT.TIGHT)
-        self._body.set_pos(0, self._scr.get_height() - self._header.get_height())
+        self._body.set_pos(0, self._header.get_height())
 
         lv.scr_load(self._scr)
         
