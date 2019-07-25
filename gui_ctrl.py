@@ -60,7 +60,7 @@ class LaserGui:
 
         # Task to gc collect
         self._task_gc_collect = lv.task_create_basic()
-        lv.task_set_cb(self._task_gc_collecte, self._gc_collect_cb)
+        lv.task_set_cb(self._task_gc_collect, self._gc_collect_cb)
         lv.task_set_period(self._task_gc_collect, 5000)
         lv.task_set_prio(self._task_gc_collect, lv.TASK_PRIO.MID)
 
