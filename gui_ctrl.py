@@ -67,7 +67,7 @@ class LaserGui:
         # Task to get laser output
         self._task_update_laser_output = lv.task_create_basic()
         lv.task_set_cb(self._task_update_laser_output, self._update_laser_output_cb)
-        lv.task_set_period(self._task_update_laser_output, 5000)
+        lv.task_set_period(self._task_update_laser_output, 5)
         lv.task_set_prio(self._task_update_laser_output, lv.TASK_PRIO.MID)
 
         # Make task to run if not yet
