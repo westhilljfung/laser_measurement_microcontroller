@@ -148,10 +148,11 @@ class LaserGui:
         self._header_text.set_text(self._th_ctrl.get_th_str())
         self._header_text.align(self._header, lv.ALIGN.IN_LEFT_MID, 10, 0)
         
+        self._laser_output.set_text(self._laser.get_values_str())
         return
 
     def _update_laser_output_cb(self, data):
-        self._laser_output.set_text(self._laser.get_values_str())
+        self.get_phrase_pvs()
         return
     
     def _gc_collect_cb(self, data):

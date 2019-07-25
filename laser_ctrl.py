@@ -22,10 +22,9 @@ class LaserCtrl:
         self.write_all("065","+99.999")
         self.write_all("066","-99.999")
 
-    def get_values_str(self):        
-        #start = utime.ticks_ms()
-        self.get_phrase_pvs()
-        #print("Total Read Phrase:" + str(utime.ticks_diff(utime.ticks_ms(), start)))
+    def get_values_str(self):
+        for pv in self._pv:
+            pv_str += ("%02.2f " % pv)
         return str(self._pv)
 
     def get_phrase_pvs(self):
