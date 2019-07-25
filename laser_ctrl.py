@@ -40,13 +40,17 @@ class LaserCtrl:
         while not self._laser.any():
             utime.sleep_us(1)
         self._laser.readinto(self._read_buf)
-        for amp in range(0,MAX_AMP_NUM):
-            self._pvs[amp] = float(self._read_buf[amp*8+3:amp*8+10])
-            if not amp % 2:
-                self._cals[amp//2] = self._pvs[amp]
-            else:
-                self._cals[amp//2] += self._pvs[amp]
+        try:
+            for amp in range(0,MAX_AMP_NUM):
+                self._pvs[amp] = float(self._read_buf[amp*8+3:amp*8+10])
+                if not amp % 2:
+                    self._cals[amp//2] = self._pvs[amp]
+                else:
+                    self._cals[amp//2] += self._pvs[amp]
 
+        except:
+            pass
+        
     def write_all(self, cmd, data):
         self._laser.write("AW,%s,%s\r\n" % (cmd, data))
         while not self._laser.any():
