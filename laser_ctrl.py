@@ -11,7 +11,7 @@ class LaserCtrl:
         self._laser.init(baudrate=38400)
         self._amp_stack = ((00,01),(02,03))
         self._read_buf = bytearray(MAX_AMP_NUM*8+4)
-        #self._pv = [0.0] * 4
+        self._pv = [0.0] * 4
         self._laser_on = True
         self.get_all_pv()
 
@@ -25,14 +25,10 @@ class LaserCtrl:
         #start = utime.ticks_us()
         self.get_all_pv()
         #print("Read M0:" + str(utime.ticks_diff(utime.ticks_us(), start)))
-        start = utime.ticks_us()
-
-        """
-        for amp in range(0,4):
-            self._pv[amp] = float(self._read_buf[amp*8 + 3: amp*8+10]) 
-        """
-        self._pv=self._read_buf.decode("ascii").strip("M0,").strip("\r\n").split(",")
-        print("Decode M0:" + str(utime.ticks_diff(utime.ticks_us(), start)))
+        #start = utime.ticks_us()
+        #for amp in range(0,4):
+            #self._pv[amp] = float(self._read_buf[amp*8 + 3: amp*8+10]) 
+        #print("Decode M0:" + str(utime.ticks_diff(utime.ticks_us(), start)))
         return str(self._pv)
         
     def get_all_pv(self):
@@ -46,6 +42,8 @@ class LaserCtrl:
         self._laser.write("AW,%s,%s\r\n" % (cmd, data))
         print(utime.ticks_diff(utime.ticks_us(), start))
         start = utime.ticks_us()
+        for amp in range(0,4):
+            self._pv[amp] = float(self._read_buf[amp*8 + 3: amp*8+10]) 
         while not self._laser.any():
             utime.sleep_us(1)
         print(utime.ticks_diff(utime.ticks_us(), start))
