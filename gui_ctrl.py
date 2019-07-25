@@ -152,7 +152,7 @@ class LaserGui:
         return
 
     def _update_laser_output_cb(self, data):
-        self.get_phrase_pvs()
+        self._laser.get_phrase_pvs()
         return
     
     def _gc_collect_cb(self, data):
