@@ -40,7 +40,7 @@ class LaserCtrl:
         print("Phrase:" + str(utime.ticks_diff(end, start)))
         start = utime.ticks_us()
         while not self._laser.any():
-            utime.sleep_us(1)
+            pass
         end = utime.ticks_us()
         print("Wait:" + str(utime.ticks_diff(end, start)))
         start = utime.ticks_us()
