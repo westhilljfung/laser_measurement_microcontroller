@@ -23,9 +23,10 @@ class LaserCtrl:
         self.write_all("066","-99.999")
 
     def get_values_str(self):
+        pv_str = ""
         for pv in self._pv:
             pv_str += ("%02.2f " % pv)
-        return str(self._pv)
+        return pv_str
 
     def get_phrase_pvs(self):
         self._laser.write("M0\r\n")
