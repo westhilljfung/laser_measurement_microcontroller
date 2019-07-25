@@ -116,7 +116,7 @@ class LaserGui:
         self._laser_output.set_text("Waiting Output")
         
         self._body.set_fit2(lv.FIT.FLOOD, lv.FIT.TIGHT)
-        self._body.set_pos(0, self._Scr.get_height - self._header.get_height())
+        self._body.set_pos(0, self._scr.get_height - self._header.get_height())
 
         lv.scr_load(self._scr)
         
