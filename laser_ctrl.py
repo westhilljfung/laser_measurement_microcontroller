@@ -26,7 +26,7 @@ class LaserCtrl:
     def get_values_str(self):
         pv_str = ""
         for pv in self._pv:
-            pv_str += ("%06.3f " % pv)
+            pv_str += ("%07.3f " % pv)
         return pv_str
 
     def get_phrase_pvs(self):
