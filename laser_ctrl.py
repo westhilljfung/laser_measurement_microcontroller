@@ -19,17 +19,17 @@ class LaserCtrl:
         self.write_all("065","+99.999")
         self.write_all("066","-99.999")
 
-    def get_values_str(self):
+    def get_values_str(self):        
+        start = utime.ticks_us()
         self.get_all_pv()
+        print("Read M0:" + str(utime.ticks_diff(utime.ticks_us(), start)))
         return self._read_buf.decode("ascii")
         
     def get_all_pv(self):
-        start = utime.ticks_us()
         self._laser.write("M0\r\n")
         while not self._laser.any():
             utime.sleep_us(1)
         self._laser.readinto(self._read_buf)
-        print("Read M0:" + str(utime.ticks_diff(utime.ticks_us(), start)))
 
     def write_all(self, cmd, data):
         start = utime.ticks_us()
