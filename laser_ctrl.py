@@ -10,7 +10,7 @@ class LaserCtrl:
         self._laser = UART(2)
         self._laser.init(baudrate=38400)
         self._amp_stack = ((00,01),(02,03))
-        self._read_buf = bytearray(36)
+        self._read_buf = bytearray(128)
         self._pv = [0.0] * 4
         self._laser_on = True
         self._laser.write("M0\r\n")
@@ -28,10 +28,6 @@ class LaserCtrl:
         start = utime.ticks_us()
         self.get_all_pv()
         print("Read M0:" + str(utime.ticks_diff(utime.ticks_us(), start)))
-        #start = utime.ticks_us()
-        #for amp in range(0,4):
-            #self._pv[amp] = float(self._read_buf[amp*8 + 3: amp*8+10]) 
-        #print("Decode M0:" + str(utime.ticks_diff(utime.ticks_us(), start)))
         return str(self._pv)
         
     def get_all_pv(self):
