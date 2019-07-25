@@ -9,9 +9,9 @@ class LaserCtrl:
     def __init__(self):
         self._laser = UART(2)
         self._laser.init(baudrate=38400)
-        self._amp_stack = ((00,01),(02,03))
-        self._read_buf = bytearray("0"*36)
-        self._pvs = [0.0] * 4
+        self._read_buf = bytearray("0"*MAX_AMP_NUM*8+4)
+        self._pvs = [0.0] * MAX_AMP_NUM
+        self._cals = [0.0] * MAX_AMP_NUM // 2
         self._laser_on = True
         self.get_phrase_pvs()
 
@@ -32,8 +32,12 @@ class LaserCtrl:
         while not self._laser.any():
             utime.sleep_us(1)
         self._laser.readinto(self._read_buf)
-        for amp in range(0,4):
+        for amp in range(0,MAX_AMP_NUM):
             self._pvs[amp] = float(self._read_buf[amp*8+3:amp*8+10])
+            if not amp % 2:
+                self._cals[amp//2] = self._pvs[amp]
+            else:
+                self._cals[amp//2] += self._pvs[amp]
 
     def write_all(self, cmd, data):
         self._laser.write("AW,%s,%s\r\n" % (cmd, data))
@@ -42,8 +46,7 @@ class LaserCtrl:
         self._laser.readline()
 
     def read_all(self, cmd):
-        for laser_pair in self._amp_stack:
-            for amp in laser_pair:
+        for amp in range(0,MAX_AMP_NUM):
                 self._laser.write("SR,%02d,%s\r\n" % (amp, cmd))
                 while not self._laser.any():
                     utime.sleep_us(1)
