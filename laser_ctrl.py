@@ -26,14 +26,10 @@ class LaserCtrl:
     def get_all_pv(self):
         start = utime.ticks_us()
         self._laser.write("M0\r\n")
-        print("Write cmd: " + str(utime.ticks_diff(utime.ticks_us(), start)))
-        start = utime.ticks_us()
         while not self._laser.any():
             utime.sleep_us(1)
-        print("Wait: " + str(utime.ticks_diff(utime.ticks_us(), start)))
-        start = utime.ticks_us()
         self._laser.readinto(self._read_buf)
-        print("Read: " + str(utime.ticks_diff(utime.ticks_us(), start)))
+        print("Read M0:" + str(utime.ticks_diff(utime.ticks_us(), start)))
 
     def write_all(self, cmd, data):
         start = utime.ticks_us()
