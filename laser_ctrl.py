@@ -13,12 +13,6 @@ class LaserCtrl:
         self._read_buf = bytearray(128)
         self._pv = [0.0] * 4
         self._laser_on = True
-        self._laser.write("M0\r\n")
-        while not self._laser.any():
-            utime.sleep_us(1)
-        self._laser.readinto(self._read_buf)
-        for amp in range(0,4):
-            self._pv[amp] = float(self._read_buf[3:9])
 
     def reset_all(self):
         self.write_all("005","0")
@@ -29,6 +23,9 @@ class LaserCtrl:
     def get_values_str(self):        
         start = utime.ticks_us()
         self.get_all_pv()
+        
+        for amp in range(0,4):
+            self._pv[amp] = float(self._read_buf[3:9])
         print("Read M0:" + str(utime.ticks_diff(utime.ticks_us(), start)))
         return str(self._pv)
         
