@@ -49,7 +49,7 @@ class LaserGui:
         # Task to update header, time and th value
         self._task_update_header = lv.task_create_basic()
         lv.task_set_cb(self._task_update_header, self._update_header_cb)
-        lv.task_set_period(self._task_update_header, 50)
+        lv.task_set_period(self._task_update_header, 500)
         lv.task_set_prio(self._task_update_header, lv.TASK_PRIO.MID)
 
         # Task to save time to flash
@@ -152,7 +152,10 @@ class LaserGui:
         return
 
     def _update_laser_output_cb(self, data):
+        self.end = utime.ticks_us()
+        print(utime.diff(self.end, self.start))
         self._laser.get_phrase_pvs()
+        self.start=utime.ticks_us()
         return
     
     def _gc_collect_cb(self, data):
