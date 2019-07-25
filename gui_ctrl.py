@@ -49,11 +49,23 @@ class LaserGui:
         self.start=utime.ticks_us()
         
         # Task to update header, time and th value
-        self._task_update_header = lv.task_create_basic()
-        lv.task_set_cb(self._task_update_header, self._update_header_cb)
-        lv.task_set_period(self._task_update_header, 500)
-        lv.task_set_prio(self._task_update_header, lv.TASK_PRIO.MID)
+        self._task_update_th = lv.task_create_basic()
+        lv.task_set_cb(self._task_update_th, self._update_th_cb)
+        lv.task_set_period(self._task_update_th, 1000)
+        lv.task_set_prio(self._task_update_th, lv.TASK_PRIO.MID)
 
+        # Task to update header, time and th value
+        self._task_update_time = lv.task_create_basic()
+        lv.task_set_cb(self._task_update_time, self._update_time_cb)
+        lv.task_set_period(self._task_update_time, 1000)
+        lv.task_set_prio(self._task_update_time, lv.TASK_PRIO.MID)
+
+        # Task to update header, time and th value
+        self._task_update_laser_output = lv.task_create_basic()
+        lv.task_set_cb(self._task_update_laser_output, self._update_laser_output_cb)
+        lv.task_set_period(self._task_update_laser_output, 1000)
+        lv.task_set_prio(self._task_update_laser_output, lv.TASK_PRIO.MID)
+        
         # Task to save time to flash
         self._task_save_time = lv.task_create_basic()
         lv.task_set_cb(self._task_save_time, self._save_time_cb)
@@ -67,10 +79,10 @@ class LaserGui:
         lv.task_set_prio(self._task_gc_collect, lv.TASK_PRIO.MID)
 
         # Task to get laser output
-        self._task_update_laser_output = lv.task_create_basic()
-        lv.task_set_cb(self._task_update_laser_output, self._update_laser_output_cb)
-        lv.task_set_period(self._task_update_laser_output, 5)
-        lv.task_set_prio(self._task_update_laser_output, lv.TASK_PRIO.MID)
+        self._task_read_laser = lv.task_create_basic()
+        lv.task_set_cb(self._task_read_laser, self._read_laser_cb)
+        lv.task_set_period(self._task_read_laser, 5)
+        lv.task_set_prio(self._task_read_laser, lv.TASK_PRIO.HIGH)
 
         # Make task to run if not yet
         lv.task_ready(self._task_update_header)
@@ -115,9 +127,9 @@ class LaserGui:
         
         self._sym = lv.label(self._header)
 
-        self._sym.set_text(self._laser_mcu.get_local_time_str() + " " + lv.SYMBOL.WIFI)
+        self._sym.set_text(" ")
         self._header_text = lv.label(self._header)
-        self._header_text.set_text(self._th_ctrl.get_th_str())
+        self._header_text.set_text(" ")
         self._header_text.align(self._header, lv.ALIGN.IN_LEFT_MID, 10, 0)
 
         self._sym.align(self._header, lv.ALIGN.IN_RIGHT_MID, -10, 0)
@@ -140,44 +152,33 @@ class LaserGui:
         lv.task_handler()
         return
 
-    def _update_screen(self):
-        
-        print(utime.ticks_diff(utime.ticks_us(), self.start))
+    def _update_time_cb(self, data):
         if self._laser_mcu.is_connected():
             self._sym.set_text(self._laser_mcu.get_local_time_str() + " " + lv.SYMBOL.WIFI)
         else:
             self._sym.set_text(self._laser_mcu.get_local_time_str())
         self._sym.align(self._header, lv.ALIGN.IN_RIGHT_MID, -10, 0)
-
-        
-        print(utime.ticks_diff(utime.ticks_us(), self.start))
-        self._header_text.set_text(self._th_ctrl.get_th_str())
-        self._header_text.align(self._header, lv.ALIGN.IN_LEFT_MID, 10, 0)
-
-        
-        print(utime.ticks_diff(utime.ticks_us(), self.start))
-        self._laser_output.set_text(self._laser.get_values_str())
-        
-        print(utime.ticks_diff(utime.ticks_us(), self.start))
+         
         return
 
     def _update_laser_output_cb(self, data):
-        print(utime.ticks_diff(utime.ticks_us(), self.start))
+        self._laser_output.set_text(self._laser.get_values_str())
+        return
+
+    def _read_laser_value_cb(self, data):
         self._laser.get_phrase_pvs()
         self.start=utime.ticks_us()
         return
     
     def _gc_collect_cb(self, data):
-        print("gc")
         gc.collect()
         return
 
-    def _update_header_cb(self, data):
-        print("screen")
-        self._update_screen()
+    def _update_th_cb(self, data):
+        self._header_text.set_text(self._th_ctrl.get_th_str())
+        self._header_text.align(self._header, lv.ALIGN.IN_LEFT_MID, 10, 0)
         return
 
     def _save_time_cb(self, data):
-        print("save time")
         self._laser_mcu.save_time()
         return
