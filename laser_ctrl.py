@@ -11,7 +11,7 @@ class LaserCtrl:
         self._laser.init(baudrate=38400)
         self._amp_stack = ((00,01),(02,03))
         self._read_buf = bytearray(((MAX_AMP_NUM*8)+4))
-        self._pv = [4]
+        self._pv = [0.0] * 4
         self._laser_on = True
         self._laser.write("M0\r\n")
         while not self._laser.any():
@@ -36,7 +36,7 @@ class LaserCtrl:
         
     def get_all_pv(self):
         self._laser.write("M0\r\n")
-        for amp in range(0,4):
+        for amp in range(0,3):
             self._pv[amp] = 0.0#float(self._read_buf[((amp * 8) + 3) : ((amp * 8) + 10)]) 
         while not self._laser.any():
             utime.sleep_us(1)
