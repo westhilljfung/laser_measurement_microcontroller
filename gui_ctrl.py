@@ -95,11 +95,10 @@ class LaserGui:
         lv.theme_set_current(th)
         self._scr = lv.obj()
         self._cont = lv.cont(self._scr)
-        self._cont.set_fit(lv.FIT.FILL)
-
-        # Add header
-        self._header = lv.cont(self._cont)
-        self._body = lv.cont(self._cont)
+        
+        # Add header and body
+        self._header = lv.cont(self._scr)
+        self._body = lv.cont(self._scr)
         
         self._sym = lv.label(self._header)
 
@@ -109,16 +108,15 @@ class LaserGui:
         self._header_text.align(self._header, lv.ALIGN.IN_LEFT_MID, 10, 0)
 
         self._sym.align(self._header, lv.ALIGN.IN_RIGHT_MID, -10, 0)
-        self._header.set_fit2(lv.FIT.NONE, lv.FIT.TIGHT)
+        self._header.set_fit2(lv.FIT.FLOOD, lv.FIT.TIGHT)
         self._header.set_pos(0, 0)
 
-        
         self._laser_output = lv.label(self._body)
         self._body.set_width(480)
         self._laser_output.set_text("Waiting Output")
         
-        self._body.set_fit2(lv.FIT.NONE, lv.FIT.TIGHT)
-        self._body.set_pos(0, 38)
+        self._body.set_fit2(lv.FIT.FLOOD, lv.FIT.TIGHT)
+        self._body.set_pos(0, self._Scr.get_height - self._header.get_height())
 
         lv.scr_load(self._scr)
         
