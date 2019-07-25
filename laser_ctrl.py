@@ -36,12 +36,6 @@ class LaserCtrl:
         start = utime.ticks_us()
         for amp in range(0,4):
             self._pv[amp] = float(self._read_buf[amp*8+3:amp*8+10])
-        end = utime.ticks_us()
-        print("Phrase:" + str(utime.ticks_diff(end, start)))
-        start = utime.ticks_us()
-        while not self._laser.any():
-            pass
-        end = utime.ticks_us()
         print("Wait:" + str(utime.ticks_diff(end, start)))
         start = utime.ticks_us()
         self._laser.readinto(self._read_buf)
