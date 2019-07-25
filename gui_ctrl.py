@@ -115,7 +115,7 @@ class LaserGui:
         self._body.set_width(480)
         self._laser_output.set_text("Waiting Output")
         
-        self._body.set_fit2(lv.FIT.NONE, lv.FIT.FILL)
+        self._body.set_fit2(lv.FIT.NONE, lv.FIT.TIGHT)
         self._body.set_pos(0, 38)
 
         lv.scr_load(self._scr)
