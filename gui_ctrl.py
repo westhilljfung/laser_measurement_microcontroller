@@ -111,6 +111,7 @@ class LaserGui:
 
         self._body = lv.cont(self._scr)
         self._body.set_fit2(lv.FIT.FLOOD, lv.FIT.TIGHT)
+        self._body.set_pos(0, 38)
 
         self._laser_output = lv.label(self._body)
         self._laser_output.set_text("Waiting Output")
