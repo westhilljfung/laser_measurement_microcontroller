@@ -43,7 +43,7 @@ class LaserMCU:
                     print("")
                     break
         return
-        
+
     def set_time_ntp(self):
         try:
             ntptime.settime()
@@ -69,20 +69,19 @@ class LaserMCU:
         machine.RTC().datetime(old_time)
         file.close()
         return
-    
+
     def get_local_time_str(self):
         # TODO Daylight Saving Time
         dt = utime.localtime(utime.time() - TIME_ZONE_OFFSET)
         ct = utime.localtime(self.time_created - TIME_ZONE_OFFSET)
-        
+
         dt_str = "Created: " + str(ct[1]) + "-" + str(ct[2]) + " " + str(ct[3]) \
             + ":" + str(ct[4]) + " " + str(dt[0]) + "-" + str(dt[1]) + "-" \
             + str(dt[2]) + " " + str(int(dt[3])) + ":" + str(dt[4]) + ":" + str(dt[5])
         return dt_str
-    
+
     def is_connected(self):
         return self.wlan.isconnected()
 
     def __str__(self):
         return self.name
-        
