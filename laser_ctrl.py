@@ -9,7 +9,7 @@ class LaserCtrl:
         self._laser = UART(2)
         self._laser.init(baudrate=38400)
         self._amp_stack = ((00,01),(02,03))
-        self._read_buf = bytes(125)
+        self._read_buf = bytearray(125)
         self._laser_on = True
         self.get_all_pv()
 
