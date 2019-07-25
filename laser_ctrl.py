@@ -11,6 +11,7 @@ class LaserCtrl:
         self._laser.init(baudrate=38400)
         self._amp_stack = ((00,01),(02,03))
         self._read_buf = bytearray(MAX_AMP_NUM*8+4)
+        self._pv = [0.0] * 4
         self._laser_on = True
         self.get_all_pv()
 
