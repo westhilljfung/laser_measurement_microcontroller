@@ -22,9 +22,9 @@ class LaserCtrl:
         self.write_all("066","-99.999")
 
     def get_values_str(self):        
-        #start = utime.ticks_us()
+        start = utime.ticks_us()
         self.get_all_pv()
-        #print("Read M0:" + str(utime.ticks_diff(utime.ticks_us(), start)))
+        print("Read M0:" + str(utime.ticks_diff(utime.ticks_us(), start)))
         #start = utime.ticks_us()
         #for amp in range(0,4):
             #self._pv[amp] = float(self._read_buf[amp*8 + 3: amp*8+10]) 
