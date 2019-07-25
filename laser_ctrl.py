@@ -20,9 +20,9 @@ class LaserCtrl:
         self.write_all("066","-99.999")
 
     def get_values_str(self):        
-        start = utime.ticks_us()
+        #start = utime.ticks_us()
         self.get_all_pv()
-        print("Read M0:" + str(utime.ticks_diff(utime.ticks_us(), start)))
+        #print("Read M0:" + str(utime.ticks_diff(utime.ticks_us(), start)))
         start = utime.ticks_us()
         pv_str = self._read_buf.decode("ascii")
         print("Decode M0:" + str(utime.ticks_diff(utime.ticks_us(), start)))
