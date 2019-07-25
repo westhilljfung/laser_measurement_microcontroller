@@ -29,7 +29,7 @@ class LaserGui:
 
         # Laser Measuring Control
         self._laser = laser_ctrl.LaserCtrl()
-        #self._laser.off()
+        self._laser.on()
 
         # Load Time
         if self._laser_mcu.is_connected():
