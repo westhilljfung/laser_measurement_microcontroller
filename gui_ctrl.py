@@ -46,6 +46,8 @@ class LaserGui:
         # Create screen
         self._load_screen()
 
+        self.start=utime.ticks_us()
+        
         # Task to update header, time and th value
         self._task_update_header = lv.task_create_basic()
         lv.task_set_cb(self._task_update_header, self._update_header_cb)
