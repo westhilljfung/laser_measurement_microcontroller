@@ -9,6 +9,7 @@ class LaserCtrl:
         self._laser = UART(2)
         self._laser.init(baudrate=38400)
         self._amp_stack = ((00,01),(02,03))
+        self._read_buf = bytes(125)
         self._laser_on = True
         self.get_all_pv()
 
@@ -20,22 +21,19 @@ class LaserCtrl:
 
     def get_values_str(self):
         self.get_all_pv()
-        return str(self._pv_s)
+        return self._read_buf.decode("ascii")
         
     def get_all_pv(self):
-        #start = utime.ticks_us()
+        start = utime.ticks_us()
         self._laser.write("M0\r\n")
-        #print(utime.ticks_diff(utime.ticks_us(), start))
+        print("Write cmd: " + utime.ticks_diff(utime.ticks_us(), start))
         start = utime.ticks_us()
         while not self._laser.any():
             utime.sleep_us(1)
-        #print(utime.ticks_diff(utime.ticks_us(), start))
+        print("Wait: " + utime.ticks_diff(utime.ticks_us(), start))
         start = utime.ticks_us()
-        pv_str = self._laser.readline().decode("ascii")
-        self._pv_s = pv_str.strip("\r\n").strip("M0,").split(",")
-        #print(utime.ticks_diff(utime.ticks_us(), start))
-        #print(pv_str)
-        #print(self._pv_s)
+        self._laser.readinto(self._read_buf)
+        print("Read: " + utime.ticks_diff(utime.ticks_us(), start))
 
     def write_all(self, cmd, data):
         start = utime.ticks_us()
