@@ -81,7 +81,7 @@ class LaserGui:
         # Task to get laser output
         self._task_read_laser = lv.task_create_basic()
         lv.task_set_cb(self._task_read_laser, self._read_laser_cb)
-        lv.task_set_period(self._task_read_laser, 5)
+        lv.task_set_period(self._task_read_laser, 50)
         lv.task_set_prio(self._task_read_laser, lv.TASK_PRIO.HIGH)
 
         return
