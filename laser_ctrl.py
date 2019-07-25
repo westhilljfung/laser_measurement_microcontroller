@@ -23,13 +23,13 @@ class LaserCtrl:
         return str(self._pv_s)
         
     def get_all_pv(self):
-        start = utime.ticks_us()
+        #start = utime.ticks_us()
         self._laser.write("M0\r\n")
-        print(utime.ticks_diff(utime.ticks_us(), start))
+        #print(utime.ticks_diff(utime.ticks_us(), start))
         start = utime.ticks_us()
         while not self._laser.any():
             utime.sleep_us(1)
-        print(utime.ticks_diff(utime.ticks_us(), start))
+        #print(utime.ticks_diff(utime.ticks_us(), start))
         start = utime.ticks_us()
         pv_str = self._laser.readline().decode("ascii")
         self._pv_s = pv_str.strip("\r\n").strip("M0,").split(",")
