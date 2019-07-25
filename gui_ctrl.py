@@ -106,10 +106,15 @@ class LaserGui:
         self._header_text.align(self._header, lv.ALIGN.IN_LEFT_MID, 10, 0)
 
         self._sym.align(self._header, lv.ALIGN.IN_RIGHT_MID, -10, 0)
-        self._header.set_fit2(lv.FIT.NONE, lv.FIT.TIGHT)
+        self._header.set_fit2(lv.FIT.FLOOD, lv.FIT.TIGHT)
         self._header.set_pos(0, 0)
-        
-        lv.scr_load(self._scr)
+
+        self._body = lv.cont(self._scr)
+        self._body.set_fit2(lv.FIT.FLOOD, lv.FIT.TIGHT)
+
+        self._laser_output = lv.label(self._body)
+        self._laser_output.set_text("Waiting Output")
+
         return
         
     def call_task_handler(self):
@@ -126,6 +131,8 @@ class LaserGui:
                                    
         self._header_text.set_text(self._th_ctrl.get_th_str())
         self._header_text.align(self._header, lv.ALIGN.IN_LEFT_MID, 10, 0)
+
+        self._laser_output.set_text(self._laser.get_values_str())
         gc.collect()
         return
 

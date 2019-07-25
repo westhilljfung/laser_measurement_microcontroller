@@ -9,6 +9,7 @@ class LaserCtrl:
         self._laser = UART(2)
         self._laser.init(baudrate=38400)
         self._amp_stack = ((00,01),(02,03))
+        self._laser_on = True
         self.get_all_pv()
 
     def reset_all(self):
@@ -16,6 +17,10 @@ class LaserCtrl:
         self.write_all("005","1")
         self.write_all("065","+99.999")
         self.write_all("066","-99.999")
+
+    def get_values_str(self):
+        self.get_all_pv()
+        return str(self._pv_s)
         
     def get_all_pv(self):
         start = utime.ticks_us()
@@ -70,6 +75,13 @@ class LaserCtrl:
         print(self._laser.readline())
         print(utime.ticks_diff(utime.ticks_us(), start))
 
+    def toggle(self):
+        if self._laser_on:
+            self.off()
+            self._laser_on = False
+        else:
+            self.on()
+            self._laser_on = True
 
     def off(self):
         self.write_all("100", "1")
