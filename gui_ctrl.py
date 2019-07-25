@@ -49,13 +49,13 @@ class LaserGui:
         # Task to update header, time and th value
         self._task_update_header = lv.task_create_basic()
         lv.task_set_cb(self._task_update_header, self._update_header_cb)
-        lv.task_set_period(self._task_update_header, 5000)
+        lv.task_set_period(self._task_update_header, 1000)
         lv.task_set_prio(self._task_update_header, lv.TASK_PRIO.MID)
 
         # Task to save time to flash
         self._task_save_time = lv.task_create_basic()
         lv.task_set_cb(self._task_save_time, self._save_time_cb)
-        lv.task_set_period(self._task_save_time, 10000)
+        lv.task_set_period(self._task_save_time, 60000)
         lv.task_set_prio(self._task_save_time, lv.TASK_PRIO.MID)
 
         # Task to gc collect
