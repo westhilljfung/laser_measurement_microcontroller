@@ -17,6 +17,8 @@ class LaserCtrl:
         while not self._laser.any():
             utime.sleep_us(1)
         self._laser.readinto(self._read_buf)
+        for amp in range(0,4):
+            self._pv[amp] = float(self._read_buf[3:9]
 
     def reset_all(self):
         self.write_all("005","0")
