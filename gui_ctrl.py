@@ -152,7 +152,9 @@ class LaserGui:
         return
 
     def _update_laser_output_cb(self, data):
+        start = utime.ticks_us()
         self._laser.get_phrase_pvs()
+        print(utime.ticks_diff(utime.ticks_us(), start))
         return
     
     def _gc_collect_cb(self, data):
