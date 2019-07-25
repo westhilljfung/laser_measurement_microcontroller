@@ -141,21 +141,28 @@ class LaserGui:
         return
 
     def _update_screen(self):
+        
+        print(utime.ticks_diff(utime.ticks_us(), self.start))
         if self._laser_mcu.is_connected():
             self._sym.set_text(self._laser_mcu.get_local_time_str() + " " + lv.SYMBOL.WIFI)
         else:
             self._sym.set_text(self._laser_mcu.get_local_time_str())
-        #self._sym.align(self._header, lv.ALIGN.IN_RIGHT_MID, -10, 0)
+        self._sym.align(self._header, lv.ALIGN.IN_RIGHT_MID, -10, 0)
 
-        self._header_text.set_text(self._th_ctrl.get_th_str())
-        #self._header_text.align(self._header, lv.ALIGN.IN_LEFT_MID, 10, 0)
         
+        print(utime.ticks_diff(utime.ticks_us(), self.start))
+        self._header_text.set_text(self._th_ctrl.get_th_str())
+        self._header_text.align(self._header, lv.ALIGN.IN_LEFT_MID, 10, 0)
+
+        
+        print(utime.ticks_diff(utime.ticks_us(), self.start))
         self._laser_output.set_text(self._laser.get_values_str())
+        
+        print(utime.ticks_diff(utime.ticks_us(), self.start))
         return
 
     def _update_laser_output_cb(self, data):
-        self.end = utime.ticks_us()
-        print(utime.ticks_diff(self.end, self.start))
+        print(utime.ticks_diff(utime.ticks_us(), self.start))
         self._laser.get_phrase_pvs()
         self.start=utime.ticks_us()
         return
