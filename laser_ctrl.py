@@ -35,6 +35,11 @@ class LaserCtrl:
             pv_str += ("% 07.3f " % cal)
         return pv_str
 
+    def set_cal_init(self, num, ref):
+        self.write_amp(num, "067", "%+07.3f" % ref)
+        self.write_amp(num, "001", "0")
+        self.write_amp(num, "001", "1")
+
     def get_phrase_pvs(self):
         self._laser.write("M0\r\n")
         while not self._laser.any():
