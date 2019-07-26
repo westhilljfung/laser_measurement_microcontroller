@@ -39,7 +39,7 @@ class LaserCtrl:
         self._laser.write("M0\r\n")
         while not self._laser.any():
             utime.sleep_us(1)
-            self._laser.readinto(self._read_buf)
+        self._laser.readinto(self._read_buf)
         try:
             for amp in range(0,MAX_AMP_NUM):
                 self._pvs[amp] = float(self._read_buf[amp*8+3:amp*8+10])
