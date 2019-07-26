@@ -36,7 +36,7 @@ class LaserCtrl:
         return pv_str
 
     def set_cal_init(self, num, ref):
-        self.write_amp(num, "067", "%+07.3f" % ref)
+        self.write_amp(num, "067", "%+07.3f" % ref - self._pvs[num*2])
         self.write_amp(num, "001", "0")
         self.write_amp(num, "001", "1")
 
