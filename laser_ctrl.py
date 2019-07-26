@@ -30,7 +30,7 @@ class LaserCtrl:
             pv_str += ("% 07.3f " % pv)
 
         pv_str += '\n'
-            
+        
         for cal in self._cals:
             pv_str += ("% 07.3f " % cal)
         return pv_str
@@ -39,7 +39,7 @@ class LaserCtrl:
         self._laser.write("M0\r\n")
         while not self._laser.any():
             utime.sleep_us(1)
-        self._laser.readinto(self._read_buf)
+            self._laser.readinto(self._read_buf)
         try:
             for amp in range(0,MAX_AMP_NUM):
                 self._pvs[amp] = float(self._read_buf[amp*8+3:amp*8+10])
@@ -54,20 +54,20 @@ class LaserCtrl:
         self._laser.write("AW,%s,%s\r\n" % (cmd, data))
         while not self._laser.any():
             utime.sleep_us(1)
-        self._laser.readline()
+            self._laser.readline()
 
     def read_all(self, cmd):
         for amp in range(0,MAX_AMP_NUM):
-                self._laser.write("SR,%02d,%s\r\n" % (amp, cmd))
-                while not self._laser.any():
-                    utime.sleep_us(1)
+            self._laser.write("SR,%02d,%s\r\n" % (amp, cmd))
+            while not self._laser.any():
+                utime.sleep_us(1)
                 self._laser.readline()
 
     def write_amp(self, amp, cmd, data):
         self._laser.write("SW,%02d,%s,%s\r\n" % (amp, cmd, data))
         while not self._laser.any():
             utime.sleep_us(1)
-        self._laser.readline()
+            self._laser.readline()
 
     def off(self):
         self.write_all("100", "1")
