@@ -174,7 +174,6 @@ class LaserGui:
 class TextBtn(lv.btn):
     def __init__(self, parent, text):
         super().__init__(parent)
-        self.symbol = lv.label(self)
         
         self.label = lv.label(self)
         self.label.set_text(text)
