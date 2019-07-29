@@ -129,27 +129,10 @@ class LaserGui:
         self._scr = lv.obj()
         
         # Add header and body
-        self._header = lv.cont(self._scr)
-        self._body = lv.cont(self._scr)
+        self._header = GuiHeader(scr, 0, 0)
+        self._sidebar = GUISidebar(scr, self._header.get_height(), 0)
+        self._body = GuiLaserMain(scr, self._header.get_height(), self._sidebar.get_width())
         
-        self._sym = lv.label(self._header)
-
-        self._sym.set_text(" ")
-        self._header_text = lv.label(self._header)
-        self._header_text.set_text(" ")
-        self._header_text.align(self._header, lv.ALIGN.IN_LEFT_MID, 10, 0)
-
-        self._sym.align(self._header, lv.ALIGN.IN_RIGHT_MID, -10, 0)
-        self._header.set_fit2(lv.FIT.FLOOD, lv.FIT.TIGHT)
-        self._header.set_pos(0, 0)
-
-        self._laser_output = lv.label(self._body)
-        self._laser_output.set_text("Waiting Output")
-        
-        self._body.set_fit2(lv.FIT.FLOOD, lv.FIT.NONE)
-        self._body.set_height(self._scr.get_height() - self._header.get_height())
-        self._body.set_pos(0, self._header.get_height())
-
         lv.scr_load(self._scr)
         
         return
@@ -161,15 +144,17 @@ class LaserGui:
 
     def _update_time_cb(self, data):
         if self._laser_mcu.is_connected():
-            self._sym.set_text(self._laser_mcu.get_local_time_str() + " " + lv.SYMBOL.WIFI)
+            self._header.set_left_text(self._laser_mcu.get_local_time_str() + " " + lv.SYMBOL.WIFI)
         else:
-            self._sym.set_text(self._laser_mcu.get_local_time_str())
-        self._sym.align(self._header, lv.ALIGN.IN_RIGHT_MID, -10, 0)
-         
+            self._header.set_left_text(self._laser_mcu.get_local_time_str())
         return
 
+    def _update_th_cb(self, data):
+        self._header.set_right_text(self._th_ctrl.get_th_str())
+        return
+    
     def _update_laser_output_cb(self, data):
-        self._laser_output.set_text(self._laser.get_values_str())
+        self._body.set_text(self._laser.get_values_str())
         return
 
     def _read_laser_cb(self, data):
@@ -181,14 +166,70 @@ class LaserGui:
         gc.collect()
         return
 
-    def _update_th_cb(self, data):
-        self._header_text.set_text(self._th_ctrl.get_th_str())
-        self._header_text.align(self._header, lv.ALIGN.IN_LEFT_MID, 10, 0)
-        return
-
     @timed_function
     def _save_time_cb(self, data):
         self._laser_mcu.save_time()
         return
+    
+class TextBtn(lv.btn):
+    def __init__(self, parent, text):
+        super().__init__(parent)
+        self.symbol = lv.label(self)
+        
+        self.label = lv.label(self)
+        self.label.set_text(text)
+        self.set_fit(lv.FIT.TIGHT)
+        return
+    
+class GuiHeader(lv.cont):
+    def __init__(self, scr, x_pos, y_pos):
+        super().__init__(scr)
+        self._left_text = lv.label(self._header)
+        self._left_text.set_text(" ")
+        self._left_text.align(self._header, lv.ALIGN.IN_RIGHT_MID, -10, 0)
+        
+        self._right_text = lv.label(self._header)
+        self._right_text.set_text(" ")
+        self._right_text.align(self._header, lv.ALIGN.IN_LEFT_MID, 10, 0)
 
+        self.set_fit2(lv.FIT.FLOOD, lv.FIT.TIGHT)
+        self.set_pos(x_pos, y_pos)
+        return
 
+    def set_left_text(self, text):
+        self._left_text.set_text(text)
+        self._left_text.align(self, lv.ALIGN.IN_RIGHT_MID, -10, 0)
+        return
+
+    def set_right_test(self, text):
+        self._right_text.set_text(text)
+        self._right_text.align(self, lv.ALIGN.IN_RIGHT_MID, 10, 0)
+        return
+
+class GuiSidebar(lv.cont):
+    def __init__(self, scr, x_pos, y_pos):
+        super().__init__(scr)
+        
+        self.set_fit2(lv.FIT.TIGHT, lv.FIT.NONE)
+        self.set_height(scr.get_height() - y_pos)
+        self.set_pos(x_pos, y_pos)
+
+        self._btn = TextBtn("Test")
+        return
+
+class GuiLaserMain(lv.cont):
+    def __init__(self, scr, x_pos, y_pos):
+        super().__init__(scr)
+        
+        self._laser_output = lv.label(self)
+        self._laser_output.set_text("Waiting Output")
+        
+        self.set_fit2(lv.FIT.NONE, lv.FIT.NONE)
+        self.set_width(scr.get_width() - x_pos)
+        self.set_height(scr.get_height() - y_pos)
+        self._body.set_pos(x_pos, y_pos)
+        return
+
+    def set_text(self, text):
+        self._laser_output.set_text(text)
+        return
