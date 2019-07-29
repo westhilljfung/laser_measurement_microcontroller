@@ -52,9 +52,9 @@ class LaserCtrl:
                     self._cals[amp//2] = self._pvs[amp]
                 else:
                     self._cals[amp//2] += self._pvs[amp]
-        except:
-            raise RuntimeError("gt_phrase_pvs")
-        
+        except ValueError:
+            print(self._read_buf)
+                
     def write_all(self, cmd, data):
         self._laser.write("AW,%s,%s\r\n" % (cmd, data))
         while not self._laser.any():
