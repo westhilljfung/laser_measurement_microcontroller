@@ -142,6 +142,10 @@ class LaserGui:
         lv.task_handler()
         return
 
+    def _stop_laser(self, data):
+        self._laser.off()
+        
+
     def _update_time_cb(self, data):
         if self._laser_mcu.is_connected():
             self._header.set_left_text(self._laser_mcu.get_local_time_str() + " " + lv.SYMBOL.WIFI)
@@ -213,7 +217,14 @@ class GuiSidebar(lv.cont):
         self.set_height(scr.get_height() - y_pos)
         self.set_pos(x_pos, y_pos)
 
-        self._btn = TextBtn(self, "Test")
+        self._btns = []
+        self.add_btn("Test", None)
+        return
+
+    def add_btn(self, text, cb):
+        btn = TextBtn(text)
+        btn.set_event_cb(cb)
+        self._btns.append(btn)
         return
 
 class GuiLaserMain(lv.cont):
