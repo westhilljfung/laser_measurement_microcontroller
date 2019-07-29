@@ -186,7 +186,7 @@ class TextBtn(lv.btn):
         
         self.label = lv.label(self)
         self.label.set_text(text)
-        self.set_fit(lv.FIT.TIGHT)
+        self.set_fit2(lv.FIT.FLOOD, lv.FIT.FIT)
         return
     
 class GuiHeader(lv.cont):
