@@ -227,7 +227,7 @@ class GuiLaserMain(lv.cont):
         self.set_fit2(lv.FIT.NONE, lv.FIT.NONE)
         self.set_width(scr.get_width() - x_pos)
         self.set_height(scr.get_height() - y_pos)
-        self._body.set_pos(x_pos, y_pos)
+        self.set_pos(x_pos, y_pos)
         return
 
     def set_text(self, text):
