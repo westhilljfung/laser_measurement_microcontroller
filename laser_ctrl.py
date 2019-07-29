@@ -76,6 +76,8 @@ class LaserCtrl:
 
     def off(self):
         self.write_all("100", "1")
+        self.write_all("155", "2")
 
     def on(self):
-        self.write_all("100", "0")
+        self.write_all("100", "0")        
+        self.write_all("155", "0")
