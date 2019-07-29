@@ -59,12 +59,6 @@ class LaserGui:
         lv.task_set_cb(self._task_update_time, self._update_time_cb)
         lv.task_set_period(self._task_update_time, 1000)
         lv.task_set_prio(self._task_update_time, lv.TASK_PRIO.MID)
-
-        # Task to update output
-        self._task_update_laser_output = lv.task_create_basic()
-        lv.task_set_cb(self._task_update_laser_output, self._update_laser_output_cb)
-        lv.task_set_period(self._task_update_laser_output, 1000)
-        lv.task_set_prio(self._task_update_laser_output, lv.TASK_PRIO.MID)
         
         # Task to save time to flash
         self._task_save_time = lv.task_create_basic()
@@ -78,6 +72,12 @@ class LaserGui:
         lv.task_set_period(self._task_gc_collect, 5000)
         lv.task_set_prio(self._task_gc_collect, lv.TASK_PRIO.MID)
 
+        # Task to update output
+        self._task_update_laser_output = lv.task_create_basic()
+        lv.task_set_cb(self._task_update_laser_output, self._update_laser_output_cb)
+        lv.task_set_period(self._task_update_laser_output, 1000)
+        lv.task_set_prio(self._task_update_laser_output, lv.TASK_PRIO.MID)
+        
         # Task to get laser output
         self._task_read_laser = lv.task_create_basic()
         lv.task_set_cb(self._task_read_laser, self._read_laser_cb)
@@ -176,6 +176,7 @@ class LaserGui:
         self._header_text.align(self._header, lv.ALIGN.IN_LEFT_MID, 10, 0)
         return
 
+    @timed_function
     def _save_time_cb(self, data):
         self._laser_mcu.save_time()
         return
