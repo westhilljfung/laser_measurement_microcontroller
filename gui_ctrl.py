@@ -214,7 +214,7 @@ class GuiSidebar(lv.cont):
         self.set_height(scr.get_height() - y_pos)
         self.set_pos(x_pos, y_pos)
 
-        self._btn = TextBtn("Test")
+        self._btn = TextBtn(self, "Test")
         return
 
 class GuiLaserMain(lv.cont):
