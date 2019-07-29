@@ -14,10 +14,7 @@ class LaserCtrl:
         self._pvs = array.array('f', [0.0] * MAX_AMP_NUM)
         self._cals = array.array('f', [0.0] * (MAX_AMP_NUM // 2))
         self._laser_on = True
-        self._laser.write("M0\r\n")
-        while not self._laser.any():
-            utime.sleep_us(1)
-        self._laser.readinto(self._read_buf)
+        self.get_phrase_pvs()
 
     def reset_all(self):
         self.write_all("005","0")
