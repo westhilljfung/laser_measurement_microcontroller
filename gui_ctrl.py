@@ -82,17 +82,19 @@ class LaserGui:
         lv.task_set_period(self._task_gc_collect, 5000)
         lv.task_set_prio(self._task_gc_collect, lv.TASK_PRIO.MID)
 
+        self._laser.off()
+        
         # Task to update output
         self._task_update_laser_output = lv.task_create_basic()
         lv.task_set_cb(self._task_update_laser_output, self._update_laser_output_cb)
         lv.task_set_period(self._task_update_laser_output, 1000)
-        lv.task_set_prio(self._task_update_laser_output, lv.TASK_PRIO.MID)
+        lv.task_set_prio(self._task_update_laser_output, lv.TASK_PRIO.OFF)
         
         # Task to get laser output
         self._task_read_laser = lv.task_create_basic()
         lv.task_set_cb(self._task_read_laser, self._read_laser_cb)
         lv.task_set_period(self._task_read_laser, 1000)
-        lv.task_set_prio(self._task_read_laser, lv.TASK_PRIO.MID)
+        lv.task_set_prio(self._task_read_laser, lv.TASK_PRIO.OFF)
 
         return
 
@@ -238,7 +240,7 @@ class GuiLaserMain(lv.cont):
         super().__init__(scr)
         
         self._laser_output = lv.label(self)
-        self._laser_output.set_text("Waiting Output")
+        self._laser_output.set_text("Laser Off")
         
         self.set_fit2(lv.FIT.NONE, lv.FIT.NONE)
         self.set_width(scr.get_width() - x_pos)
