@@ -137,7 +137,7 @@ class LaserGui:
         lv.scr_load(self._scr)        
         return
 
-    def _stop_laser_btn(self, event):
+    def _stop_laser_btn(self, obj, event):
         if event == lv.EVENT.CLICKED:
             self._laser.off()
             print(self)
