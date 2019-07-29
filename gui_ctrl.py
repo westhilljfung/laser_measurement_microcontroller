@@ -131,16 +131,20 @@ class LaserGui:
         # Add header and body
         self._header = GuiHeader(self._scr, 0, 0)
         self._sidebar = GuiSidebar(self._scr, 0, self._header.get_height())
-        self._sidebar.add_btn("Test", self._stop_laser_btn)
+        self._sidebar.add_btn("ON", self._start_laser_btn)        
+        self._sidebar.add_btn("OFF", self._stop_laser_btn)
         self._body = GuiLaserMain(self._scr, self._sidebar.get_width(), self._header.get_height())
         
         lv.scr_load(self._scr)        
         return
 
+    def _start_laser_btn(self, obj, event):
+        if event == lv.EVENT.CLICKED:
+            self._laser.on()
+    
     def _stop_laser_btn(self, obj, event):
         if event == lv.EVENT.CLICKED:
             self._laser.off()
-            print(self)
         
     def _update_time_cb(self, data):
         if self._laser_mcu.is_connected():
