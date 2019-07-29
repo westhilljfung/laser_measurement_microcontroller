@@ -184,13 +184,13 @@ class TextBtn(lv.btn):
 class GuiHeader(lv.cont):
     def __init__(self, scr, x_pos, y_pos):
         super().__init__(scr)
-        self._left_text = lv.label(self._header)
+        self._left_text = lv.label(self)
         self._left_text.set_text(" ")
-        self._left_text.align(self._header, lv.ALIGN.IN_RIGHT_MID, -10, 0)
+        self._left_text.align(self, lv.ALIGN.IN_RIGHT_MID, -10, 0)
         
-        self._right_text = lv.label(self._header)
+        self._right_text = lv.label(self)
         self._right_text.set_text(" ")
-        self._right_text.align(self._header, lv.ALIGN.IN_LEFT_MID, 10, 0)
+        self._right_text.align(self, lv.ALIGN.IN_LEFT_MID, 10, 0)
 
         self.set_fit2(lv.FIT.FLOOD, lv.FIT.TIGHT)
         self.set_pos(x_pos, y_pos)
