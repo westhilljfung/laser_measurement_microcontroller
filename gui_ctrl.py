@@ -27,12 +27,12 @@ class LaserGui:
         lv.init()
         lv.task_core_init()
 
+        # MCU Control
+        self._laser_mcu = laser_mcu.LaserMCU()
+
         # TFT and TS driver
         self._tft = tftwing.TFTFeatherWing()
         self._tft.init()
-
-        # MCU Control
-        self._laser_mcu = laser_mcu.LaserMCU()
 
         # TH sensor
         self._th_ctrl = th_ctrl.THCtrl()
