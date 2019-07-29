@@ -1,6 +1,7 @@
 from machine import UART
 import utime
 from micropython import const
+import array
 
 DEFAULT_PANEL_WIDTH_MM = const(1245)
 MAX_AMP_NUM = const(4)
@@ -10,8 +11,8 @@ class LaserCtrl:
         self._laser = UART(2)
         self._laser.init(baudrate=38400)
         self._read_buf = bytearray("0"*36)
-        self._pvs = [0.0] * MAX_AMP_NUM
-        self._cals = [0.0] * (MAX_AMP_NUM // 2)
+        self._pvs = array.array('f', [0.0] * MAX_AMP_NUM)
+        self._cals = array.array('f', [0.0] * (MAX_AMP_NUM // 2))
         self._laser_on = True
         self._laser.write("M0\r\n")
         while not self._laser.any():
@@ -81,3 +82,8 @@ class LaserCtrl:
     def on(self):
         self.write_all("100", "0")        
         self.write_all("155", "0")
+
+class Panel:
+    def __init__(self):
+        self._date = utime.locatime()
+        return

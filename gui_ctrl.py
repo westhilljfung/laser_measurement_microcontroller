@@ -82,6 +82,7 @@ class LaserGui:
         lv.task_set_period(self._task_gc_collect, 5000)
         lv.task_set_prio(self._task_gc_collect, lv.TASK_PRIO.MID)
 
+        # Laser off on start
         self._laser.off()
         
         # Task to update output
