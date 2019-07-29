@@ -202,7 +202,7 @@ class GuiHeader(lv.cont):
 
     def set_right_text(self, text):
         self._right_text.set_text(text)
-        self._right_text.align(self, lv.ALIGN.IN_RIGHT_MID, 10, 0)
+        self._right_text.align(self, lv.ALIGN.IN_LEFT_MID, 10, 0)
         return
 
 class GuiSidebar(lv.cont):
