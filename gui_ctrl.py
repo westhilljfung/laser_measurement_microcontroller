@@ -217,6 +217,7 @@ class GuiSidebar(lv.cont):
         self.set_height(scr.get_height() - y_pos)
         self.set_pos(x_pos, y_pos)
 
+        self.set_layout(lv.LAYOUT.COL_M)
         self._btns = []
         return
 
