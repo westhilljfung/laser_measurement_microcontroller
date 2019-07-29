@@ -129,9 +129,9 @@ class LaserGui:
         self._scr = lv.obj()
         
         # Add header and body
-        self._header = GuiHeader(scr, 0, 0)
-        self._sidebar = GUISidebar(scr, self._header.get_height(), 0)
-        self._body = GuiLaserMain(scr, self._header.get_height(), self._sidebar.get_width())
+        self._header = GuiHeader(self._scr, 0, 0)
+        self._sidebar = GUISidebar(self._scr, self._header.get_height(), 0)
+        self._body = GuiLaserMain(self._scr, self._header.get_height(), self._sidebar.get_width())
         
         lv.scr_load(self._scr)
         
