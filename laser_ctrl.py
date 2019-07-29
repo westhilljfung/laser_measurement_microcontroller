@@ -51,7 +51,7 @@ class LaserCtrl:
                 else:
                     self._cals[amp//2] += self._pvs[amp]
         except ValueError:
-            print(self._read_buf)
+            print(self._read_buf.encode("ascii"))
 
         return self._cals
             
