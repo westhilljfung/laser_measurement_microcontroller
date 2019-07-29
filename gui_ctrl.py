@@ -133,13 +133,7 @@ class LaserGui:
         self._sidebar = GuiSidebar(self._scr, 0, self._header.get_height())
         self._body = GuiLaserMain(self._scr, self._sidebar.get_width(), self._header.get_height())
         
-        lv.scr_load(self._scr)
-        
-        return
-
-    def call_task_handler(self):
-        print("LaserGui call_task_handler")
-        lv.task_handler()
+        lv.scr_load(self._scr)        
         return
 
     def _stop_laser(self, data):
@@ -170,7 +164,7 @@ class LaserGui:
         gc.collect()
         return
 
-    @timed_function
+    #@timed_function
     def _save_time_cb(self, data):
         self._laser_mcu.save_time()
         return
@@ -222,7 +216,7 @@ class GuiSidebar(lv.cont):
         return
 
     def add_btn(self, text, cb):
-        btn = TextBtn(text)
+        btn = TextBtn(self, text)
         btn.set_event_cb(cb)
         self._btns.append(btn)
         return
