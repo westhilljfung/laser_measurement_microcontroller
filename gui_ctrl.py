@@ -140,10 +140,14 @@ class LaserGui:
 
     def _start_laser_btn(self, obj, event):
         if event == lv.EVENT.CLICKED:
+            lv.task_set_prio(self._task_read_laser, lv.TASK_PRIO.MID)            
+            lv.task_set_prio(self._task_update_laser_output, lv.TASK_PRIO.MID)
             self._laser.on()
     
     def _stop_laser_btn(self, obj, event):
-        if event == lv.EVENT.CLICKED:
+        if event == lv.EVENT.CLICKED:            
+            lv.task_set_prio(self._task_read_laser, lv.TASK_PRIO.OFF)            
+            lv.task_set_prio(self._task_update_laser_output, lv.TASK_PRIO.OFF)
             self._laser.off()
         
     def _update_time_cb(self, data):
