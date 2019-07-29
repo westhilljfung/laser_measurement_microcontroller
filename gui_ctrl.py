@@ -201,7 +201,7 @@ class GuiHeader(lv.cont):
         self._left_text.align(self, lv.ALIGN.IN_RIGHT_MID, -10, 0)
         return
 
-    def set_right_test(self, text):
+    def set_right_text(self, text):
         self._right_text.set_text(text)
         self._right_text.align(self, lv.ALIGN.IN_RIGHT_MID, 10, 0)
         return
