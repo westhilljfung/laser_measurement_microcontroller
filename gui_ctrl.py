@@ -130,7 +130,7 @@ class LaserGui:
         
         # Add header and body
         self._header = GuiHeader(self._scr, 0, 0)
-        self._sidebar = GuiSidebar(self._scr, 0, self._header.get_height())
+        self._sidebar = GuiSidebar(self._scr, 96, 0, self._header.get_height())
         self._sidebar.add_btn("ON", self._start_laser_btn)        
         self._sidebar.add_btn("OFF", self._stop_laser_btn)
         self._body = GuiLaserMain(self._scr, self._sidebar.get_width(), self._header.get_height())
@@ -215,10 +215,11 @@ class GuiHeader(lv.cont):
         return
 
 class GuiSidebar(lv.cont):
-    def __init__(self, scr, x_pos, y_pos):
+    def __init__(self, scr, width, x_pos, y_pos):
         super().__init__(scr)
         
-        self.set_fit2(lv.FIT.TIGHT, lv.FIT.NONE)
+        self.set_fit2(lv.FIT.NONE, lv.FIT.NONE)
+        self.set_width(width)
         self.set_height(scr.get_height() - y_pos)
         self.set_pos(x_pos, y_pos)
 
