@@ -236,6 +236,33 @@ class GuiSidebar(lv.cont):
         self._btns.append(btn)
         return
 
+class CalibarteScreen(lv.cont):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.align(parent, lv.ALIGN.IN_TOP_LEFT, 0, 0)
+        self.set_fit(lv.FIT.FLOOD)
+
+        self._text = lv.label(self)
+        self._text.set_text(" ")
+
+        self._kb = lv.kb(self)
+        self._kb.set_mode(lv.kb.MODE.NUM)
+        
+        self.set_layout(lv.LAYOUT.GRID)
+        return
+
+    def hide(self):
+        self.set_hidden(True)
+        return
+
+    def show(self):
+        self.set_hidden(False)
+        return
+
+    def set_text(self, text):
+        self._text.set_text(text)
+        return
+    
 class GuiLaserMain(lv.cont):
     def __init__(self, scr, x_pos, y_pos):
         super().__init__(scr)
@@ -247,9 +274,6 @@ class GuiLaserMain(lv.cont):
         self.set_width(scr.get_width() - x_pos)
         self.set_height(scr.get_height() - y_pos)
         self.set_pos(x_pos, y_pos)
-        self.set_layout(lv.LAYOUT.GRID)
+        self.set_layout(lv.LAYOUT.OFF)
         return
 
-    def set_text(self, text):
-        self._laser_output.set_text(text)
-        return
