@@ -1,4 +1,10 @@
-# gui_ctrl.py
+"""
+gui_ctrl.py
+==========
+This is the Controller for the GUI
+*Author(s): Joshua Fung
+July 30, 2019
+"""
 import lvgl as lv
 from micropython import const
 import utime
@@ -11,6 +17,11 @@ import laser_ctrl
 
 DISP_BUF_SIZE = const(9600)
 
+"""
+Timing function
+
+Use @timed_function decorator
+"""
 def timed_function(f, *args, **kwargs):
     myname = str(f).split(' ')[1]
     def new_func(*args, **kwargs):
@@ -21,20 +32,27 @@ def timed_function(f, *args, **kwargs):
         return result
     return new_func
 
+"""
+GUI Controller
+"""
 class LaserGui:
     def __init__(self):
-        # LVGL
+        # init LVGL
         lv.init()
         lv.task_core_init()
 
         # MCU Control
+        # For some reason the LaserMCU needs to be init before TFT and TS driver
+        # Likely because of the SPI
         self._laser_mcu = laser_mcu.LaserMCU()
 
         # TFT and TS driver
+        # POTENTIAL: move into LaserMcu
         self._tft = tftwing.TFTFeatherWing()
         self._tft.init()
 
         # TH sensor
+        # TODO move the th controller into LaserMcu
         self._th_ctrl = th_ctrl.THCtrl()
 
         # Laser Measuring Control
@@ -42,6 +60,7 @@ class LaserGui:
         self._laser.on()
 
         # Load Time
+        # TODO: also move into LaserMcu
         if self._laser_mcu.is_connected():
             self._laser_mcu.set_time_ntp()
         else:
@@ -55,10 +74,9 @@ class LaserGui:
 
         # Create screen
         self._load_screen()
-
-        self.start=utime.ticks_us()
         
         # Task to update th
+        # TODO: use one line creation
         self._task_update_th = lv.task_create_basic()
         lv.task_set_cb(self._task_update_th, self._update_th_cb)
         lv.task_set_period(self._task_update_th, 1000)
@@ -96,7 +114,65 @@ class LaserGui:
         lv.task_set_cb(self._task_read_laser, self._read_laser_cb)
         lv.task_set_period(self._task_read_laser, 1000)
         lv.task_set_prio(self._task_read_laser, lv.TASK_PRIO.OFF)
+        return
 
+    def _load_screen(self):
+        # Create screen obj
+        th=lv.theme_night_init(210, lv.font_roboto_16)
+        lv.theme_set_current(th)
+        self._scr = lv.obj()
+        
+        # Add header and body
+        self._header = GuiHeader(self._scr, 0, 0)
+        self._sidebar = GuiSidebar(self._scr, 96, 0, self._header.get_height())
+        self._sidebar.add_btn("Calibrate", self._calibrate_laser_btn)        
+        self._sidebar.add_btn("Laser Off", self._stop_laser_btn)
+        self._body = GuiLaserMain(self._scr, self._sidebar.get_width(), self._header.get_height())
+        
+        lv.scr_load(self._scr)        
+        return
+
+    def _calibrate_laser_btn(self, obj, event):
+        if event == lv.EVENT.CLICKED:
+            lv.task_set_prio(self._task_read_laser, lv.TASK_PRIO.MID)            
+            lv.task_set_prio(self._task_update_laser_output, lv.TASK_PRIO.MID)
+            self._laser.on()
+            return
+    
+    def _stop_laser_btn(self, obj, event):
+        if event == lv.EVENT.CLICKED:
+            self._body.set_text("Laser Off")
+            lv.task_set_prio(self._task_read_laser, lv.TASK_PRIO.OFF)            
+            lv.task_set_prio(self._task_update_laser_output, lv.TASK_PRIO.OFF)
+            self._laser.off()
+            return
+        
+    def _update_time_cb(self, data):
+        if self._laser_mcu.is_connected():
+            self._header.set_left_text(self._laser_mcu.get_local_time_str() + " " + lv.SYMBOL.WIFI)
+        else:
+            self._header.set_left_text(self._laser_mcu.get_local_time_str())
+        return
+
+    def _update_th_cb(self, data):
+        self._header.set_right_text(self._th_ctrl.get_th_str())
+        return
+    
+    def _update_laser_output_cb(self, data):
+        self._body.set_text(self._laser.get_values_str())
+        return
+
+    def _read_laser_cb(self, data):
+        self._laser.get_phrase_pvs()
+        self.start=utime.ticks_us()
+        return
+    
+    def _gc_collect_cb(self, data):
+        gc.collect()
+        return
+
+    def _save_time_cb(self, data):
+        self._laser_mcu.save_time()
         return
 
     def _register_disp_drv(self):
@@ -125,64 +201,10 @@ class LaserGui:
         self._indev = lv.indev_drv_register(self._indev_drv)
         return
 
-    def _load_screen(self):
-        # Create screen obj
-        th=lv.theme_night_init(210, lv.font_roboto_16)
-        lv.theme_set_current(th)
-        self._scr = lv.obj()
-        
-        # Add header and body
-        self._header = GuiHeader(self._scr, 0, 0)
-        self._sidebar = GuiSidebar(self._scr, 96, 0, self._header.get_height())
-        self._sidebar.add_btn("Calibrate", self._calibrate_laser_btn)        
-        self._sidebar.add_btn("Laser Off", self._stop_laser_btn)
-        self._body = GuiLaserMain(self._scr, self._sidebar.get_width(), self._header.get_height())
-        
-        lv.scr_load(self._scr)        
-        return
 
-    def _calibrate_laser_btn(self, obj, event):
-        if event == lv.EVENT.CLICKED:
-            lv.task_set_prio(self._task_read_laser, lv.TASK_PRIO.MID)            
-            lv.task_set_prio(self._task_update_laser_output, lv.TASK_PRIO.MID)
-            self._laser.on()
-    
-    def _stop_laser_btn(self, obj, event):
-        if event == lv.EVENT.CLICKED:
-            self._body.set_text("Laser Off")
-            lv.task_set_prio(self._task_read_laser, lv.TASK_PRIO.OFF)            
-            lv.task_set_prio(self._task_update_laser_output, lv.TASK_PRIO.OFF)
-            self._laser.off()
-        
-    def _update_time_cb(self, data):
-        if self._laser_mcu.is_connected():
-            self._header.set_left_text(self._laser_mcu.get_local_time_str() + " " + lv.SYMBOL.WIFI)
-        else:
-            self._header.set_left_text(self._laser_mcu.get_local_time_str())
-        return
-
-    def _update_th_cb(self, data):
-        self._header.set_right_text(self._th_ctrl.get_th_str())
-        return
-    
-    def _update_laser_output_cb(self, data):
-        self._body.set_text(self._laser.get_values_str())
-        return
-
-    def _read_laser_cb(self, data):
-        self._laser.get_phrase_pvs()
-        self.start=utime.ticks_us()
-        return
-    
-    def _gc_collect_cb(self, data):
-        gc.collect()
-        return
-
-    #@timed_function
-    def _save_time_cb(self, data):
-        self._laser_mcu.save_time()
-        return
-    
+"""
+GUI elements
+"""
 class TextBtn(lv.btn):
     def __init__(self, parent, text):
         super().__init__(parent)
