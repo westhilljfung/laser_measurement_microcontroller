@@ -1,4 +1,10 @@
-# laser_mcu.py
+""" 
+laser_mcu.py
+==========
+This is a Micropython driver for the Laser Measurement Controller
+*Author(s): Joshua Fung
+July 30, 2019
+"""
 import network
 import ntptime
 import utime
@@ -17,30 +23,28 @@ TIME_FILE = "/time"
 class LaserMCU:
 
     def __init__(self):
-        self.name = "Westhill Laser Measument System"
-        self.wlan =  network.WLAN(network.STA_IF)
+        self._name = "Westhill Laser Measument System"
+        self._wlan =  network.WLAN(network.STA_IF)
         self.connect_wifi()
-        self.sd = machine.SDCard(slot=3, sck=machine.Pin(14), miso=machine.Pin(12)
+        self._sd = machine.SDCard(slot=3, sck=machine.Pin(14), miso=machine.Pin(12)
                                  ,mosi=machine.Pin(13),cs=machine.Pin(15))
-        uos.mount(self.sd, "/sd")
-        #print(uos.listdir("/sd/DCIM"))
+        uos.mount(self._sd, "/sd")
 
     def connect_wifi(self):
         if not self.is_connected():
-            self.wlan.active(True)
-            self.wlan.connect(ssid, wp2_pass)
+            self._wlan.active(True)
+            self._wlan.connect(ssid, wp2_pass)
             start = utime.ticks_ms()
-            print("Connecting Wifi", end = "")
+            print("Connecting Wifi [", end = "")
             while True:
-                utime.sleep(5)
+                utime.sleep_ms(WIFI_CON_TIMEOUT / 20)
                 print("-", end="")
-                #print(utime.ticks_diff(utime.ticks_ms(), start))
                 if utime.ticks_diff(utime.ticks_ms(), start) >= WIFI_CON_TIMEOUT:
-                    print("")
+                    print("]")
                     print("Fail to connect WIFI")
                     break
                 elif self.is_connected():
-                    print("")
+                    print("]")
                     break
         return
 
@@ -56,13 +60,12 @@ class LaserMCU:
         return
 
     def save_time(self):
-        #print("save time")
         file = open(TIME_FILE, "w")
         ujson.dump(utime.localtime(), file)
         file.close()
+        return
 
     def load_time(self):
-        print("load time")
         file = open(TIME_FILE, "r")
         old_time = ujson.load(file)
         print(old_time)
@@ -81,7 +84,7 @@ class LaserMCU:
         return dt_str
 
     def is_connected(self):
-        return self.wlan.isconnected()
+        return self._wlan.isconnected()
 
     def __str__(self):
-        return self.name
+        return self._name
