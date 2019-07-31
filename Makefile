@@ -1,7 +1,7 @@
 # By Joshua Fung 2019/07/19
 BUILD_DIR = build
 
-MPY_CROSS = ~/new/micropython/mpy-cross/mpy-cross
+MPY_CROSS = $(HOME)/Documents/laser/mymicropython/mpy-cross/mpy-cross
 MPY_CROSS_FLAG=
 
 reverse = $(if $(1),$(call reverse,$(wordlist 2,$(words $(1)),$(1)))) $(firstword $(1))
@@ -16,12 +16,12 @@ MODULES_MPY = $(patsubst %,$(BUILD_DIR)/%,$(_MODULES_MPY))
 CLEAN = $(CLEAN_MAIN)
 CLEAN += $(patsubst %,CLEAN/%,$(_MODULES_MPY))
 
-PORT = /dev/ttyS4
+PORT = /dev/ttyUSB0
 BAUDRATE = 115200
 
 .PHONY: deploy git dir $(CLEAN) con
 
-deploy: dir $(CLEAN_MAIN) $(MODULES_MPY) $(MAIN) con
+deploy: dir $(MODULES_MPY) $(MAIN) con
 
 dir: $(BUILD_DIR)
 $(BUILD_DIR):

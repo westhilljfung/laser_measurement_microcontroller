@@ -40,7 +40,7 @@ class LaserGui:
         # init LVGL
         lv.init()
         lv.task_core_init()
-
+        
         # MCU Control
         # For some reason the LaserMCU needs to be init before TFT and TS driver
         # Likely because of the SPI
@@ -48,7 +48,7 @@ class LaserGui:
 
         # TFT and TS driver
         # POTENTIAL: move into LaserMcu
-        self._tft = tftwing.TFTFeatherWing()
+        self._tft = tftwing.TFTFeatherWing(tft_mhz=24)
         self._tft.init()
 
         # TH sensor
@@ -74,7 +74,7 @@ class LaserGui:
 
         # Create screen
         self._load_screen()
-        
+
         # Task to update th
         # TODO: use one line creation
         self._task_update_th = lv.task_create_basic()
@@ -114,6 +114,7 @@ class LaserGui:
         lv.task_set_cb(self._task_read_laser, self._read_laser_cb)
         lv.task_set_period(self._task_read_laser, 1000)
         lv.task_set_prio(self._task_read_laser, lv.TASK_PRIO.OFF)
+
         return
 
     def _load_screen(self):
@@ -121,14 +122,15 @@ class LaserGui:
         th=lv.theme_night_init(210, lv.font_roboto_16)
         lv.theme_set_current(th)
         self._scr = lv.obj()
-        
+
+ 
         # Add header and body
         self._header = GuiHeader(self._scr, 0, 0)
         self._sidebar = GuiSidebar(self._scr, 96, 0, self._header.get_height())
         self._sidebar.add_btn("Calibrate", self._calibrate_laser_btn_cb)        
         self._sidebar.add_btn("Laser Off", self._stop_laser_btn_cb)
         self._body = GuiLaserMain(self._scr, self._sidebar.get_width(), self._header.get_height())
-        
+
         lv.scr_load(self._scr)        
         return
 
@@ -281,21 +283,22 @@ class CalibarteScreen(lv.cont):
         self.set_hidden(False)
         return
 
-    def set_text(self, text):
-        self._text.set_text(text)
-        return
+    
     
 class GuiLaserMain(lv.cont):
     def __init__(self, scr, x_pos, y_pos):
         super().__init__(scr)
         
-        self._laser_output = lv.label(self)
-        self._laser_output.set_text("Laser Off")
+        self._text = lv.label(self)
+        self._text.set_text("Laser Off")
         
         self.set_fit2(lv.FIT.NONE, lv.FIT.NONE)
         self.set_width(scr.get_width() - x_pos)
         self.set_height(scr.get_height() - y_pos)
         self.set_pos(x_pos, y_pos)
-        self.set_layout(lv.LAYOUT.OFF)
+        self.set_layout(lv.LAYOUT.PRETTY)
         return
 
+    def set_text(self, text):
+        self._text.set_text(text)
+        return

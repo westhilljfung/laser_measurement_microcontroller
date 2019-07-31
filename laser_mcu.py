@@ -23,7 +23,7 @@ TIME_FILE = "/time"
 class LaserMCU:
     def __init__(self):
         self._name = "Westhill Laser Measument System"
-        self._wlan =  network.WLAN(network.STA_IF)
+        self._wlan = network.WLAN(network.STA_IF)
         self.connect_wifi()
         self._sd = machine.SDCard(slot=3, sck=machine.Pin(14), miso=machine.Pin(12)
                                  ,mosi=machine.Pin(13),cs=machine.Pin(15))
@@ -36,7 +36,7 @@ class LaserMCU:
             start = utime.ticks_ms()
             print("Connecting Wifi [", end = "")
             while True:
-                utime.sleep_ms(WIFI_CON_TIMEOUT / 20)
+                utime.sleep_ms(WIFI_CON_TIMEOUT // 20)
                 print("-", end="")
                 if utime.ticks_diff(utime.ticks_ms(), start) >= WIFI_CON_TIMEOUT:
                     print("]")
