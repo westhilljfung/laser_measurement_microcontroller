@@ -125,21 +125,21 @@ class LaserGui:
         # Add header and body
         self._header = GuiHeader(self._scr, 0, 0)
         self._sidebar = GuiSidebar(self._scr, 96, 0, self._header.get_height())
-        self._sidebar.add_btn("Calibrate", self._calibrate_laser_btn)        
-        self._sidebar.add_btn("Laser Off", self._stop_laser_btn)
+        self._sidebar.add_btn("Calibrate", self._calibrate_laser_btn_cb)        
+        self._sidebar.add_btn("Laser Off", self._stop_laser_btn_cb)
         self._body = GuiLaserMain(self._scr, self._sidebar.get_width(), self._header.get_height())
         
         lv.scr_load(self._scr)        
         return
 
-    def _calibrate_laser_btn(self, obj, event):
+    def _calibrate_laser_btn_cb(self, obj, event):
         if event == lv.EVENT.CLICKED:
             lv.task_set_prio(self._task_read_laser, lv.TASK_PRIO.MID)            
             lv.task_set_prio(self._task_update_laser_output, lv.TASK_PRIO.MID)
             self._laser.on()
             return
     
-    def _stop_laser_btn(self, obj, event):
+    def _stop_laser_btn_cb(self, obj, event):
         if event == lv.EVENT.CLICKED:
             self._body.set_text("Laser Off")
             lv.task_set_prio(self._task_read_laser, lv.TASK_PRIO.OFF)            

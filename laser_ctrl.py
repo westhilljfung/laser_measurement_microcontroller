@@ -5,12 +5,14 @@ import array
 
 DEFAULT_PANEL_WIDTH_MM = const(1245)
 MAX_AMP_NUM = const(4)
+READ_BUF_SIZE = const(36)
+MAX_PANEL_DATA = const(1200*2)
 
 class LaserCtrl:
     def __init__(self):
         self._laser = UART(2)
         self._laser.init(baudrate=38400)
-        self._read_buf = bytearray("0"*36)
+        self._read_buf = bytearray("0" * READ_BUF_SIZE)
         self._pvs = array.array('f', [0.0] * MAX_AMP_NUM)
         self._cals = array.array('f', [0.0] * (MAX_AMP_NUM // 2))
         self._laser_on = True
@@ -83,6 +85,8 @@ class LaserCtrl:
         self.write_all("155", "0")
 
 class Panel:
-    def __init__(self):
-        self._date = utime.locatime()
+    def __init__(self, num):
+        self._creation = utime.locatime()
+        self._data = array.array('f', [0.0] * MAX_PANEL_DATA)
+        self._num = num
         return

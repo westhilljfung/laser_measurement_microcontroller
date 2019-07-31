@@ -21,7 +21,6 @@ WIFI_CON_TIMEOUT = const(60000)
 TIME_FILE = "/time"
 
 class LaserMCU:
-
     def __init__(self):
         self._name = "Westhill Laser Measument System"
         self._wlan =  network.WLAN(network.STA_IF)
