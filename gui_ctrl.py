@@ -102,12 +102,14 @@ class LaserGui:
 
         # Laser off on start
         self._laser.off()
-        
+
+        """
         # Task to update output
         self._task_update_laser_output = lv.task_create_basic()
         lv.task_set_cb(self._task_update_laser_output, self._update_laser_output_cb)
         lv.task_set_period(self._task_update_laser_output, 1000)
         lv.task_set_prio(self._task_update_laser_output, lv.TASK_PRIO.OFF)
+        """
         
         # Task to get laser output
         self._task_read_laser = lv.task_create_basic()
@@ -126,10 +128,14 @@ class LaserGui:
  
         # Add header and body
         self._header = GuiHeader(self._scr, 0, 0)
-        self._sidebar = GuiSidebar(self._scr, 96, 0, self._header.get_height())
-        self._sidebar.add_btn("Calibrate", self._calibrate_laser_btn_cb)        
-        self._sidebar.add_btn("Laser Off", self._stop_laser_btn_cb)
-        self._body = GuiLaserMain(self._scr, self._sidebar.get_width(), self._header.get_height())
+        self._body = GuiLaserMain(self._scr, 0, self._header.get_height())
+
+        self._tv = lv.tabview(self._body)
+        self._tv.set_anim_time(0)
+        self._tv.set_btns_pos(lv.tabview.BTNS_POS.LEFT)
+        self._t1 = self._tv.add_tab("Tab 1")
+        self._t2 = self._tv.add_tab("Tab 2")
+        self._t3 = self._tv.add_tab("Tab 3")
 
         lv.scr_load(self._scr)        
         return
@@ -296,7 +302,7 @@ class GuiLaserMain(lv.cont):
         self.set_width(scr.get_width() - x_pos)
         self.set_height(scr.get_height() - y_pos)
         self.set_pos(x_pos, y_pos)
-        self.set_layout(lv.LAYOUT.PRETTY)
+        self.set_layout(lv.LAYOUT.OFF)
         return
 
     def set_text(self, text):
