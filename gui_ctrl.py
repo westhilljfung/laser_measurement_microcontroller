@@ -67,6 +67,7 @@ class LaserGui:
             self._laser_mcu.load_time()
 
         self._laser_mcu.set_creation_time()
+        
 
         # Register display buffer, driver and input device driver
         self._register_disp_drv()
@@ -74,7 +75,7 @@ class LaserGui:
 
         # Create screen
         self._load_screen()
-
+        
         # Task to update th
         # TODO: use one line creation
         self._task_update_th = lv.task_create_basic()
@@ -127,11 +128,12 @@ class LaserGui:
 
  
         # Add header and body
-        self._header = GuiHeader(self._scr, 0, 0)
+        self._header = GuiHeader(self._scr, 0, 0, self._laser_mcu.get_creation_time_str())
         self._body = GuiLaserMain(self._scr, 0, self._header.get_height())
 
         self._tv = lv.tabview(self._body)
         self._tv.set_anim_time(0)
+        self._tv.set_size(480,320 - self._header.get_height())
         self._tv.set_btns_pos(lv.tabview.BTNS_POS.LEFT)
         self._t1 = self._tv.add_tab("Tab 1")
         self._t2 = self._tv.add_tab("Tab 2")
@@ -223,18 +225,24 @@ class TextBtn(lv.btn):
         return
     
 class GuiHeader(lv.cont):
-    def __init__(self, scr, x_pos, y_pos):
+    def __init__(self, scr, x_pos, y_pos, text):
         super().__init__(scr)
+        
         self._left_text = lv.label(self)
-        self._left_text.set_text(" ")
+        self._left_text.set_text("TIME")
         self._left_text.align(self, lv.ALIGN.IN_RIGHT_MID, -10, 0)
         
         self._right_text = lv.label(self)
-        self._right_text.set_text(" ")
+        self._right_text.set_text("TH: -- H: --")
         self._right_text.align(self, lv.ALIGN.IN_LEFT_MID, 10, 0)
+
+        self._center_text = lv.label(self)
+        self._center_text.set_text(text)
+        self._center_text.align(self, lv.ALIGN.IN_RIGHT_MID, 100, 0)
 
         self.set_fit2(lv.FIT.FLOOD, lv.FIT.TIGHT)
         self.set_pos(x_pos, y_pos)
+        self._center_text.align(self, lv.ALIGN.IN_RIGHT_MID, -200, 0)
         return
 
     def set_left_text(self, text):
@@ -246,50 +254,6 @@ class GuiHeader(lv.cont):
         self._right_text.set_text(text)
         self._right_text.align(self, lv.ALIGN.IN_LEFT_MID, 10, 0)
         return
-
-class GuiSidebar(lv.cont):
-    def __init__(self, scr, width, x_pos, y_pos):
-        super().__init__(scr)
-        
-        self.set_fit2(lv.FIT.NONE, lv.FIT.NONE)
-        self.set_width(width)
-        self.set_height(scr.get_height() - y_pos)
-        self.set_pos(x_pos, y_pos)
-
-        self.set_layout(lv.LAYOUT.COL_M)
-        self._btns = []
-        return
-
-    def add_btn(self, text, cb):
-        btn = TextBtn(self, text)
-        btn.set_event_cb(cb)
-        self._btns.append(btn)
-        return
-
-class CalibarteScreen(lv.cont):
-    def __init__(self, parent):
-        super().__init__(parent)
-        self.align(parent, lv.ALIGN.IN_TOP_LEFT, 0, 0)
-        self.set_fit(lv.FIT.FLOOD)
-
-        self._text = lv.label(self)
-        self._text.set_text(" ")
-
-        self._kb = lv.kb(self)
-        self._kb.set_mode(lv.kb.MODE.NUM)
-        
-        self.set_layout(lv.LAYOUT.GRID)
-        return
-
-    def hide(self):
-        self.set_hidden(True)
-        return
-
-    def show(self):
-        self.set_hidden(False)
-        return
-
-    
     
 class GuiLaserMain(lv.cont):
     def __init__(self, scr, x_pos, y_pos):
