@@ -16,8 +16,9 @@ MODULES_MPY = $(patsubst %,$(BUILD_DIR)/%,$(_MODULES_MPY))
 CLEAN = $(CLEAN_MAIN)
 CLEAN += $(patsubst %,CLEAN/%,$(_MODULES_MPY))
 
-PORT = /dev/ttyUSB0
+PORT = /dev/ttyUSB1
 BAUDRATE = 115200
+AMPY_BAUD = 115200
 
 .PHONY: deploy git dir $(CLEAN) con
 
@@ -29,7 +30,7 @@ $(BUILD_DIR):
 
 $(BUILD_DIR)/%.mpy: %.py
 	$(MPY_CROSS) $(MPY_CROSS_FLAG) -o $@ $*.py
-	ampy -p $(PORT) put $@ && sleep 1 || sleep 1
+	ampy -p $(PORT) -b $(AMPY_BAUD) put $@ && sleep 1 || sleep 1
 
 $(MAIN): $(BUILD_DIR)/%.py: %.py
 	cp $< $@

@@ -131,14 +131,6 @@ class LaserGui:
         self._header = GuiHeader(self._scr, 0, 0, self._laser_mcu.get_creation_time_str())
         self._body = GuiLaserMain(self._scr, 0, self._header.get_height())
 
-        self._tv = lv.tabview(self._body)
-        self._tv.set_anim_time(0)
-        self._tv.set_size(480,320 - self._header.get_height())
-        self._tv.set_btns_pos(lv.tabview.BTNS_POS.LEFT)
-        self._t1 = self._tv.add_tab("Tab 1")
-        self._t2 = self._tv.add_tab("Tab 2")
-        self._t3 = self._tv.add_tab("Tab 3")
-
         lv.scr_load(self._scr)        
         return
 
@@ -257,18 +249,27 @@ class GuiHeader(lv.cont):
         self._right_text.align(self, lv.ALIGN.IN_LEFT_MID, 10, 0)
         return
     
-class GuiLaserMain(lv.cont):
-    def __init__(self, scr, x_pos, y_pos):
-        super().__init__(scr)
-        
-        self._text = lv.label(self)
-        self._text.set_text("Laser Off")
-        
-        self.set_fit2(lv.FIT.NONE, lv.FIT.NONE)
-        self.set_width(scr.get_width() - x_pos)
-        self.set_height(scr.get_height() - y_pos)
+class GuiLaserMain(lv.tabview):
+    def __init__(self, parent, x_pos, y_pos):
+        super().__init__(parent)
+        btn_style = self.get_style(lv.tabview.STYLE.BTN_REL)
+        btn_style.body.padding.left = (parent.get_width() - x_pos) // 5 // 2
+        btn_style.body.padding.right = (parent.get_width() - x_pos) // 5 // 2
+        self.set_style(lv.tabview.STYLE.BTN_REL, btn_style)
+
+        self.set_size(parent.get_width() - x_pos, parent.get_height() - y_pos)
         self.set_pos(x_pos, y_pos)
-        self.set_layout(lv.LAYOUT.OFF)
+        
+        self.set_anim_time(0)
+        self.set_sliding(False)
+        
+        self.set_btns_pos(lv.tabview.BTNS_POS.LEFT)
+        self._t_start = self.add_tab("New Session")
+        self._t_cal = self.add_tab("Calibration")
+        self._t_off = self.add_tab("Laser Off")
+        
+        self._text = lv.label(self._t_off)
+        self._text.set_text("Laser Off")
         return
 
     def set_text(self, text):
