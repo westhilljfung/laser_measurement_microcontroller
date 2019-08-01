@@ -127,38 +127,10 @@ class LaserGui:
  
         # Add header and body
         self._header = GuiHeader(self._scr, 0, 0, self._laser_mcu.get_creation_time_str())
-        self._body = GuiLaserMain(self._scr, 0, self._header.get_height(), self._tab_change_handler, self._laser_mcu)
+        self._body = GuiLaserMain(self._scr, 0, self._header.get_height(), self)
 
         lv.scr_load(self._scr)        
         return
-
-    def _tab_change_handler(self, obj, event):
-        if event == lv.EVENT.VALUE_CHANGED:
-            tab_act = obj.get_tab_act()
-            if tab_act == 1:
-                self._laser.on()
-                lv.task_set_prio(self._task_read_laser, lv.TASK_PRIO.MID)            
-                lv.task_set_prio(self._task_update_laser_output, lv.TASK_PRIO.MID)
-            elif tab_act == 2:
-                lv.task_set_prio(self._task_read_laser, lv.TASK_PRIO.OFF)            
-                lv.task_set_prio(self._task_update_laser_output, lv.TASK_PRIO.OFF)
-                self._laser.off()
-        return
-
-    def _calibrate_laser_btn_cb(self, obj, event):
-        if event == lv.EVENT.CLICKED:
-            lv.task_set_prio(self._task_read_laser, lv.TASK_PRIO.MID)            
-            lv.task_set_prio(self._task_update_laser_output, lv.TASK_PRIO.MID)
-            self._laser.on()
-            return
-    
-    def _stop_laser_btn_cb(self, obj, event):
-        if event == lv.EVENT.CLICKED:
-            self._body.set_text("Laser Off")
-            lv.task_set_prio(self._task_read_laser, lv.TASK_PRIO.OFF)            
-            lv.task_set_prio(self._task_update_laser_output, lv.TASK_PRIO.OFF)
-            self._laser.off()
-            return
         
     def _update_time_cb(self, data):
         if self._laser_mcu.is_connected():
@@ -273,9 +245,9 @@ class GuiHeader(lv.cont):
         return
     
 class GuiLaserMain(lv.tabview):
-    def __init__(self, parent, x_pos, y_pos, tab_change_handler, laser_mcu):
+    def __init__(self, parent, x_pos, y_pos, gui_ctrl):
         super().__init__(parent)
-        self._laser_mcu = laser_mcu
+        self._gui_ctrl = gui_ctrl
         
         btn_style = self.get_style(lv.tabview.STYLE.BTN_REL)
         btn_style.body.padding.left = (parent.get_width() - x_pos) // 5 // 2
@@ -289,7 +261,7 @@ class GuiLaserMain(lv.tabview):
         self.set_sliding(False)        
         self.set_btns_pos(lv.tabview.BTNS_POS.LEFT)
 
-        self.set_event_cb(tab_change_handler)
+        self.set_event_cb(self._tab_change_handler)
 
         self._t_start = self.add_tab("New Session")
         self._t_cal = self.add_tab("Calibration")
@@ -317,6 +289,19 @@ class GuiLaserMain(lv.tabview):
 
         # Other Screen
         self._cal = lv.calendar(self._t_other)
+        return
+    
+    def _tab_change_handler(self, obj, event):
+        if event == lv.EVENT.VALUE_CHANGED:
+            tab_act = obj.get_tab_act()
+            if tab_act == 1:
+                self._gui_ctrl._laser.on()
+                lv.task_set_prio(self._gui_ctrl._task_read_laser, lv.TASK_PRIO.MID)            
+                lv.task_set_prio(self._gui_ctrl._task_update_laser_output, lv.TASK_PRIO.MID)
+            elif tab_act == 2:
+                lv.task_set_prio(self._gui_ctrl._task_read_laser, lv.TASK_PRIO.OFF)            
+                lv.task_set_prio(self._gui_ctrl._task_update_laser_output, lv.TASK_PRIO.OFF)
+                self._gui_ctrl._laser.off()
         return
     
     def ta_test(self, obj, event):
