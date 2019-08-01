@@ -104,13 +104,11 @@ class LaserGui:
         # Laser off on start
         self._laser.off()
 
-        """
         # Task to update output
         self._task_update_laser_output = lv.task_create_basic()
         lv.task_set_cb(self._task_update_laser_output, self._update_laser_output_cb)
         lv.task_set_period(self._task_update_laser_output, 1000)
         lv.task_set_prio(self._task_update_laser_output, lv.TASK_PRIO.OFF)
-        """
         
         # Task to get laser output
         self._task_read_laser = lv.task_create_basic()
@@ -129,9 +127,22 @@ class LaserGui:
  
         # Add header and body
         self._header = GuiHeader(self._scr, 0, 0, self._laser_mcu.get_creation_time_str())
-        self._body = GuiLaserMain(self._scr, 0, self._header.get_height())
+        self._body = GuiLaserMain(self._scr, 0, self._header.get_height(), self._tab_change_handler, self._laser_mcu)
 
         lv.scr_load(self._scr)        
+        return
+
+    def _tab_change_handler(self, obj, event):
+        if event == lv.EVENT.VALUE_CHANGED:
+            tab_act = obj.get_tab_act()
+            if tab_act == 1:
+                self._laser.on()
+                lv.task_set_prio(self._task_read_laser, lv.TASK_PRIO.MID)            
+                lv.task_set_prio(self._task_update_laser_output, lv.TASK_PRIO.MID)
+            elif tab_act == 2:
+                lv.task_set_prio(self._task_read_laser, lv.TASK_PRIO.OFF)            
+                lv.task_set_prio(self._task_update_laser_output, lv.TASK_PRIO.OFF)
+                self._laser.off()
         return
 
     def _calibrate_laser_btn_cb(self, obj, event):
@@ -161,12 +172,12 @@ class LaserGui:
         return
     
     def _update_laser_output_cb(self, data):
-        self._body.set_text(self._laser.get_values_str())
+        self._body.set_cal_label(self._laser.get_values_str())
         return
 
     def _read_laser_cb(self, data):
         self._laser.get_phrase_pvs()
-        self.start=utime.ticks_us()
+        self.start = utime.ticks_us()
         return
     
     def _gc_collect_cb(self, data):
@@ -203,7 +214,6 @@ class LaserGui:
         self._indev = lv.indev_drv_register(self._indev_drv)
         return
 
-
 """
 GUI elements
 """
@@ -214,6 +224,19 @@ class TextBtn(lv.btn):
         self.label = lv.label(self)
         self.label.set_text(text)
         self.set_fit2(lv.FIT.FLOOD, lv.FIT.TIGHT)
+        return
+
+class NumTextArea(lv.ta):
+    def __init__(self, parent, cb):
+        super().__init__(parent)
+
+        self.set_one_line(True)
+        self.set_max_length(7)
+        self.set_accepted_chars("0123456789.+-")
+        self.set_width(85)
+        self.set_placeholder_text("+00.000")
+        self.set_text("")
+        self.set_event_cb(cb)
         return
     
 class GuiHeader(lv.cont):
@@ -250,8 +273,10 @@ class GuiHeader(lv.cont):
         return
     
 class GuiLaserMain(lv.tabview):
-    def __init__(self, parent, x_pos, y_pos):
+    def __init__(self, parent, x_pos, y_pos, tab_change_handler, laser_mcu):
         super().__init__(parent)
+        self._laser_mcu = laser_mcu
+        
         btn_style = self.get_style(lv.tabview.STYLE.BTN_REL)
         btn_style.body.padding.left = (parent.get_width() - x_pos) // 5 // 2
         btn_style.body.padding.right = (parent.get_width() - x_pos) // 5 // 2
@@ -261,17 +286,51 @@ class GuiLaserMain(lv.tabview):
         self.set_pos(x_pos, y_pos)
         
         self.set_anim_time(0)
-        self.set_sliding(False)
-        
+        self.set_sliding(False)        
         self.set_btns_pos(lv.tabview.BTNS_POS.LEFT)
+
+        self.set_event_cb(tab_change_handler)
+
         self._t_start = self.add_tab("New Session")
         self._t_cal = self.add_tab("Calibration")
         self._t_off = self.add_tab("Laser Off")
+        self._t_other = self.add_tab("Other")
+
+        # Calibration Screen
+        self._cal_label = lv.label(self._t_cal)        
+        self._cal_label.set_text("Output: \n")
+        self._cal_num_input = NumTextArea(self._t_cal, self.ta_test)
+        self._cal_num_input.set_auto_realign(True)
+        self._cal_num_input.align(self._cal_label, lv.ALIGN.OUT_BOTTOM_LEFT, 0, 0)
         
+        self._kb = lv.kb(self._t_cal)
+        self._kb.set_map(["1", "2", "3","\n","4","5", "6",\
+                          "\n","7", "8", "9","\n","0",".","Bksp",""])
+
+        self._kb.set_height(180)
+        self._kb.set_y(85)
+        self._kb.set_ta(self._cal_num_input)
+
+        # Laser Off Screen
         self._text = lv.label(self._t_off)
         self._text.set_text("Laser Off")
+
+        # Other Screen
+        self._cal = lv.calendar(self._t_other)
+        return
+    
+    def ta_test(self, obj, event):
+        if event == lv.EVENT.PRESSED:
+            obj.set_text("+")
+            self._kb.set_ta(obj)
         return
 
+    def set_cal_label(self, text):
+        self._cal_label.set_text("Output: " + text)
+        return
+    
     def set_text(self, text):
         self._text.set_text(text)
         return
+
+
