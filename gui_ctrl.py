@@ -195,7 +195,7 @@ class TextBtn(lv.btn):
         
         self.label = lv.label(self)
         self.label.set_text(text)
-        self.set_fit2(lv.FIT.FLOOD, lv.FIT.TIGHT)
+        self.set_fit2(lv.FIT.TIGHT, lv.FIT.TIGHT)
         return
 
 class NumTextArea(lv.ta):
@@ -250,13 +250,15 @@ class GuiLaserMain(lv.tabview):
         self._gui_ctrl = gui_ctrl
         
         btn_style = self.get_style(lv.tabview.STYLE.BTN_REL)
+        btn_style_or = lv.style_t()
+        lv.style_copy(btn_style_or, btn_style)
         btn_style.body.padding.left = (parent.get_width() - x_pos) // 5 // 2
         btn_style.body.padding.right = (parent.get_width() - x_pos) // 5 // 2
         self.set_style(lv.tabview.STYLE.BTN_REL, btn_style)
 
         self.set_size(parent.get_width() - x_pos, parent.get_height() - y_pos)
         self.set_pos(x_pos, y_pos)
-        
+
         self.set_anim_time(0)
         self.set_sliding(False)        
         self.set_btns_pos(lv.tabview.BTNS_POS.LEFT)
@@ -274,6 +276,16 @@ class GuiLaserMain(lv.tabview):
         self._cal_num_input = NumTextArea(self._t_cal, self.ta_test)
         self._cal_num_input.set_auto_realign(True)
         self._cal_num_input.align(self._cal_label, lv.ALIGN.OUT_BOTTOM_LEFT, 0, 0)
+
+        self._set_cal_1 = TextBtn(self._t_cal, "Set Amp 1")
+        self._set_cal_1.set_style(lv.btn.STYLE.REL, btn_style_or)
+        self._set_cal_1.align(self._cal_num_input, lv.ALIGN.OUT_RIGHT_MID, 0, 0)
+        self._set_cal_1.set_event_cb(self._set_amp_1_cb)
+
+        self._set_cal_2 = TextBtn(self._t_cal, "Set Amp 2")
+        self._set_cal_2.set_style(lv.btn.STYLE.REL, btn_style_or)
+        self._set_cal_2.align(self._set_cal_1, lv.ALIGN.OUT_RIGHT_MID, 0, 0)
+        self._set_cal_2.set_event_cb(self._set_amp_2_cb)
         
         self._kb = lv.kb(self._t_cal)
         self._kb.set_map(["1", "2", "3","\n","4","5", "6",\
@@ -290,15 +302,35 @@ class GuiLaserMain(lv.tabview):
         # Other Screen
         self._cal = lv.calendar(self._t_other)
         return
+
+    def _set_amp_1_cb(self, obj, event):
+        if event == lv.EVENT.CLICKED:
+            try:
+                self._gui_ctrl._laser.set_cal_init(0, float(self._cal_num_input.get_text()))
+            except ValueError:
+                print("Not a float")
+        return
+    
+    def _set_amp_2_cb(self, obj, event):
+        if event == lv.EVENT.CLICKED:
+            try:
+                self._gui_ctrl._laser.set_cal_init(1, float(self._cal_num_input.get_text()))
+            except ValueError:
+                print("Not a float")
+        return
     
     def _tab_change_handler(self, obj, event):
         if event == lv.EVENT.VALUE_CHANGED:
             tab_act = obj.get_tab_act()
-            if tab_act == 1:
+            if tab_act == 0:
                 self._gui_ctrl._laser.on()
                 lv.task_set_prio(self._gui_ctrl._task_read_laser, lv.TASK_PRIO.MID)            
                 lv.task_set_prio(self._gui_ctrl._task_update_laser_output, lv.TASK_PRIO.MID)
-            elif tab_act == 2:
+            elif tab_act == 1:
+                self._gui_ctrl._laser.on()
+                lv.task_set_prio(self._gui_ctrl._task_read_laser, lv.TASK_PRIO.MID)            
+                lv.task_set_prio(self._gui_ctrl._task_update_laser_output, lv.TASK_PRIO.MID)
+            else:
                 lv.task_set_prio(self._gui_ctrl._task_read_laser, lv.TASK_PRIO.OFF)            
                 lv.task_set_prio(self._gui_ctrl._task_update_laser_output, lv.TASK_PRIO.OFF)
                 self._gui_ctrl._laser.off()
@@ -307,7 +339,6 @@ class GuiLaserMain(lv.tabview):
     def ta_test(self, obj, event):
         if event == lv.EVENT.PRESSED:
             obj.set_text("+")
-            self._kb.set_ta(obj)
         return
 
     def set_cal_label(self, text):

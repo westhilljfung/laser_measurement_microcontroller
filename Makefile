@@ -6,7 +6,7 @@ MPY_CROSS_FLAG=
 
 reverse = $(if $(1),$(call reverse,$(wordlist 2,$(words $(1)),$(1)))) $(firstword $(1))
 
-_MAIN = main.py boot.py
+_MAIN = test.py boot.py
 MAIN = $(patsubst %,$(BUILD_DIR)/%,$(call reverse,$(_MAIN)))
 CLEAN_MAIN = $(patsubst %,CLEAN/%,$(_MAIN))
 
@@ -35,6 +35,9 @@ $(BUILD_DIR)/%.mpy: %.py
 $(MAIN): $(BUILD_DIR)/%.py: %.py
 	cp $< $@
 	ampy -p $(PORT) put $@ && sleep 1 || sleep 1
+
+test.py: main.py
+	cp $< $@
 
 git:
 	git pull
