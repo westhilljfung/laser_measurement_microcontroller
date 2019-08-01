@@ -243,6 +243,8 @@ class GuiHeader(lv.cont):
         self.set_fit2(lv.FIT.FLOOD, lv.FIT.TIGHT)
         self.set_pos(x_pos, y_pos)
         self._center_text.align(self, lv.ALIGN.IN_RIGHT_MID, -200, 0)
+        self._right_text.align(self, lv.ALIGN.IN_LEFT_MID, 10, 0)
+        self._left_text.align(self, lv.ALIGN.IN_RIGHT_MID, -10, 0)
         return
 
     def set_left_text(self, text):
