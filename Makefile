@@ -16,7 +16,7 @@ MODULES_MPY = $(patsubst %,$(BUILD_DIR)/%,$(_MODULES_MPY))
 CLEAN = $(CLEAN_MAIN)
 CLEAN += $(patsubst %,CLEAN/%,$(_MODULES_MPY))
 
-PORT = /dev/ttyUSB1
+PORT = /dev/ttyUSB0
 BAUDRATE = 115200
 AMPY_BAUD = 115200
 
@@ -30,11 +30,13 @@ $(BUILD_DIR):
 
 $(BUILD_DIR)/%.mpy: %.py
 	$(MPY_CROSS) $(MPY_CROSS_FLAG) -o $@ $*.py
-	ampy -p $(PORT) -b $(AMPY_BAUD) put $@ && sleep 1 || sleep 1
+	ampy -p $(PORT) -b $(AMPY_BAUD) put $@
+	sleep 0.5
 
 $(MAIN): $(BUILD_DIR)/%.py: %.py
 	cp $< $@
-	ampy -p $(PORT) put $@ && sleep 1 || sleep 1
+	ampy -p $(PORT) put $@
+	sleep 0.5
 
 test.py: main.py
 	cp $< $@
@@ -46,8 +48,9 @@ clean: $(CLEAN)
 	rm -rf $(BUILD_DIR)
 
 $(CLEAN): CLEAN/%:
-	ampy -p $(PORT) rm $* && sleep 1 || sleep 1
-	rm -f $(BUILD_DIR)/$*
+	ampy -p $(PORT) rm $*
+	sleep 0.5
+	ampy -f $(BUILD_DIR)/$*
 
 list:
 	ampy -p $(PORT) ls

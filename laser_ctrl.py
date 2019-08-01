@@ -16,8 +16,12 @@ class LaserCtrl:
         self._pvs = array.array('f', [0.0] * MAX_AMP_NUM)
         self._cals = array.array('f', [0.0] * (MAX_AMP_NUM // 2))
         self._laser_on = True
-        self.get_phrase_pvs()
-
+        try:
+            self.get_phrase_pvs()
+        except ValueError:
+            pass
+        return
+    
     def reset_all(self):
         self.write_all("005","0")
         self.write_all("005","1")
@@ -54,7 +58,7 @@ class LaserCtrl:
                     self._cals[amp//2] += self._pvs[amp]
         except ValueError:
             print(self._read_buf.decode("ascii"))
-
+            raise ValueError
         return self._cals
             
     def write_all(self, cmd, data):

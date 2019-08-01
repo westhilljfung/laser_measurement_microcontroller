@@ -144,7 +144,12 @@ class LaserGui:
         return
     
     def _update_laser_output_cb(self, data):
-        self._body.set_cal_label(self._laser.get_values_str())
+        try:
+            pv_str = self._laser.get_values_str()       
+        except:
+            return
+        
+        self._body.set_cal_label(pv_str)
         return
 
     def _read_laser_cb(self, data):
@@ -267,8 +272,8 @@ class GuiLaserMain(lv.tabview):
 
         self._t_start = self.add_tab("New Session")
         self._t_cal = self.add_tab("Calibration")
-        self._t_off = self.add_tab("Laser Off")
         self._t_other = self.add_tab("Other")
+        self._t_done = self.add_tab("Done")
 
         # Calibration Screen
         self._cal_label = lv.label(self._t_cal)        
@@ -296,7 +301,7 @@ class GuiLaserMain(lv.tabview):
         self._kb.set_ta(self._cal_num_input)
 
         # Laser Off Screen
-        self._text = lv.label(self._t_off)
+        self._text = lv.label(self._t_done)
         self._text.set_text("Laser Off")
 
         # Other Screen
@@ -307,6 +312,7 @@ class GuiLaserMain(lv.tabview):
         if event == lv.EVENT.CLICKED:
             try:
                 self._gui_ctrl._laser.set_cal_init(0, float(self._cal_num_input.get_text()))
+                self._cal_label.set_text("Setting Amp 1")
             except ValueError:
                 print("Not a float")
         return
@@ -315,6 +321,7 @@ class GuiLaserMain(lv.tabview):
         if event == lv.EVENT.CLICKED:
             try:
                 self._gui_ctrl._laser.set_cal_init(1, float(self._cal_num_input.get_text()))
+                self._cal_label.set_text("Setting Amp 2")
             except ValueError:
                 print("Not a float")
         return
@@ -343,10 +350,6 @@ class GuiLaserMain(lv.tabview):
 
     def set_cal_label(self, text):
         self._cal_label.set_text("Output: " + text)
-        return
-    
-    def set_text(self, text):
-        self._text.set_text(text)
         return
 
 
