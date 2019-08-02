@@ -73,45 +73,35 @@ class LaserGui:
         self._load_screen()
         
         # Task to update th
-        # TODO: use one line creation
-        self._task_update_th = lv.task_create_basic()
+        self._task_update_th = lv.task_create(None, 1000, lv.TASK_PRIO.MID, None)
         lv.task_set_cb(self._task_update_th, self._update_th_cb)
-        lv.task_set_period(self._task_update_th, 1000)
-        lv.task_set_prio(self._task_update_th, lv.TASK_PRIO.MID)
-
+        
+        # Task to save th
+        self._task_save_th = lv.task_create(None, 60000, lv.TASK_PRIO.MID, None)
+        lv.task_set_cb(self._task_save_th, self._save_th_cb)
+        
         # Task to update time
-        self._task_update_time = lv.task_create_basic()
+        self._task_update_time = lv.task_create(None, 1000, lv.TASK_PRIO.MID, None)
         lv.task_set_cb(self._task_update_time, self._update_time_cb)
-        lv.task_set_period(self._task_update_time, 1000)
-        lv.task_set_prio(self._task_update_time, lv.TASK_PRIO.MID)
         
         # Task to save time to flash
-        self._task_save_time = lv.task_create_basic()
+        self._task_save_time = lv.task_create(None, 60000, lv.TASK_PRIO.MID, None)
         lv.task_set_cb(self._task_save_time, self._save_time_cb)
-        lv.task_set_period(self._task_save_time, 60000)
-        lv.task_set_prio(self._task_save_time, lv.TASK_PRIO.MID)
-
+        
         # Task to gc collect
-        self._task_gc_collect = lv.task_create_basic()
+        self._task_gc_collect = lv.task_create(None, 10000, lv.TASK_PRIO.MID, None)
         lv.task_set_cb(self._task_gc_collect, self._gc_collect_cb)
-        lv.task_set_period(self._task_gc_collect, 5000)
-        lv.task_set_prio(self._task_gc_collect, lv.TASK_PRIO.MID)
 
         # Laser off on start
         self._laser.off()
 
         # Task to update output
-        self._task_update_laser_output = lv.task_create_basic()
+        self._task_update_laser_output = lv.task_create(None, 1000, lv.TASK_PRIO.OFF, None)
         lv.task_set_cb(self._task_update_laser_output, self._update_laser_output_cb)
-        lv.task_set_period(self._task_update_laser_output, 1000)
-        lv.task_set_prio(self._task_update_laser_output, lv.TASK_PRIO.OFF)
-        
-        # Task to get laser output
-        self._task_read_laser = lv.task_create_basic()
-        lv.task_set_cb(self._task_read_laser, self._read_laser_cb)
-        lv.task_set_period(self._task_read_laser, 1000)
-        lv.task_set_prio(self._task_read_laser, lv.TASK_PRIO.OFF)
 
+        # Task to get laser output
+        self._task_read_laser = lv.task_create(None, 1000, lv.TASK_PRIO.OFF, None)
+        lv.task_set_cb(self._task_read_laser, self._read_laser_cb)
         return
 
     def _load_screen(self):
@@ -134,6 +124,10 @@ class LaserGui:
             self._header.set_left_text(self._laser_mcu.get_local_time_str())
         return
 
+    def _save_th_cb(self, data):
+        self._laser_mcu.save_th_data()
+        return
+    
     def _update_th_cb(self, data):
         self._header.set_right_text(self._laser_mcu.get_th_str())
         return

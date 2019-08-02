@@ -20,6 +20,7 @@ wp2_pass = 'Radoslav13'
 TIME_ZONE_OFFSET = const(14400)
 WIFI_CON_TIMEOUT = const(30000)
 TIME_FILE = "/time"
+SD_FILE = "/sd"
 
 class LaserMCU:
     def __init__(self):
@@ -28,7 +29,7 @@ class LaserMCU:
         self.connect_wifi()
         self._sd = machine.SDCard(slot=3, sck=machine.Pin(14), miso=machine.Pin(12)
                                  ,mosi=machine.Pin(13),cs=machine.Pin(15))
-        uos.mount(self._sd, "/sd")
+        uos.mount(self._sd, SD_FILE)
         self._th_sensor = si7021.SI7021(4, 21)
         
     def connect_wifi(self):
@@ -36,7 +37,7 @@ class LaserMCU:
             self._wlan.active(True)
             self._wlan.connect(ssid, wp2_pass)
             start = utime.ticks_ms()
-            print("Connecting Wifi [", end = "")
+            print("Connecting Wifi [", end = '')
             while True:
                 utime.sleep_ms(WIFI_CON_TIMEOUT // 40)
                 print("-", end="")
@@ -47,6 +48,25 @@ class LaserMCU:
                 elif self.is_connected():
                     print("]")
                     break
+        return
+
+    def save_th_data(self):
+        # Time in utc
+        dt = utime.localtime()
+        filename = ("%04d" % dt[0]) + "_" + ("%02d" % dt[1]) + "_" \
+            + ("%02d" % dt[2]) + ".txt"
+        try:
+            f = open(SD_FILE + "/" + filename, "a+")
+        except OSError as err:
+            raise
+        if f.tell() == 0:
+            print("YYYY-MM-DD-HH-MM(RTC)\tTemperature(C)\tHumidity(RH%)", file = f)
+            
+        print("%04d-%02d-%02d-%02d-%02d\t%0.3f\t%0.3f" \
+              % (dt[0], dt[1], dt[2], dt[3], dt[4],\
+                self._th_sensor.read_temperature(),\
+                 self._th_sensor.read_relative_humidity()), file = f)
+        f.close()
         return
 
     def get_th_str(self):
