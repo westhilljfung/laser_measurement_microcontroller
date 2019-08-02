@@ -11,7 +11,6 @@ import utime
 import lvesp32
 import TFTFeatherWing as tftwing
 import laser_mcu
-import th_ctrl
 import gc
 import laser_ctrl
 
@@ -50,10 +49,6 @@ class LaserGui:
         # POTENTIAL: move into LaserMcu
         self._tft = tftwing.TFTFeatherWing(tft_mhz=24)
         self._tft.init()
-
-        # TH sensor
-        # TODO move the th controller into LaserMcu
-        self._th_ctrl = th_ctrl.THCtrl()
 
         # Laser Measuring Control
         self._laser = laser_ctrl.LaserCtrl()
@@ -124,7 +119,6 @@ class LaserGui:
         lv.theme_set_current(th)
         self._scr = lv.obj()
 
- 
         # Add header and body
         self._header = GuiHeader(self._scr, 0, 0, self._laser_mcu.get_creation_time_str())
         self._body = GuiLaserMain(self._scr, 0, self._header.get_height(), self)
@@ -140,7 +134,7 @@ class LaserGui:
         return
 
     def _update_th_cb(self, data):
-        self._header.set_right_text(self._th_ctrl.get_th_str())
+        self._header.set_right_text(self._laser_mcu.get_th_str())
         return
     
     def _update_laser_output_cb(self, data):

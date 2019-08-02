@@ -12,6 +12,7 @@ from micropython import const
 import machine
 import uos
 import ujson
+import si7021
 
 ssid = 'Westhill_2.4G'
 wp2_pass = 'Radoslav13'
@@ -28,7 +29,8 @@ class LaserMCU:
         self._sd = machine.SDCard(slot=3, sck=machine.Pin(14), miso=machine.Pin(12)
                                  ,mosi=machine.Pin(13),cs=machine.Pin(15))
         uos.mount(self._sd, "/sd")
-
+        self._th_sensor = si7021.SI7021(4, 21)
+        
     def connect_wifi(self):
         if not self.is_connected():
             self._wlan.active(True)
@@ -47,6 +49,11 @@ class LaserMCU:
                     break
         return
 
+    def get_th_str(self):
+        th_str = "T: " + str("%0.2f" % self._th_sensor.read_temperature()) + " H: " \
+            + str("%0.2f" % self._th_sensor.read_relative_humidity())
+        return th_str
+    
     def set_time_ntp(self):
         try:
             ntptime.settime()
