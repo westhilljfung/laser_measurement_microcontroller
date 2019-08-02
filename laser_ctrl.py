@@ -6,7 +6,7 @@ import array
 DEFAULT_PANEL_WIDTH_MM = const(1245)
 MAX_AMP_NUM = const(4)
 READ_BUF_SIZE = const(36)
-MAX_PANEL_DATA = const(1200*2)
+MAX_PANEL_DATA = const(1200)
 
 class LaserCtrl:
     def __init__(self):
@@ -16,6 +16,7 @@ class LaserCtrl:
         self._pvs = array.array('f', [0.0] * MAX_AMP_NUM)
         self._cals = array.array('f', [0.0] * (MAX_AMP_NUM // 2))
         self._laser_on = True
+        self._session = None
         try:
             self.get_phrase_pvs()
         except ValueError:
@@ -87,9 +88,34 @@ class LaserCtrl:
         self.write_all("100", "0")        
         self.write_all("155", "0")
 
+    def start_session(self, thickness):
+        self._session = MeasurementSession(thickness)
+
+    def check_for_panel(self):
+        cals = self.get_phrase_pvs()
+        if cals[0] > 0 or cals[1] > 0:
+            raise RuntimeError("Missed the chance")
+        for i in range(0, 10):
+            cals = self.get_phrase_pvs()
+            if cals[0] < 0 or cals[1] < 0:
+                continue
+            else:
+                # Start a panel here
+        return
+
+class MeasurementSession:
+    def __init__(self, thickness):
+        self._start_date_time = utime.locatime()
+        self._thickness = thickness
+        self._index = 0
+        self._panels = [Panel(self._index)]
+        return
+        
 class Panel:
     def __init__(self, num):
         self._creation = utime.locatime()
-        self._data = array.array('f', [0.0] * MAX_PANEL_DATA)
+        self._pass = False
+        self._data1 = array.array('f', [0.0] * MAX_PANEL_DATA)
+        self._data2 = array.array('f', [0.0] * MAX_PANEL_DATA)
         self._num = num
         return
