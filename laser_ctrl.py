@@ -32,9 +32,7 @@ class LaserCtrl:
         pv_str = ""
         for pv in self._pvs:
             pv_str += ("% 07.3f " % pv)
-
         pv_str += '\n'
-        
         for cal in self._cals:
             pv_str += ("% 07.3f " % cal)
         return pv_str
@@ -78,6 +76,7 @@ class LaserCtrl:
         self._laser.write("SW,%02d,%s,%s\r\n" % (amp, cmd, data))
         while not self._laser.any():
             utime.sleep_us(1)
+            
         self._laser.readline()
 
     def off(self):

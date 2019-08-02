@@ -16,9 +16,10 @@ MODULES_MPY = $(patsubst %,$(BUILD_DIR)/%,$(_MODULES_MPY))
 CLEAN = $(CLEAN_MAIN)
 CLEAN += $(patsubst %,CLEAN/%,$(_MODULES_MPY))
 
-PORT = /dev/ttyUSB0
-BAUDRATE = 115200
-AMPY_BAUD = 115200
+V ?= 0
+PORT ?= /dev/ttyUSB0
+BAUDRATE ?= 115200
+AMPY_BAUD ?= 115200
 
 .PHONY: deploy git dir $(CLEAN) con
 
@@ -48,12 +49,12 @@ clean: $(CLEAN)
 	rm -rf $(BUILD_DIR)
 
 $(CLEAN): CLEAN/%:
-	ampy -p $(PORT) rm $*
-	sleep 0.5
-	ampy -f $(BUILD_DIR)/$*
+	ampy -p $(PORT) rm $* && sleep 0.5 || sleep 0.5
+	rm -f $(BUILD_DIR)/$*
 
 list:
 	ampy -p $(PORT) ls
 
 con:
 	picocom -b$(BAUDRATE) $(PORT)
+	ampy -p /dev/ttyUSB0 reset

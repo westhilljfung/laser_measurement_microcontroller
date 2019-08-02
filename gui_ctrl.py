@@ -212,7 +212,7 @@ class NumTextArea(lv.ta):
         self.set_accepted_chars("0123456789.+-")
         self.set_width(85)
         self.set_placeholder_text("+00.000")
-        self.set_text("")
+        self.set_text("+12.000")
         self.set_event_cb(cb)
         return
     
