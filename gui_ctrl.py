@@ -52,13 +52,14 @@ class LaserGui:
 
         # Laser Measuring Control
         self._laser = laser_ctrl.LaserCtrl()
-        self._laser.on()
+        self._laser.off()
 
         # Load Time
         # TODO: also move into LaserMcu
-        if self._laser_mcu.is_connected():
+        try:
             self._laser_mcu.set_time_ntp()
-        else:
+        except OSError as err:
+            print("OSError: {0}".format(err))
             self._laser_mcu.load_time()
 
         self._laser_mcu.set_creation_time()

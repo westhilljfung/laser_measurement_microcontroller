@@ -18,7 +18,7 @@ ssid = 'Westhill_2.4G'
 wp2_pass = 'Radoslav13'
 
 TIME_ZONE_OFFSET = const(14400)
-WIFI_CON_TIMEOUT = const(60000)
+WIFI_CON_TIMEOUT = const(30000)
 TIME_FILE = "/time"
 
 class LaserMCU:
@@ -55,10 +55,9 @@ class LaserMCU:
         return th_str
     
     def set_time_ntp(self):
-        try:
-            ntptime.settime()
-        except:
-            pass
+        if not self.is_connected():
+            raise OSError("Wifi not connected")
+        ntptime.settime()
         return
 
     def set_creation_time(self):
@@ -74,7 +73,6 @@ class LaserMCU:
     def load_time(self):
         file = open(TIME_FILE, "r")
         old_time = ujson.load(file)
-        print(old_time)
         machine.RTC().datetime(old_time)
         file.close()
         return
