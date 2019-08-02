@@ -38,7 +38,7 @@ class LaserMCU:
             start = utime.ticks_ms()
             print("Connecting Wifi [", end = "")
             while True:
-                utime.sleep_ms(WIFI_CON_TIMEOUT // 20)
+                utime.sleep_ms(WIFI_CON_TIMEOUT // 40)
                 print("-", end="")
                 if utime.ticks_diff(utime.ticks_ms(), start) >= WIFI_CON_TIMEOUT:
                     print("]")
