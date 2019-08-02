@@ -37,7 +37,7 @@ class LaserMCU:
             self._wlan.active(True)
             self._wlan.connect(ssid, wp2_pass)
             start = utime.ticks_ms()
-            print("Connecting Wifi [", end = '')
+            print("Connecting Wifi: [", end = '')
             while True:
                 utime.sleep_ms(WIFI_CON_TIMEOUT // 40)
                 print("-", end="")
@@ -60,9 +60,9 @@ class LaserMCU:
         except OSError as err:
             raise
         if f.tell() == 0:
-            print("YYYY-MM-DD-HH-MM(RTC)\tTemperature(C)\tHumidity(RH%)", file = f)
+            print("YYYY-MM-DD-HH-MM(RTC)\tTemperature(C)\t\tHumidity(RH%)", file = f)
             
-        print("%04d-%02d-%02d-%02d-%02d\t%0.3f\t%0.3f" \
+        print("%04d-%02d-%02d-%02d-%02d\t%0.3f\t\t%0.3f" \
               % (dt[0], dt[1], dt[2], dt[3], dt[4],\
                 self._th_sensor.read_temperature(),\
                  self._th_sensor.read_relative_humidity()), file = f)
