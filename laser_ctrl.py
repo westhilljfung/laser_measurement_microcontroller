@@ -7,6 +7,22 @@ DEFAULT_PANEL_WIDTH_MM = const(1245)
 MAX_AMP_NUM = const(4)
 READ_BUF_SIZE = const(36)
 MAX_PANEL_DATA = const(1200)
+PANEL_WAIT_TIMEOUT = const(30000)
+
+"""
+Timing function
+
+Use @timed_function decorator
+"""
+def timed_function(f, *args, **kwargs):
+    myname = str(f).split(' ')[1]
+    def new_func(*args, **kwargs):
+        t = utime.ticks_us()
+        result = f(*args, **kwargs)
+        delta = utime.ticks_diff(utime.ticks_us(), t)
+        print('Function {} Time = {:6.3f}ms'.format(myname, delta/1000))
+        return result
+    return new_func
 
 class LaserCtrl:
     def __init__(self):
@@ -43,23 +59,23 @@ class LaserCtrl:
         self.write_amp(num*2+1, "001", "0")
         self.write_amp(num*2+1, "001", "1")
 
-    def get_phrase_pvs(self):
+    def get_phrase_pvs(self):      
         self._laser.write("M0\r\n")
         while not self._laser.any():
-            utime.sleep_us(1)
+            pass
         self._laser.readinto(self._read_buf)
-        try:
-            for amp in range(0,MAX_AMP_NUM):
+        for amp in range(0,MAX_AMP_NUM):
+            try:
                 self._pvs[amp] = float(self._read_buf[amp*8+3:amp*8+10])
-                if not amp % 2:
-                    self._cals[amp//2] = self._pvs[amp]
-                else:
-                    self._cals[amp//2] += self._pvs[amp]
-        except ValueError:
-            print(self._read_buf.decode("ascii"))
-            raise ValueError
+            except ValueError:
+                print(self._read_buf.decode("ascii"))
+                raise ValueError
+            if not amp % 2:
+                self._cals[amp//2] = self._pvs[amp]
+            else:
+                self._cals[amp//2] += self._pvs[amp]
         return self._cals
-            
+    
     def write_all(self, cmd, data):
         self._laser.write("AW,%s,%s\r\n" % (cmd, data))
         while not self._laser.any():
@@ -71,7 +87,7 @@ class LaserCtrl:
             self._laser.write("SR,%02d,%s\r\n" % (amp, cmd))
             while not self._laser.any():
                 utime.sleep_us(1)
-            self._laser.readline()
+            print(self._laser.readline())
 
     def write_amp(self, amp, cmd, data):
         self._laser.write("SW,%02d,%s,%s\r\n" % (amp, cmd, data))
@@ -91,16 +107,29 @@ class LaserCtrl:
     def start_session(self, thickness):
         self._session = MeasurementSession(thickness)
 
-    def check_for_panel(self):
+    """
+    A blocking function to wait for panel to read
+    """
+    def wait_for_panel(self, panel):
         cals = self.get_phrase_pvs()
         if cals[0] > 0 or cals[1] > 0:
-            raise RuntimeError("Missed the chance")
-        for i in range(0, 10):
+            raise RuntimeError("Panel already under measure")
+        while True:
             cals = self.get_phrase_pvs()
             if cals[0] < 0 or cals[1] < 0:
                 continue
             else:
-                # Start a panel here
+                panel.start_measurement(cals)
+                while True:
+                    cals = self.get_phrase_pvs()
+                    if cals[0] < 0 or cals[1] < 0:
+                        break
+                    else:
+                        try:
+                            panel.add_points(cals)
+                        except IndexError:
+                            break
+                break
         return
 
 class MeasurementSession:
@@ -113,9 +142,25 @@ class MeasurementSession:
         
 class Panel:
     def __init__(self, num):
-        self._creation = utime.locatime()
+        self._creation = utime.localtime()
         self._pass = False
+        self._time = array.array('l', [0] * MAX_PANEL_DATA)
         self._data1 = array.array('f', [0.0] * MAX_PANEL_DATA)
         self._data2 = array.array('f', [0.0] * MAX_PANEL_DATA)
+        self._data_num = 0
         self._num = num
         return
+
+    def start_measurement(self, points):
+        self._t_start = utime.ticks_us()
+        self.add_points(points)
+        return
+
+    def add_points(self, points):
+        try:
+            self._time[self._data_num] = utime.ticks_diff(utime.ticks_us(), self._t_start)
+            self._data1[self._data_num] = points[0]
+            self._data2[self._data_num] = points[1]
+        except IndexError:
+            raise
+        self._data_num += 1

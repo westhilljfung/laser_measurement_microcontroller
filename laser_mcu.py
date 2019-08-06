@@ -60,7 +60,7 @@ class LaserMCU:
         except OSError as err:
             raise
         if f.tell() == 0:
-            print("YYYY-MM-DD-HH-MM(RTC)\tTemperature(C)\t\tHumidity(RH%)", file = f)
+            print("YYYY-MM-DD-HH-MM(RTC)\tTemperature(C)\tHumidity(RH%)", file = f)
             
         print("%04d-%02d-%02d-%02d-%02d\t%0.3f\t\t%0.3f" \
               % (dt[0], dt[1], dt[2], dt[3], dt[4],\
@@ -93,7 +93,7 @@ class LaserMCU:
     def load_time(self):
         file = open(TIME_FILE, "r")
         old_time = ujson.load(file)
-        machine.RTC().datetime(old_time)
+        machine.RTC().datetime(old_time[0:3] + [0] + old_time[3:6] + [0])
         file.close()
         return
 

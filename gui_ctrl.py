@@ -16,20 +16,7 @@ import laser_ctrl
 
 DISP_BUF_SIZE = const(9600)
 
-"""
-Timing function
 
-Use @timed_function decorator
-"""
-def timed_function(f, *args, **kwargs):
-    myname = str(f).split(' ')[1]
-    def new_func(*args, **kwargs):
-        t = utime.ticks_us()
-        result = f(*args, **kwargs)
-        delta = utime.ticks_diff(utime.ticks_us(), t)
-        print('Function {} Time = {:6.3f}ms'.format(myname, delta/1000))
-        return result
-    return new_func
 
 """
 GUI Controller
@@ -96,12 +83,8 @@ class LaserGui:
         self._laser.off()
 
         # Task to update output
-        self._task_update_laser_output = lv.task_create(None, 1000, lv.TASK_PRIO.OFF, None)
+        self._task_update_laser_output = lv.task_create(None, 200, lv.TASK_PRIO.OFF, None)
         lv.task_set_cb(self._task_update_laser_output, self._update_laser_output_cb)
-
-        # Task to get laser output
-        self._task_read_laser = lv.task_create(None, 1000, lv.TASK_PRIO.OFF, None)
-        lv.task_set_cb(self._task_read_laser, self._read_laser_cb)
         return
 
     def _load_screen(self):
@@ -134,16 +117,12 @@ class LaserGui:
     
     def _update_laser_output_cb(self, data):
         try:
-            pv_str = self._laser.get_values_str()       
+            self._laser.get_phrase_pvs()     
         except:
             return
         
+        pv_str = self._laser.get_values_str()  
         self._body.set_cal_label(pv_str)
-        return
-
-    def _read_laser_cb(self, data):
-        self._laser.get_phrase_pvs()
-        self.start = utime.ticks_us()
         return
     
     def _gc_collect_cb(self, data):
@@ -264,6 +243,8 @@ class GuiLaserMain(lv.tabview):
         self._t_other = self.add_tab("Other")
         self._t_done = self.add_tab("Done")
 
+        self.set_tab_act(3, lv.ANIM.OFF)
+
         # Calibration Screen
         self._cal_label = lv.label(self._t_cal)        
         self._cal_label.set_text("Output: \n")
@@ -319,15 +300,12 @@ class GuiLaserMain(lv.tabview):
         if event == lv.EVENT.VALUE_CHANGED:
             tab_act = obj.get_tab_act()
             if tab_act == 0:
-                self._gui_ctrl._laser.on()
-                lv.task_set_prio(self._gui_ctrl._task_read_laser, lv.TASK_PRIO.MID)            
+                self._gui_ctrl._laser.on()       
                 lv.task_set_prio(self._gui_ctrl._task_update_laser_output, lv.TASK_PRIO.MID)
             elif tab_act == 1:
-                self._gui_ctrl._laser.on()
-                lv.task_set_prio(self._gui_ctrl._task_read_laser, lv.TASK_PRIO.MID)            
+                self._gui_ctrl._laser.on()           
                 lv.task_set_prio(self._gui_ctrl._task_update_laser_output, lv.TASK_PRIO.MID)
-            else:
-                lv.task_set_prio(self._gui_ctrl._task_read_laser, lv.TASK_PRIO.OFF)            
+            else:         
                 lv.task_set_prio(self._gui_ctrl._task_update_laser_output, lv.TASK_PRIO.OFF)
                 self._gui_ctrl._laser.off()
         return
