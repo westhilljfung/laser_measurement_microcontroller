@@ -25,7 +25,7 @@ class LaserGui:
     def __init__(self):
         # init LVGL
         lv.init()
-        lv.task_core_init()
+        #lv.task_core_init()
         
         # MCU Control
         # For some reason the LaserMCU needs to be init before TFT and TS driver

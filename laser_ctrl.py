@@ -55,6 +55,7 @@ class LaserCtrl:
         return pv_str
 
     def set_cal_init(self, num, ref):
+        # Without the zero shift value memory function "152" the shift will be forgotten after power cycle
         self.write_amp(num*2+1, "067", "%+07.3f" % (ref - self._pvs[num*2]))
         self.write_amp(num*2+1, "001", "0")
         self.write_amp(num*2+1, "001", "1")
