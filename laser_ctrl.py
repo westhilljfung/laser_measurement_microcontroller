@@ -2,11 +2,12 @@ from machine import UART
 import utime
 from micropython import const
 import array
+import _thread
 
 DEFAULT_PANEL_WIDTH_MM = const(1245)
 MAX_AMP_NUM = const(4)
 READ_BUF_SIZE = const(36)
-MAX_PANEL_DATA = const(1200)
+MAX_PANEL_DATA = const(700)
 PANEL_WAIT_TIMEOUT = const(30000)
 
 """
@@ -105,22 +106,29 @@ class LaserCtrl:
         self.write_all("100", "0")        
         self.write_all("155", "0")
 
-    def start_session(self, thickness):
-        self._session = MeasurementSession(thickness)
+    def start_session(self, material, thickness):
+        self._session = MeasurementSession(material, thickness)
+        return
+
+    def end_session(self):
+        self._session = None
+        return
 
     """
     A blocking function to wait for panel to read
     """
-    def wait_for_panel(self, panel):
+    def wait_for_panel(self, panel, lock):
+        lock.acquire()
         cals = self.get_phrase_pvs()
         if cals[0] > 0 or cals[1] > 0:
+            lock.release()
             raise RuntimeError("Panel already under measure")
         while True:
             cals = self.get_phrase_pvs()
             if cals[0] < 0 or cals[1] < 0:
                 continue
             else:
-                panel.start_measurement(cals)
+                panel.start_measure(cals)
                 while True:
                     cals = self.get_phrase_pvs()
                     if cals[0] < 0 or cals[1] < 0:
@@ -131,29 +139,38 @@ class LaserCtrl:
                         except IndexError:
                             break
                 break
+        lock.release()
         return
 
 class MeasurementSession:
-    def __init__(self, thickness):
-        self._start_date_time = utime.locatime()
+    def __init__(self, material, thickness):
+        self._start_date_time = utime.localtime()
+        self._material = material
         self._thickness = thickness
-        self._index = 0
-        self._panels = [Panel(self._index)]
+        self._index = -1
+        self._panel = Panel()
         return
-        
+
+    def __str__(self):
+        data_str = str(self._start_date_time) + "\n " + str(self._index) + " " + str(self._material) + " " + str(self._thickness)
+        return data_str
+
+    def new_panel(self):
+        self._index += 1
+        return self._panel
+    
 class Panel:
-    def __init__(self, num):
+    def __init__(self):
         self._creation = utime.localtime()
-        self._pass = False
         self._time = array.array('l', [0] * MAX_PANEL_DATA)
         self._data1 = array.array('f', [0.0] * MAX_PANEL_DATA)
         self._data2 = array.array('f', [0.0] * MAX_PANEL_DATA)
         self._data_num = 0
-        self._num = num
         return
 
-    def start_measurement(self, points):
+    def start_measure(self, points):
         self._t_start = utime.ticks_us()
+        self._data_num = 0
         self.add_points(points)
         return
 
