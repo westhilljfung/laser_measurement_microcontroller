@@ -17,7 +17,7 @@ import _thread
 
 DISP_BUF_SIZE = const(9600)
 MATERIAL_TYPE = ("WPC", "ECEL", "OTHER")
-THICKNESS_TYPE = ("5", "5.5", "6.5", "12")
+THICKNESS_TYPE = ("12", "5", "5.5", "6.5")
 
 """
 GUI Controller
@@ -26,7 +26,6 @@ class LaserGui:
     def __init__(self):
         # init LVGL
         lv.init()
-        #lv.task_core_init()
         
         # MCU Control
         # For some reason the LaserMCU needs to be init before TFT and TS driver
@@ -57,8 +56,11 @@ class LaserGui:
 
         # Create screen
         self._load_screen()
-        
+
+        # Register Tasks
         self._register_tasks()
+
+        # Create lock for panel wait process
         self._lock = _thread.allocate_lock()
         return
 
@@ -83,9 +85,6 @@ class LaserGui:
         # Task to gc collect
         self._task_gc_collect = lv.task_create(None, 10000, lv.TASK_PRIO.MID, None)
         lv.task_set_cb(self._task_gc_collect, self._gc_collect_cb)
-
-        # Laser off on start
-        self._laser.off()
 
         # Task to update output
         self._task_update_laser_output = lv.task_create(None, 200, lv.TASK_PRIO.OFF, None)
@@ -148,7 +147,6 @@ class LaserGui:
             self._laser.get_phrase_pvs()     
         except:
             return
-        
         pv_str = self._laser.get_values_str()  
         self._body.set_cal_label(pv_str)
         return
