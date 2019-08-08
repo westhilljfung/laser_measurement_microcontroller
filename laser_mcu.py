@@ -13,6 +13,7 @@ import machine
 import uos
 import ujson
 import si7021
+import _thread
 
 ssid = 'Westhill_2.4G'
 wp2_pass = 'Radoslav13'
@@ -31,6 +32,7 @@ class LaserMCU:
                                  ,mosi=machine.Pin(13),cs=machine.Pin(15))
         uos.mount(self._sd, SD_FILE)
         self._th_sensor = si7021.SI7021(4, 21)
+        self._buzz = Buzzer(26)
         
     def connect_wifi(self):
         if not self.is_connected():
@@ -50,10 +52,18 @@ class LaserMCU:
                     break
         return
 
+    def alt(self):
+        self._buzz.alt()
+        return
+
+    def warn(self):
+        self._buzz.warn()
+        return
+    
     def save_th_data(self):
         # Time in utc
         dt = utime.localtime()
-        filename = ("%04d" % dt[0]) + "_" + ("%02d" % dt[1]) + "_" \
+        filename = ("TH-%04d" % dt[0]) + "_" + ("%02d" % dt[1]) + "_" \
             + ("%02d" % dt[2]) + ".txt"
         try:
             f = open(SD_FILE + "/" + filename, "a+")
@@ -116,3 +126,36 @@ class LaserMCU:
 
     def __str__(self):
         return self._name
+
+class Buzzer:
+    def __init__(self, pin):
+        self._pin = machine.Pin(pin)
+        return
+    
+    def warn(self):
+        _thread.start_new_thread(self._warn, [3])
+        return
+        
+    def _warn(self, i):
+        for x in range(0, i):
+            pwn = machine.PWM(self._pin, freq = 554)
+            utime.sleep_ms(100)
+            pwn = machine.PWM(self._pin, freq=440)
+            utime.sleep_ms(400)
+        pwn.deinit()
+        return
+
+    def alt(self):
+        _thread.start_new_thread(self._alt, [1])
+        return
+        
+    def _alt(self, i):
+        for x in range(0, i):
+            pwn = machine.PWM(self._pin, freq=440)
+            utime.sleep_ms(400)
+            pwn.deinit()
+            utime.sleep_ms(100)
+        pwn.deinit()
+        return
+
+        

@@ -3,11 +3,13 @@ import utime
 from micropython import const
 import array
 import _thread
+from laser_mcu import TIME_ZONE_OFFSET, SD_FILE
+import ujson
 
 DEFAULT_PANEL_WIDTH_MM = const(1245)
 MAX_AMP_NUM = const(4)
 READ_BUF_SIZE = const(36)
-MAX_PANEL_DATA = const(700)
+MAX_PANEL_DATA = const(600)
 PANEL_WAIT_TIMEOUT = const(30000)
 
 """
@@ -34,6 +36,7 @@ class LaserCtrl:
         self._cals = array.array('f', [0.0] * (MAX_AMP_NUM // 2))
         self._laser_on = True
         self._session = None
+        self._session_file = None
         try:
             self.get_phrase_pvs()
         except ValueError:
@@ -57,9 +60,12 @@ class LaserCtrl:
 
     def set_cal_init(self, num, ref):
         # Without the zero shift value memory function "152" the shift will be forgotten after power cycle
-        self.write_amp(num*2+1, "067", "%+07.3f" % (ref - self._pvs[num*2]))
-        self.write_amp(num*2+1, "001", "0")
-        self.write_amp(num*2+1, "001", "1")
+        self.write_amp(num*2 + 1, "152", "1")
+        self.write_amp(num*2 + 1, "067", "%+07.3f" % (ref - self._pvs[num*2]))
+        self.write_amp(num*2 + 1, "001", "0")
+        self.write_amp(num*2 + 1, "001", "1")
+        self.write_amp(num*2 + 1, "152", "0")
+        return
 
     def get_phrase_pvs(self):      
         self._laser.write("M0\r\n")
@@ -108,21 +114,37 @@ class LaserCtrl:
 
     def start_session(self, material, thickness):
         self._session = MeasurementSession(material, thickness)
+        self._session_file = open(SD_FILE + "/" + self._session.get_filename(), "a+")
+        self._write_session_file()
+        return
+
+    def _write_session_file(self):
+        start = utime.ticks_us()
+        self._session_file.write("Time: ")
+        ujson.dump(utime.localtime(self._session._start_time), self._session_file)
+        self._session_file.write("\nMaterial: ")
+        self._session_file.write(self._session._material)
+        self._session_file.write("\nThickness: ")
+        self._session_file.write(self._session._thickness)
+        self._session_file.write("\n\n")
+        delta = utime.ticks_diff(utime.ticks_us(), start)
+        print("Write header: %d" % delta)
         return
 
     def end_session(self):
         self._session = None
+        self._session_file.close()
+        self._session_file = None
         return
 
-    """
-    A blocking function to wait for panel to read
-    """
-    def wait_for_panel(self, panel, lock):
+    def wait_for_panel(self, panel, thickness, lock):
+        """A blocking function to wait for panel to read"""
         lock.acquire()
         cals = self.get_phrase_pvs()
         if cals[0] > 0 or cals[1] > 0:
+            panel.err = RuntimeError("Panel already under measure")
             lock.release()
-            raise RuntimeError("Panel already under measure")
+            return
         while True:
             cals = self.get_phrase_pvs()
             if cals[0] < 0 or cals[1] < 0:
@@ -136,36 +158,126 @@ class LaserCtrl:
                     else:
                         try:
                             panel.add_points(cals)
-                        except IndexError:
-                            break
+                        except IndexError as err:
+                            panel.err = err
+                            lock.release()
+                            return
+                self._cal_move_mean(panel, thickness)
+                self._write_panel(panel)
                 break
         lock.release()
         return
 
-class MeasurementSession:
-    def __init__(self, material, thickness):
-        self._start_date_time = utime.localtime()
-        self._material = material
-        self._thickness = thickness
-        self._index = -1
-        self._panel = Panel()
+    def _write_panel(self, panel):
+        print("ID: %d" % self._session.count, file = self._session_file)
+        # json dump is faster than any format print
+        #start = utime.ticks_us()
+        ujson.dump(panel._time[0:panel._data_num], self._session_file)
+        self._session_file.write("\n")
+        ujson.dump(panel._data1[0:panel._data_num], self._session_file)
+        self._session_file.write("\n")
+        ujson.dump(panel._data2[0:panel._data_num], self._session_file)
+        self._session_file.write("\n")
+        self._session_file.flush()
+        #delta = utime.ticks_diff(utime.ticks_us(), start)
+        #print("Write with json with slice and write newlinw: %d" % delta)
         return
 
+    def _cal_move_mean(self, panel, thickness):
+        filter_size = panel._data_num // 20
+        panel.size = panel._data_num - filter_size
+        panel.size2 = panel._data_num - filter_size//2
+        for i in range(0, panel.size):
+            sum1 = 0
+            sum2 = 0
+            n = filter_size
+            for j in range(0, filter_size):
+                if (panel._data1[i + j] > thickness + 1
+                    or panel._data1[i + j] < thickness - 1
+                    or panel._data2[i + j] > thickness + 1
+                    or panel._data2[i + j] < thickness - 1):
+                    n -= 1
+                    continue
+                sum1 += panel._data1[i + j]
+                sum2 += panel._data2[i + j]
+            # There is a chance n will be zero
+            if n > 0:
+                panel._cdata1[i] = sum1 / n
+                panel._cdata2[i] = sum2 / n
+            else:
+                panel._cdata1[i] = 0
+                panel._cdata2[i] = 0
+        return
+
+class MeasurementSession:
+    def __init__(self, material, thickness):
+        self._start_time = utime.time()
+        self._material = material
+        self._thickness = thickness
+        self.count = 0
+        self.panel = Panel()
+        return
+
+    def get_filename(self):
+        st = utime.localtime(self._start_time)
+        str_ = (str(st[0])
+                + "-"
+                + str(st[1])
+                + "-"
+                + str(st[2])
+                + "-"
+                + str(st[3])
+                + "-"
+                + str(st[4])
+                + "_"
+                + self._material
+                + "_"
+                + self._thickness
+                + ".txt"                
+        )
+        return str_
+    
     def __str__(self):
-        data_str = str(self._start_date_time) + "\n " + str(self._index) + " " + str(self._material) + " " + str(self._thickness)
-        return data_str
+        st = utime.localtime(self._start_time - TIME_ZONE_OFFSET)
+        str_ = ("Session started: "
+                + str(st[0])
+                + " "
+                + str(st[1])
+                + " "
+                + str(st[2])
+                + " "
+                + str(st[3])
+                + " "
+                + str(st[4])
+                + "\nPanel Count: "
+                + str(self.count)
+                + " Material: "
+                + self._material
+                + " Thickness:"
+                + self._thickness
+                + "mm"
+        )
+        return str_
 
     def new_panel(self):
-        self._index += 1
-        return self._panel
+        self.count += 1
+        return self.panel, float(self._thickness)
+
+    def re_panel(self):
+        return self.panel, float(self._thickness)
     
 class Panel:
     def __init__(self):
         self._creation = utime.localtime()
+        self.err = None
         self._time = array.array('l', [0] * MAX_PANEL_DATA)
         self._data1 = array.array('f', [0.0] * MAX_PANEL_DATA)
-        self._data2 = array.array('f', [0.0] * MAX_PANEL_DATA)
+        self._data2 = array.array('f', [0.0] * MAX_PANEL_DATA)    
+        self._cdata1 = array.array('f', [0.0] * MAX_PANEL_DATA)           
+        self._cdata2 = array.array('f', [0.0] * MAX_PANEL_DATA)
         self._data_num = 0
+        self.size = 0
+        self.size2 = 0
         return
 
     def start_measure(self, points):
@@ -182,3 +294,9 @@ class Panel:
         except IndexError:
             raise
         self._data_num += 1
+
+    def __str__(self):
+        return "__str__"
+
+    def __repr__(self):
+        return "__repr__"
