@@ -65,8 +65,13 @@ class LaserMCU:
     def save_th_data(self):
         # Time in utc
         dt = utime.localtime()
-        filename = ("TH-%04d" % dt[0]) + "_" + ("%02d" % dt[1]) + "_" \
-            + ("%02d" % dt[2]) + ".txt"
+        filename = (("TH-%04d" % dt[0])
+                    + "_"
+                    + ("%02d" % dt[1])
+                    + "_"
+                    + ("%02d" % dt[2])
+                    + ".txt"
+        )
         try:
             f = open(SD_FILE + "/" + filename, "a+")
         except OSError as err:

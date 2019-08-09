@@ -77,13 +77,14 @@ class LaserCtrl:
             pv_str += ("% 07.3f " % cal)
         return pv_str
 
-    def set_cal_init(self, num, ref):
-        # Without the _ZERO_SHIFT_MEM shift will be forgotten after power cycle
-        self.write_amp(num*2 + 1, _ZERO_SHIFT_MEM, "1")
-        self.write_amp(num*2 + 1, _SHIFT_VALUE, "%+07.3f" % (ref - self._pvs[num*2]))
-        self.write_amp(num*2 + 1, _ZERO_SHIFT, "0")
-        self.write_amp(num*2 + 1, _ZERO_SHIFT, "1")
-        self.write_amp(num*2 + 1, _ZERO_SHIFT_MEM, "0")
+    def set_cal_init(self, stack_num, ref):
+        amp = stack_num*2 + 1
+        # Without the _Z ERO_SHIFT_MEM shift will be forgotten after power cycle
+        self.write_amp(amp, _ZERO_SHIFT_MEM, "1")
+        self.write_amp(amp, _SHIFT_VALUE, "%+07.3f" % (ref - self._pvs[num*2]))
+        self.write_amp(amp, _ZERO_SHIFT, "0")
+        self.write_amp(amp, _ZERO_SHIFT, "1")
+        self.write_amp(amp, _ZERO_SHIFT_MEM, "0")
         return
 
     def get_phrase_pvs(self):
