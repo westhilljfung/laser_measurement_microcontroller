@@ -213,16 +213,12 @@ class GuiHeader(lv.cont):
         # Left label
         self._left_text = OneLineLabel(self, "TIME")
         # Right label
-        self._right_text = lv.label(self)
-        self._right_text.set_text("TH: -- H: --")
+        self._right_text = OneLineLabel(self, "TH: -- H: --")
         # Center label
-        self._center_text = lv.label(self)
-        self._center_text.set_text(text)
+        self._center_text = OneLineLabel(self, text)
         # Fit and Align
         self.set_fit2(lv.FIT.FLOOD, lv.FIT.TIGHT)
         self.set_pos(x_pos, y_pos)
-        self._center_text.set_auto_realign(True)
-        self._right_text.set_auto_realign(True)
         self._center_text.align(self, lv.ALIGN.IN_RIGHT_MID, -200, 0)
         self._right_text.align(self, lv.ALIGN.IN_LEFT_MID, 10, 0)
         self._left_text.align(self, lv.ALIGN.IN_RIGHT_MID, -10, 0)
