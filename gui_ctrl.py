@@ -103,8 +103,8 @@ class LaserGui:
             self._body._session.set_hidden(False)
             self._body._re_measure_btn.set_hidden(False) 
             self._body._preload_cont.set_hidden(True)
-            self._body._chart.set_point_count(self._laser._session.panel._data_num)
-            filter_size = self._laser._session.panel._data_num // 20
+            self._body._chart.set_point_count(self._laser._session.panel._in)
+            filter_size = self._laser._session.panel._in // 20
             for d in self._laser._session.panel._data1[0:self._laser._session.panel.size2]:
                 self._body._chart.set_next(self._body._ser1, int(d*1000))
             for d in self._laser._session.panel._data2[0:self._laser._session.panel.size2]:

@@ -6,9 +6,9 @@ Controller for the laser sensor
 2019-08-09
 """
 import utime
-import array
 import ujson
 import _thread
+from array import array
 
 from machine import UART
 from micropython import const
@@ -54,8 +54,8 @@ class LaserCtrl:
         self._laser = UART(2)
         self._laser.init(baudrate=38400)
         self._read_buf = bytearray("0" * READ_BUF_SIZE)
-        self._pvs = array.array('f', [0.0] * MAX_AMP_NUM)
-        self._cals = array.array('f', [0.0] * (MAX_AMP_NUM // 2))
+        self._pvs = array('f', [0.0] * MAX_AMP_NUM)
+        self._cals = array('f', [0.0] * (MAX_AMP_NUM // 2))
         self._laser_on = True
         self._session = None
         self._sess_f = None
@@ -191,19 +191,19 @@ class LaserCtrl:
 
     def _write_panel(self, panel):
         print("ID: %d" % self._session.count, file = self._sess_f)
-        ujson.dump(panel._time[0:panel._data_num], self._sess_f)
+        ujson.dump(panel._time[0:panel._in], self._sess_f)
         self._sess_f.write("\n")
-        ujson.dump(panel._data1[0:panel._data_num], self._sess_f)
+        ujson.dump(panel._data1[0:panel._in], self._sess_f)
         self._sess_f.write("\n")
-        ujson.dump(panel._data2[0:panel._data_num], self._sess_f)
+        ujson.dump(panel._data2[0:panel._in], self._sess_f)
         self._sess_f.write("\n")
         self._sess_f.flush()
         return
 
     def _cal_move_mean(self, panel, thickness):
-        filter_size = panel._data_num // 20
-        panel.size = panel._data_num - filter_size
-        panel.size2 = panel._data_num - filter_size//2
+        filter_size = panel._in // 20
+        panel.size = panel._in - filter_size
+        panel.size2 = panel._in - filter_size//2
         for i in range(0, panel.size):
             sum1 = 0
             sum2 = 0
@@ -291,27 +291,27 @@ class Panel:
     def __init__(self):
         self._creation = utime.localtime()
         self.err = None
-        self._time = array.array('l', [0] * MAX_PANEL_DATA)
-        self._data1 = array.array('f', [0.0] * MAX_PANEL_DATA)
-        self._data2 = array.array('f', [0.0] * MAX_PANEL_DATA)
-        self._cdata1 = array.array('f', [0.0] * MAX_PANEL_DATA)
-        self._cdata2 = array.array('f', [0.0] * MAX_PANEL_DATA)
-        self._data_num = 0
+        self._time = array('l', [0] * MAX_PANEL_DATA)
+        self._data1 = array('f', [0.0] * MAX_PANEL_DATA)
+        self._data2 = array('f', [0.0] * MAX_PANEL_DATA)
+        self._cdata1 = array('f', [0.0] * MAX_PANEL_DATA)
+        self._cdata2 = array('f', [0.0] * MAX_PANEL_DATA)
+        self._in = 0
         self.size = 0
         self.size2 = 0
         return
 
     def start_measure(self, points):
         self._t_start = utime.ticks_us()
-        self._data_num = 0
+        self._in = 0
         self.add_points(points)
         return
 
-    def add_points(self, points):
+    def add_points(self, ps):
         try:
-            self._time[self._data_num] = utime.ticks_diff(utime.ticks_us(), self._t_start)
-            self._data1[self._data_num] = points[0]
-            self._data2[self._data_num] = points[1]
+            self._time[self._in] = utime.ticks_diff(utime.ticks_us(), self._t_start)
+            self._data1[self._in] = ps[0]
+            self._data2[self._in] = ps[1]
         except IndexError:
             raise
-        self._data_num += 1
+        self._in += 1
