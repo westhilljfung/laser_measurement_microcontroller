@@ -77,7 +77,7 @@ class LaserCtrl:
             pv_str += ("% 07.3f " % cal)
         return pv_str
 
-    def set_cal_init(self, stack_num, ref):
+    def zero_shift(self, stack_num, ref):
         amp = stack_num*2 + 1
         # Without the _ZERO_SHIFT_MEM shift will be forgotten after power cycle
         self.write_amp(amp, _ZERO_SHIFT_MEM, "1")
@@ -156,7 +156,7 @@ class LaserCtrl:
         self._sess_f = None
         return
 
-    def wait_for_panel(self, panel, thickness, lock):
+    def wait_for_panel(self, panel, lock):
         """A blocking function to wait for panel to read"""
         lock.acquire()
         cals = self.get_phrase_pvs()
@@ -178,11 +178,11 @@ class LaserCtrl:
                     else:
                         try:
                             panel.add_points(cals)
-                        except IndexError as err:
-                            panel.err = err
+                        except IndexError:
+                            panel.err = RuntimeError("Pushing panle to slow")
                             lock.release()
                             return
-                self._cal_move_mean(panel, thickness)
+                self._cal_move_mean(panel)
                 # TODO Check if panel is good
                 self._write_panel(panel)
                 break
@@ -200,19 +200,18 @@ class LaserCtrl:
         self._sess_f.flush()
         return
 
-    def _cal_move_mean(self, panel, thickness):
+    def _cal_move_mean(self, panel):
         filter_size = panel._in // 20
         panel.size = panel._in - filter_size
-        panel.size2 = panel._in - filter_size//2
         for i in range(0, panel.size):
             sum1 = 0
             sum2 = 0
             n = filter_size
             for j in range(0, filter_size):
-                if (panel._data1[i + j] > thickness + 1
-                    or panel._data1[i + j] < thickness - 1
-                    or panel._data2[i + j] > thickness + 1
-                    or panel._data2[i + j] < thickness - 1):
+                if (panel._data1[i + j] > panel.thickness + 1
+                    or panel._data1[i + j] < panel.thickness - 1
+                    or panel._data2[i + j] > panel.thickness + 1
+                    or panel._data2[i + j] < panel.thickness - 1):
                     n -= 1
                     continue
                 sum1 += panel._data1[i + j]
@@ -234,7 +233,7 @@ class MeasurementSession:
         self._material = material
         self._thickness = thickness
         self.count = 0
-        self.panel = Panel()
+        self.panel = Panel(float(thickness))
         return
 
     def get_filename(self):
@@ -260,13 +259,13 @@ class MeasurementSession:
         st = utime.localtime(self._start_time - TIME_ZONE_OFFSET)
         str_ = ("Session started: "
                 + str(st[0])
-                + " "
+                + "-"
                 + str(st[1])
-                + " "
+                + "-"
                 + str(st[2])
                 + " "
                 + str(st[3])
-                + " "
+                + ":"
                 + str(st[4])
                 + "\nPanel Count: "
                 + str(self.count)
@@ -280,15 +279,17 @@ class MeasurementSession:
 
     def new_panel(self):
         self.count += 1
-        return self.panel, float(self._thickness)
+        self.panel.err = None
+        return self.panel
 
     def re_panel(self):
-        return self.panel, float(self._thickness)
+        self.panel.err = None
+        return self.panel
 
 
 class Panel:
 
-    def __init__(self):
+    def __init__(self, thickness):
         self._creation = utime.localtime()
         self.err = None
         self._time = array('l', [0] * MAX_PANEL_DATA)
@@ -298,7 +299,7 @@ class Panel:
         self._cdata2 = array('f', [0.0] * MAX_PANEL_DATA)
         self._in = 0
         self.size = 0
-        self.size2 = 0
+        self.thickness = thickness
         return
 
     def start_measure(self, points):
