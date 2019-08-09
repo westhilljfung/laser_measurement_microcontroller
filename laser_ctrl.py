@@ -22,6 +22,16 @@ READ_BUF_SIZE = const(36)
 MAX_PANEL_DATA = const(600)
 PANEL_WAIT_TIMEOUT = const(30000)
 
+_ZERO_SHIFT = "001"
+_RESET = "003"
+_INITIAL_RESET = "005"
+_HIGH_VALUE = "065"
+_LOW_VALUE = "066"
+_SHIFT_VALUE = "067"
+_LASER_STOP = "100"
+_ZERO_SHIFT_MEM = "152"
+_POWER_SAVE = "155"
+
 
 def timed_function(f, *args, **kwargs):
     """Time function
@@ -53,10 +63,10 @@ class LaserCtrl:
         return
 
     def reset_all(self):
-        self.write_all("005","0")
-        self.write_all("005","1")
-        self.write_all("065","+99.999")
-        self.write_all("066","-99.999")
+        self.write_all(_INITIAL_RESET,"0")
+        self.write_all(_INITIAL_RESET,"1")
+        self.write_all(_HIGH_VALUE,"+99.999")
+        self.write_all(_LOW_VALUE,"-99.999")
 
     def get_values_str(self):
         pv_str = ""
@@ -68,12 +78,12 @@ class LaserCtrl:
         return pv_str
 
     def set_cal_init(self, num, ref):
-        # Without the zero shift value memory function "152" the shift will be forgotten after power cycle
-        self.write_amp(num*2 + 1, "152", "1")
-        self.write_amp(num*2 + 1, "067", "%+07.3f" % (ref - self._pvs[num*2]))
-        self.write_amp(num*2 + 1, "001", "0")
-        self.write_amp(num*2 + 1, "001", "1")
-        self.write_amp(num*2 + 1, "152", "0")
+        # Without the _ZERO_SHIFT_MEM shift will be forgotten after power cycle
+        self.write_amp(num*2 + 1, _ZERO_SHIFT_MEM, "1")
+        self.write_amp(num*2 + 1, _SHIFT_VALUE, "%+07.3f" % (ref - self._pvs[num*2]))
+        self.write_amp(num*2 + 1, _ZERO_SHIFT, "0")
+        self.write_amp(num*2 + 1, _ZERO_SHIFT, "1")
+        self.write_amp(num*2 + 1, _ZERO_SHIFT_MEM, "0")
         return
 
     def get_phrase_pvs(self):
@@ -114,12 +124,12 @@ class LaserCtrl:
         self._laser.readline()
 
     def off(self):
-        self.write_all("100", "1")
-        self.write_all("155", "2")
+        self.write_all(_LASER_STOP, "1")
+        self.write_all(_POWER_SAVE, "2")
 
     def on(self):
-        self.write_all("100", "0")
-        self.write_all("155", "0")
+        self.write_all(_LASER_STOP, "0")
+        self.write_all(_POWER_SAVE, "0")
 
     def start_session(self, material, thickness):
         self._session = MeasurementSession(material, thickness)
