@@ -87,8 +87,8 @@ class LaserGui:
         lv.theme_set_current(th)
         self._scr = lv.obj()
         # Add header and body
-        self._header = GuiHeader(self._scr, 0, 0, self.mcu.get_creation_time_str())
-        self._body = GuiLaserMain(self._scr, 0, self._header.get_height(), self)
+        self.hdr = GuiHeader(self._scr, 0, 0, self.mcu.get_creation_time_str())
+        self._body = GuiLaserMain(self._scr, 0, self.hdr.get_height(), self)
         # Load screen
         lv.scr_load(self._scr)        
         return
@@ -118,9 +118,9 @@ class LaserGui:
         
     def _update_time_cb(self, data):
         if self.mcu.is_connected():
-            self._header.set_left_text(self.mcu.get_lt_str() + " " + lv.SYMBOL.WIFI)
+            self.hdr.set_left_text(self.mcu.get_lt_str() + " " + lv.SYMBOL.WIFI)
         else:
-            self._header.set_left_text(self.mcu.get_lt_str())
+            self.hdr.set_left_text(self.mcu.get_lt_str())
         return
 
     def _save_th_cb(self, data):
@@ -128,7 +128,7 @@ class LaserGui:
         return
     
     def _update_th_cb(self, data):
-        self._header.set_right_text(self.mcu.get_th_str())
+        self.hdr.set_right_text(self.mcu.get_th_str())
         return
     
     def _update_laser_output_cb(self, data):

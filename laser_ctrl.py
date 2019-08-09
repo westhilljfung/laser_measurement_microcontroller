@@ -79,7 +79,7 @@ class LaserCtrl:
 
     def set_cal_init(self, stack_num, ref):
         amp = stack_num*2 + 1
-        # Without the _Z ERO_SHIFT_MEM shift will be forgotten after power cycle
+        # Without the _ZERO_SHIFT_MEM shift will be forgotten after power cycle
         self.write_amp(amp, _ZERO_SHIFT_MEM, "1")
         self.write_amp(amp, _SHIFT_VALUE, "%+07.3f" % (ref - self._pvs[stack_num*2]))
         self.write_amp(amp, _ZERO_SHIFT, "0")
@@ -183,7 +183,7 @@ class LaserCtrl:
                             lock.release()
                             return
                 self._cal_move_mean(panel, thickness)
-                # Check if panel is good
+                # TODO Check if panel is good
                 self._write_panel(panel)
                 break
         lock.release()
