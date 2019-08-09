@@ -24,6 +24,10 @@ PANEL_WAIT_TIMEOUT = const(30000)
 
 
 def timed_function(f, *args, **kwargs):
+    """Time function
+
+    Time a function using @timed_function decorator
+    """
     myname = str(f).split(' ')[1]
     def new_func(*args, **kwargs):
         t = utime.ticks_us()
@@ -303,9 +307,3 @@ class Panel:
         except IndexError:
             raise
         self._data_num += 1
-
-    def __str__(self):
-        return "__str__"
-
-    def __repr__(self):
-        return "__repr__"
