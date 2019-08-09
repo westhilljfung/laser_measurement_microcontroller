@@ -118,9 +118,9 @@ class LaserGui:
         
     def _update_time_cb(self, data):
         if self.mcu.is_connected():
-            self._header.set_left_text(self.mcu.get_local_time_str() + " " + lv.SYMBOL.WIFI)
+            self._header.set_left_text(self.mcu.get_lt_str() + " " + lv.SYMBOL.WIFI)
         else:
-            self._header.set_left_text(self.mcu.get_local_time_str())
+            self._header.set_left_text(self.mcu.get_lt_str())
         return
 
     def _save_th_cb(self, data):

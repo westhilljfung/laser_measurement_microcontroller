@@ -126,7 +126,7 @@ class LaserMCU:
         )
         return dt_str
          
-    def get_local_time_str(self):
+    def get_lt_str(self):
         # TODO Daylight Saving Time
         dt = utime.localtime(utime.time() - TIME_ZONE_OFFSET)
 
