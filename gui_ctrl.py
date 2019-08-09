@@ -85,12 +85,12 @@ class LaserGui:
         # Create screen obj
         th=lv.theme_night_init(210, lv.font_roboto_16)
         lv.theme_set_current(th)
-        self._scr = lv.obj()
+        self.scr = lv.obj()
         # Add header and body
-        self.hdr = GuiHeader(self._scr, 0, 0, self.mcu.get_creation_time_str())
-        self._body = GuiLaserMain(self._scr, 0, self.hdr.get_height(), self)
+        self.hdr = GuiHeader(self.scr, 0, 0, self.mcu.get_creation_time_str())
+        self.body = GuiLaserMain(self.scr, 0, self.hdr.get_height(), self)
         # Load screen
-        lv.scr_load(self._scr)        
+        lv.scr_load(self.scr)        
         return
 
     def _check_wait_panel_cb(self, data):
@@ -99,20 +99,20 @@ class LaserGui:
             lv.task_set_prio(self._task_update_time, lv.TASK_PRIO.MID)
             lv.task_set_prio(self._task_update_th, lv.TASK_PRIO.MID)
             lv.task_set_prio(self._task_gc_collect, lv.TASK_PRIO.MID)            
-            self._body._session_label.set_text(str(self._laser._session))
-            self._body._session.set_hidden(False)
-            self._body._re_measure_btn.set_hidden(False) 
-            self._body._preload_cont.set_hidden(True)
-            self._body._chart.set_point_count(self._laser._session.panel._in)
+            self.body._session_label.set_text(str(self._laser._session))
+            self.body._session.set_hidden(False)
+            self.body._re_measure_btn.set_hidden(False) 
+            self.body._preload_cont.set_hidden(True)
+            self.body._chart.set_point_count(self._laser._session.panel._in)
             filter_size = self._laser._session.panel._in // 20
             for d in self._laser._session.panel._data1[0:self._laser._session.panel.size2]:
-                self._body._chart.set_next(self._body._ser1, int(d*1000))
+                self.body._chart.set_next(self.body._ser1, int(d*1000))
             for d in self._laser._session.panel._data2[0:self._laser._session.panel.size2]:
-                self._body._chart.set_next(self._body._ser2, int(d*1000))
+                self.body._chart.set_next(self.body._ser2, int(d*1000))
             for d in self._laser._session.panel._cdata1[0:self._laser._session.panel.size]:
-                self._body._chart.set_next(self._body._ser3, int(d*1000))
+                self.body._chart.set_next(self.body._ser3, int(d*1000))
             for d in self._laser._session.panel._cdata2[0:self._laser._session.panel.size]:
-                self._body._chart.set_next(self._body._ser4, int(d*1000))
+                self.body._chart.set_next(self.body._ser4, int(d*1000))
             self.mcu.alt()
         return
         
@@ -137,7 +137,7 @@ class LaserGui:
         except:
             return
         pv_str = self._laser.get_values_str()  
-        self._body.set_cal_label(pv_str)
+        self.body.set_cal_label(pv_str)
         return
     
     def _gc_collect_cb(self, data):
@@ -362,13 +362,12 @@ class GuiLaserMain(lv.tabview):
                                      [panel, thickness,
                                       self._gui_ctrl._lock]
             )
-            lv.task_set_prio(self._gui_ctrl._task_wait_panel, lv.TASK_PRIO.MID)
             lv.task_set_prio(self._gui_ctrl._task_update_time, lv.TASK_PRIO.OFF)
             lv.task_set_prio(self._gui_ctrl._task_update_th, lv.TASK_PRIO.OFF)
             lv.task_set_prio(self._gui_ctrl._task_gc_collect, lv.TASK_PRIO.OFF)
-
             self._session.set_hidden(True)
             self._preload_cont.set_hidden(False)
+            lv.task_set_prio(self._gui_ctrl._task_wait_panel, lv.TASK_PRIO.MID)
         return
 
     def _re_measure_cb(self, obj, event):
@@ -378,13 +377,12 @@ class GuiLaserMain(lv.tabview):
                                      [panel, thickness,
                                       self._gui_ctrl._lock]
             )
-            lv.task_set_prio(self._gui_ctrl._task_wait_panel, lv.TASK_PRIO.MID)
             lv.task_set_prio(self._gui_ctrl._task_update_time, lv.TASK_PRIO.OFF)
             lv.task_set_prio(self._gui_ctrl._task_update_th, lv.TASK_PRIO.OFF)
             lv.task_set_prio(self._gui_ctrl._task_gc_collect, lv.TASK_PRIO.OFF)
-
             self._session.set_hidden(True)
             self._preload_cont.set_hidden(False)
+            lv.task_set_prio(self._gui_ctrl._task_wait_panel, lv.TASK_PRIO.MID)
         return
 
     def _done_measure_cb(self, obj, event):
@@ -394,13 +392,13 @@ class GuiLaserMain(lv.tabview):
 
     def _done_measure(self):
         self._gui_ctrl._laser.end_session()
-        self._gui_ctrl._laser.off()
-            
+        self._gui_ctrl._laser.off()         
         self._new_sess.set_hidden(False)
+        self._preload_cont.set_hidden(True)
         self._session.set_hidden(True)
         return
 
-    def _start_session_cb(self, obj, event):
+    def _new_sess_cb(self, obj, event):
         if event == lv.EVENT.CLICKED:
             material = MATERIAL_TYPE[self._material_sel.get_selected()]
             thickness = THICKNESS_TYPE[self._thickness_sel.get_selected()]
