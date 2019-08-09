@@ -29,40 +29,30 @@ class LaserGui:
     def __init__(self):
         # init LVGL
         lv.init()
-        
         # MCU Control
-        # For some reason the LaserMCU needs to be init before TFT and TS driver
-        # Likely because of the SPI
-        self._laser_mcu = laser_mcu.LaserMCU()
-
+        self.mcu = laser_mcu.LaserMCU()
         # TFT and TS driver
         # POTENTIAL: move into LaserMcu
         self._tft = tftwing.TFTFeatherWing(tft_mhz=24)
         self._tft.init()
-
         # Laser Measuring Control
         self._laser = laser_ctrl.LaserCtrl()
         self._laser.off()
-
         # Load Time
         # TODO: also move into LaserMcu
         try:
-            self._laser_mcu.set_time_ntp()
+            self.mcu.set_time_ntp()
         except OSError as err:
             print("OSError: {0}".format(err))
-            self._laser_mcu.load_time()
-        self._laser_mcu.set_creation_time()
-        
+            self.mcu.load_time()
+        self.mcu.set_creation_time()
         # Register display buffer, driver and input device driver
         self._register_disp_drv()
         self._register_indev_drv()
-
         # Create screen
         self._load_screen()
-
         # Register Tasks
         self._register_tasks()
-
         # Create lock for panel wait process
         self._lock = _thread.allocate_lock()
         return
@@ -71,27 +61,21 @@ class LaserGui:
         # Task to update th
         self._task_update_th = lv.task_create(None, 1000, lv.TASK_PRIO.MID, None)
         lv.task_set_cb(self._task_update_th, self._update_th_cb)
-        
         # Task to save th
         self._task_save_th = lv.task_create(None, 60000, lv.TASK_PRIO.MID, None)
         lv.task_set_cb(self._task_save_th, self._save_th_cb)
-        
         # Task to update time
         self._task_update_time = lv.task_create(None, 1000, lv.TASK_PRIO.MID, None)
         lv.task_set_cb(self._task_update_time, self._update_time_cb)
-        
         # Task to save time to flash
         self._task_save_time = lv.task_create(None, 60000, lv.TASK_PRIO.MID, None)
         lv.task_set_cb(self._task_save_time, self._save_time_cb)
-        
         # Task to gc collect
         self._task_gc_collect = lv.task_create(None, 10000, lv.TASK_PRIO.MID, None)
         lv.task_set_cb(self._task_gc_collect, self._gc_collect_cb)
-
         # Task to update output
         self._task_update_laser_output = lv.task_create(None, 200, lv.TASK_PRIO.OFF, None)
         lv.task_set_cb(self._task_update_laser_output, self._update_laser_output_cb)
-
         # Task to wait for wait panel function
         self._task_wait_panel = lv.task_create(None, 1000, lv.TASK_PRIO.OFF, None)
         lv.task_set_cb(self._task_wait_panel, self._check_wait_panel_cb)
@@ -102,11 +86,10 @@ class LaserGui:
         th=lv.theme_night_init(210, lv.font_roboto_16)
         lv.theme_set_current(th)
         self._scr = lv.obj()
-
         # Add header and body
-        self._header = GuiHeader(self._scr, 0, 0, self._laser_mcu.get_creation_time_str())
+        self._header = GuiHeader(self._scr, 0, 0, self.mcu.get_creation_time_str())
         self._body = GuiLaserMain(self._scr, 0, self._header.get_height(), self)
-
+        # Load screen
         lv.scr_load(self._scr)        
         return
 
@@ -130,22 +113,22 @@ class LaserGui:
                 self._body._chart.set_next(self._body._ser3, int(d*1000))
             for d in self._laser._session.panel._cdata2[0:self._laser._session.panel.size]:
                 self._body._chart.set_next(self._body._ser4, int(d*1000))
-            self._laser_mcu.alt()
+            self.mcu.alt()
         return
         
     def _update_time_cb(self, data):
-        if self._laser_mcu.is_connected():
-            self._header.set_left_text(self._laser_mcu.get_local_time_str() + " " + lv.SYMBOL.WIFI)
+        if self.mcu.is_connected():
+            self._header.set_left_text(self.mcu.get_local_time_str() + " " + lv.SYMBOL.WIFI)
         else:
-            self._header.set_left_text(self._laser_mcu.get_local_time_str())
+            self._header.set_left_text(self.mcu.get_local_time_str())
         return
 
     def _save_th_cb(self, data):
-        self._laser_mcu.save_th_data()
+        self.mcu.save_th_data()
         return
     
     def _update_th_cb(self, data):
-        self._header.set_right_text(self._laser_mcu.get_th_str())
+        self._header.set_right_text(self.mcu.get_th_str())
         return
     
     def _update_laser_output_cb(self, data):
@@ -162,7 +145,7 @@ class LaserGui:
         return
 
     def _save_time_cb(self, data):
-        self._laser_mcu.save_time()
+        self.mcu.save_time()
         return
 
     def _register_disp_drv(self):
@@ -172,7 +155,6 @@ class LaserGui:
         self._buf_2 = bytearray(DISP_BUF_SIZE)
         self._disp_drv = lv.disp_drv_t()
         lv.disp_buf_init(self._disp_buf, self._buf_1, self._buf_2, DISP_BUF_SIZE//4)
-
         # Register display driver
         lv.disp_drv_init(self._disp_drv)
         self._disp_drv.buffer = self._disp_buf
@@ -220,21 +202,21 @@ class GuiHeader(lv.cont):
     
     def __init__(self, scr, x_pos, y_pos, text):
         super().__init__(scr)
-        
+        # Left label
         self._left_text = lv.label(self)
         self._left_text.set_text("TIME")
-        self._left_text.align(self, lv.ALIGN.IN_RIGHT_MID, -10, 0)
-        
+        # Right label
         self._right_text = lv.label(self)
         self._right_text.set_text("TH: -- H: --")
-        self._right_text.align(self, lv.ALIGN.IN_LEFT_MID, 10, 0)
-
+        # Center label
         self._center_text = lv.label(self)
         self._center_text.set_text(text)
-        self._center_text.align(self, lv.ALIGN.IN_RIGHT_MID, 100, 0)
-
+        # Fit and Align
         self.set_fit2(lv.FIT.FLOOD, lv.FIT.TIGHT)
         self.set_pos(x_pos, y_pos)
+        self._center_text.set_auto_realign(True)
+        self._right_text.set_auto_realign(True)
+        self._left_text.set_auto_realign(True)
         self._center_text.align(self, lv.ALIGN.IN_RIGHT_MID, -200, 0)
         self._right_text.align(self, lv.ALIGN.IN_LEFT_MID, 10, 0)
         self._left_text.align(self, lv.ALIGN.IN_RIGHT_MID, -10, 0)
@@ -242,12 +224,10 @@ class GuiHeader(lv.cont):
 
     def set_left_text(self, text):
         self._left_text.set_text(text)
-        self._left_text.align(self, lv.ALIGN.IN_RIGHT_MID, -10, 0)
         return
 
     def set_right_text(self, text):
         self._right_text.set_text(text)
-        self._right_text.align(self, lv.ALIGN.IN_LEFT_MID, 10, 0)
         return
 
     
