@@ -58,7 +58,7 @@ class LaserCtrl:
         self._cals = array.array('f', [0.0] * (MAX_AMP_NUM // 2))
         self._laser_on = True
         self._session = None
-        self._session_file = None
+        self._sess_f = None
         self.get_phrase_pvs()
         return
 
@@ -81,7 +81,7 @@ class LaserCtrl:
         amp = stack_num*2 + 1
         # Without the _Z ERO_SHIFT_MEM shift will be forgotten after power cycle
         self.write_amp(amp, _ZERO_SHIFT_MEM, "1")
-        self.write_amp(amp, _SHIFT_VALUE, "%+07.3f" % (ref - self._pvs[num*2]))
+        self.write_amp(amp, _SHIFT_VALUE, "%+07.3f" % (ref - self._pvs[stack_num*2]))
         self.write_amp(amp, _ZERO_SHIFT, "0")
         self.write_amp(amp, _ZERO_SHIFT, "1")
         self.write_amp(amp, _ZERO_SHIFT_MEM, "0")
@@ -109,6 +109,7 @@ class LaserCtrl:
         while not self._laser.any():
             utime.sleep_us(1)
         self._laser.readline()
+        return
 
     def read_all(self, cmd):
         for amp in range(0,MAX_AMP_NUM):
@@ -121,8 +122,8 @@ class LaserCtrl:
         self._laser.write("SW,%02d,%s,%s\r\n" % (amp, cmd, data))
         while not self._laser.any():
             utime.sleep_us(1)
-
         self._laser.readline()
+        return
 
     def off(self):
         self.write_all(_LASER_STOP, "1")
@@ -134,33 +135,32 @@ class LaserCtrl:
 
     def start_session(self, material, thickness):
         self._session = MeasurementSession(material, thickness)
-        self._session_file = open(SD_FILE + "/" + self._session.get_filename(), "a+")
-        self._write_session_file()
+        self._sess_f = open(SD_FILE + "/" + self._session.get_filename(), "a+")
+        self._write_sess_f()
         return
 
-    def _write_session_file(self):
-        start = utime.ticks_us()
-        self._session_file.write("Time: ")
-        ujson.dump(utime.localtime(self._session._start_time), self._session_file)
-        self._session_file.write("\nMaterial: ")
-        self._session_file.write(self._session._material)
-        self._session_file.write("\nThickness: ")
-        self._session_file.write(self._session._thickness)
-        self._session_file.write("\n\n")
-        delta = utime.ticks_diff(utime.ticks_us(), start)
-        print("Write header: %d" % delta)
+    def _write_sess_f(self):
+        self._sess_f.write("Time: ")
+        ujson.dump(utime.localtime(self._session._start_time), self._sess_f)
+        self._sess_f.write("\nMaterial: ")
+        self._sess_f.write(self._session._material)
+        self._sess_f.write("\nThickness: ")
+        self._sess_f.write(self._session._thickness)
+        self._sess_f.write("\n\n")
+        self._sess_f.flush()
         return
 
     def end_session(self):
         self._session = None
-        self._session_file.close()
-        self._session_file = None
+        self._sess_f.close()
+        self._sess_f = None
         return
 
     def wait_for_panel(self, panel, thickness, lock):
         """A blocking function to wait for panel to read"""
         lock.acquire()
         cals = self.get_phrase_pvs()
+        good_panel = False
         if cals[0] > 0 or cals[1] > 0:
             panel.err = RuntimeError("Panel already under measure")
             lock.release()
@@ -183,24 +183,21 @@ class LaserCtrl:
                             lock.release()
                             return
                 self._cal_move_mean(panel, thickness)
+                # Check if panel is good
                 self._write_panel(panel)
                 break
         lock.release()
-        return
+        return good_panel
 
     def _write_panel(self, panel):
-        print("ID: %d" % self._session.count, file = self._session_file)
-        # json dump is faster than any format print
-        #start = utime.ticks_us()
-        ujson.dump(panel._time[0:panel._data_num], self._session_file)
-        self._session_file.write("\n")
-        ujson.dump(panel._data1[0:panel._data_num], self._session_file)
-        self._session_file.write("\n")
-        ujson.dump(panel._data2[0:panel._data_num], self._session_file)
-        self._session_file.write("\n")
-        self._session_file.flush()
-        #delta = utime.ticks_diff(utime.ticks_us(), start)
-        #print("Write with json with slice and write newlinw: %d" % delta)
+        print("ID: %d" % self._session.count, file = self._sess_f)
+        ujson.dump(panel._time[0:panel._data_num], self._sess_f)
+        self._sess_f.write("\n")
+        ujson.dump(panel._data1[0:panel._data_num], self._sess_f)
+        self._sess_f.write("\n")
+        ujson.dump(panel._data2[0:panel._data_num], self._sess_f)
+        self._sess_f.write("\n")
+        self._sess_f.flush()
         return
 
     def _cal_move_mean(self, panel, thickness):
