@@ -176,10 +176,12 @@ class LaserGui:
 
 class TextBtn(lv.btn):
     
-    def __init__(self, parent, text):
+    def __init__(self, parent, text, cb):
         super().__init__(parent)
         self.label = lv.label(self)
         self.label.set_text(text)
+        self.set_event_cb(cb)
+        self.set_auto_realign(True)
         self.set_fit2(lv.FIT.TIGHT, lv.FIT.TIGHT)
         return
 
@@ -198,7 +200,7 @@ class NumTextArea(lv.ta):
         return
 
 
-class OneLineLabel(lv.label):
+class RealignLabel(lv.label):
 
     def __init__(self, parent, text):
         super().__init__(parent)
@@ -211,11 +213,11 @@ class GuiHeader(lv.cont):
     def __init__(self, scr, x_pos, y_pos, text):
         super().__init__(scr)
         # Left label
-        self._left_text = OneLineLabel(self, "TIME")
+        self._left_text = RealignLabel(self, "TIME")
         # Right label
-        self._right_text = OneLineLabel(self, "TH: -- H: --")
+        self._right_text = RealignLabel(self, "TH: -- H: --")
         # Center label
-        self._center_text = OneLineLabel(self, text)
+        self._center_text = RealignLabel(self, text)
         # Fit and Align
         self.set_fit2(lv.FIT.FLOOD, lv.FIT.TIGHT)
         self.set_pos(x_pos, y_pos)
@@ -268,8 +270,9 @@ class GuiLaserMain(lv.tabview):
         self._start_session.set_fit(lv.FIT.FLOOD)
         self._start_session.set_layout(lv.LAYOUT.PRETTY)
 
-        self._new_session_label = lv.label(self._start_session)
-        self._new_session_label.set_text("Set info, and start a new measuring session!")
+        self._new_session_label = RealignLabel(self._start_session,
+                                               "Set info, and start a new measuring session!"
+        )
         
         self._material_sel = lv.roller(self._start_session)
         self._material_sel.set_options("\n".join(material for material in MATERIAL_TYPE), \
@@ -279,29 +282,24 @@ class GuiLaserMain(lv.tabview):
         self._thickness_sel.set_options("\n".join(thickness for thickness in THICKNESS_TYPE), \
                                        lv.roller.MODE.INIFINITE)
 
-        self._start_btn = TextBtn(self._start_session, "Start")
+        self._start_btn = TextBtn(self._start_session, "Start", self._start_session_cb)
         self._start_btn.set_style(lv.btn.STYLE.REL, btn_style_or)
-        self._start_btn.set_event_cb(self._start_session_cb)
 
         # Measuring Screen
         self._session = lv.cont(self._t_start)
         self._session.set_fit(lv.FIT.FLOOD)
         self._session.set_layout(lv.LAYOUT.PRETTY)
 
-        self._session_label = lv.label(self._session)
-        self._session_label.set_text("\n\n")
+        self._session_label = RealignLabel(self._session, "\n\n")
 
-        self._start_measure_btn = TextBtn(self._session, "New Panel")
+        self._start_measure_btn = TextBtn(self._session, "New Panel", self._start_measure_cb)
         self._start_measure_btn.set_style(lv.btn.STYLE.REL, btn_style_or)
-        self._start_measure_btn.set_event_cb(self._start_measure_cb)
 
-        self._done_measure_btn = TextBtn(self._session, "Finish")
+        self._done_measure_btn = TextBtn(self._session, "Finish", self._done_measure_cb)
         self._done_measure_btn.set_style(lv.btn.STYLE.REL, btn_style_or)
-        self._done_measure_btn.set_event_cb(self._done_measure_cb)
         
-        self._re_measure_btn = TextBtn(self._session, "Re-measure")
+        self._re_measure_btn = TextBtn(self._session, "Re-measure", self._re_measure_cb)
         self._re_measure_btn.set_style(lv.btn.STYLE.REL, btn_style_or)
-        self._re_measure_btn.set_event_cb(self._re_measure_cb)
 
         self._chart = lv.chart(self._session)
         self._chart.set_height(110)
@@ -325,21 +323,19 @@ class GuiLaserMain(lv.tabview):
         self._preload_cont.set_hidden(True)
         
         # Calibration Screen
-        self._cal_label = lv.label(self._t_cal)        
-        self._cal_label.set_text("Output: \n")
+        self._cal_label = RealignLabel(self._t_cal, "Output: \n")
+        
         self._cal_num_input = NumTextArea(self._t_cal, self.ta_test)
         self._cal_num_input.set_auto_realign(True)
         self._cal_num_input.align(self._cal_label, lv.ALIGN.OUT_BOTTOM_LEFT, 0, 0)
 
-        self._set_cal_1 = TextBtn(self._t_cal, "Set Amp 1")
+        self._set_cal_1 = TextBtn(self._t_cal, "Set Amp 1", self._set_amp_1_cb)
         self._set_cal_1.set_style(lv.btn.STYLE.REL, btn_style_or)
         self._set_cal_1.align(self._cal_num_input, lv.ALIGN.OUT_RIGHT_MID, 0, 0)
-        self._set_cal_1.set_event_cb(self._set_amp_1_cb)
 
-        self._set_cal_2 = TextBtn(self._t_cal, "Set Amp 2")
+        self._set_cal_2 = TextBtn(self._t_cal, "Set Amp 2", self._set_amp_2_cb)
         self._set_cal_2.set_style(lv.btn.STYLE.REL, btn_style_or)
         self._set_cal_2.align(self._set_cal_1, lv.ALIGN.OUT_RIGHT_MID, 0, 0)
-        self._set_cal_2.set_event_cb(self._set_amp_2_cb)
         
         self._kb = lv.kb(self._t_cal)
         self._kb.set_map(["1", "2", "3","\n","4","5", "6",\
