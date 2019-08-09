@@ -202,10 +202,10 @@ class NumTextArea(lv.ta):
 
 class RealignLabel(lv.label):
 
-    def __init__(self, parent, text):
+    def __init__(self, parent, text, realign):
         super().__init__(parent)
         self.set_text(text)
-        self.set_auto_realign(True)
+        self.set_auto_realign(realign)
         return
     
 class GuiHeader(lv.cont):
@@ -213,11 +213,11 @@ class GuiHeader(lv.cont):
     def __init__(self, scr, x_pos, y_pos, text):
         super().__init__(scr)
         # Left label
-        self._left_text = RealignLabel(self, "TIME")
+        self._left_text = RealignLabel(self, "TIME", True)
         # Right label
-        self._right_text = RealignLabel(self, "TH: -- H: --")
+        self._right_text = RealignLabel(self, "TH: -- H: --", True)
         # Center label
-        self._center_text = RealignLabel(self, text)
+        self._center_text = RealignLabel(self, text, True)
         # Fit and Align
         self.set_fit2(lv.FIT.FLOOD, lv.FIT.TIGHT)
         self.set_pos(x_pos, y_pos)
@@ -266,23 +266,26 @@ class GuiLaserMain(lv.tabview):
 
         # Session screen
         # Stat new session
-        self._start_session = lv.cont(self._t_start)
-        self._start_session.set_fit(lv.FIT.FLOOD)
-        self._start_session.set_layout(lv.LAYOUT.PRETTY)
+        self._new_sess = lv.cont(self._t_start)
+        self._new_sess.set_fit(lv.FIT.FLOOD)
+        self._new_sess.set_layout(lv.LAYOUT.PRETTY)
 
-        self._new_session_label = RealignLabel(self._start_session,
-                                               "Set info, and start a new measuring session!"
+        self._new_session_label = RealignLabel(self._new_sess,
+                                               "Set info, and start a new measuring session!",
+                                               False
         )
         
-        self._material_sel = lv.roller(self._start_session)
-        self._material_sel.set_options("\n".join(material for material in MATERIAL_TYPE), \
-                                       lv.roller.MODE.INIFINITE)
+        self._material_sel = lv.roller(self._new_sess)
+        self._material_sel.set_options("\n".join(material for material in MATERIAL_TYPE),
+                                       lv.roller.MODE.INIFINITE
+        )
 
-        self._thickness_sel = lv.roller(self._start_session)
-        self._thickness_sel.set_options("\n".join(thickness for thickness in THICKNESS_TYPE), \
-                                       lv.roller.MODE.INIFINITE)
+        self._thickness_sel = lv.roller(self._new_sess)
+        self._thickness_sel.set_options("\n".join(thickness for thickness in THICKNESS_TYPE),
+                                       lv.roller.MODE.INIFINITE
+        )
 
-        self._start_btn = TextBtn(self._start_session, "Start", self._start_session_cb)
+        self._start_btn = TextBtn(self._new_sess, "Start", self._new_sess_cb)
         self._start_btn.set_style(lv.btn.STYLE.REL, btn_style_or)
 
         # Measuring Screen
@@ -290,7 +293,7 @@ class GuiLaserMain(lv.tabview):
         self._session.set_fit(lv.FIT.FLOOD)
         self._session.set_layout(lv.LAYOUT.PRETTY)
 
-        self._session_label = RealignLabel(self._session, "\n\n")
+        self._session_label = RealignLabel(self._session, "\n\n", True)
 
         self._start_measure_btn = TextBtn(self._session, "New Panel", self._start_measure_cb)
         self._start_measure_btn.set_style(lv.btn.STYLE.REL, btn_style_or)
@@ -312,7 +315,7 @@ class GuiLaserMain(lv.tabview):
 
         self._session.set_hidden(True)
         
-        lv.page.glue_obj(self._start_session, True)
+        lv.page.glue_obj(self._new_sess, True)
         lv.page.glue_obj(self._session, True)
 
         self._preload_cont = lv.cont(self._t_start)
@@ -323,7 +326,7 @@ class GuiLaserMain(lv.tabview):
         self._preload_cont.set_hidden(True)
         
         # Calibration Screen
-        self._cal_label = RealignLabel(self._t_cal, "Output: \n")
+        self._cal_label = RealignLabel(self._t_cal, "Output: \n", False)
         
         self._cal_num_input = NumTextArea(self._t_cal, self.ta_test)
         self._cal_num_input.set_auto_realign(True)
@@ -346,8 +349,7 @@ class GuiLaserMain(lv.tabview):
         self._kb.set_ta(self._cal_num_input)
 
         # Laser Off Screen
-        self._text = lv.label(self._t_done)
-        self._text.set_text("Laser Off")
+        self._text = RealignLabel(self._t_done, "Laser Off", False)
 
         # Other Screen
         self._cal = lv.calendar(self._t_other)
@@ -356,8 +358,10 @@ class GuiLaserMain(lv.tabview):
     def _start_measure_cb(self, obj, event):
         if event == lv.EVENT.CLICKED:
             panel, thickness = self._gui_ctrl._laser._session.new_panel()
-            _thread.start_new_thread(self._gui_ctrl._laser.wait_for_panel, [panel, thickness, self._gui_ctrl._lock])
-
+            _thread.start_new_thread(self._gui_ctrl._laser.wait_for_panel,
+                                     [panel, thickness,
+                                      self._gui_ctrl._lock]
+            )
             lv.task_set_prio(self._gui_ctrl._task_wait_panel, lv.TASK_PRIO.MID)
             lv.task_set_prio(self._gui_ctrl._task_update_time, lv.TASK_PRIO.OFF)
             lv.task_set_prio(self._gui_ctrl._task_update_th, lv.TASK_PRIO.OFF)
@@ -370,8 +374,10 @@ class GuiLaserMain(lv.tabview):
     def _re_measure_cb(self, obj, event):
         if event == lv.EVENT.CLICKED:
             panel, thickness = self._gui_ctrl._laser._session.re_panel()
-            _thread.start_new_thread(self._gui_ctrl._laser.wait_for_panel, [panel, thickness, self._gui_ctrl._lock])
-
+            _thread.start_new_thread(self._gui_ctrl._laser.wait_for_panel,
+                                     [panel, thickness,
+                                      self._gui_ctrl._lock]
+            )
             lv.task_set_prio(self._gui_ctrl._task_wait_panel, lv.TASK_PRIO.MID)
             lv.task_set_prio(self._gui_ctrl._task_update_time, lv.TASK_PRIO.OFF)
             lv.task_set_prio(self._gui_ctrl._task_update_th, lv.TASK_PRIO.OFF)
@@ -390,7 +396,7 @@ class GuiLaserMain(lv.tabview):
         self._gui_ctrl._laser.end_session()
         self._gui_ctrl._laser.off()
             
-        self._start_session.set_hidden(False)
+        self._new_sess.set_hidden(False)
         self._session.set_hidden(True)
         return
 
@@ -401,7 +407,7 @@ class GuiLaserMain(lv.tabview):
             self._gui_ctrl._laser.on()
             self._gui_ctrl._laser.start_session(material, thickness)
             self._session_label.set_text(str(self._gui_ctrl._laser._session))
-            self._start_session.set_hidden(True)
+            self._new_sess.set_hidden(True)
             self._session.set_hidden(False)
             self._re_measure_btn.set_hidden(True) 
         return
