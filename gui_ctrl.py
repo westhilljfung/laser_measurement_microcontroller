@@ -197,14 +197,21 @@ class NumTextArea(lv.ta):
         self.set_event_cb(cb)
         return
 
+
+class OneLineLabel(lv.label):
+
+    def __init__(self, parent, text):
+        super().__init__(parent)
+        self.set_text(text)
+        self.set_auto_realign(True)
+        return
     
 class GuiHeader(lv.cont):
     
     def __init__(self, scr, x_pos, y_pos, text):
         super().__init__(scr)
         # Left label
-        self._left_text = lv.label(self)
-        self._left_text.set_text("TIME")
+        self._left_text = OneLineLabel(self, "TIME")
         # Right label
         self._right_text = lv.label(self)
         self._right_text.set_text("TH: -- H: --")
@@ -216,7 +223,6 @@ class GuiHeader(lv.cont):
         self.set_pos(x_pos, y_pos)
         self._center_text.set_auto_realign(True)
         self._right_text.set_auto_realign(True)
-        self._left_text.set_auto_realign(True)
         self._center_text.align(self, lv.ALIGN.IN_RIGHT_MID, -200, 0)
         self._right_text.align(self, lv.ALIGN.IN_LEFT_MID, 10, 0)
         self._left_text.align(self, lv.ALIGN.IN_RIGHT_MID, -10, 0)
