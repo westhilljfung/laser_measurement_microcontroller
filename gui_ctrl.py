@@ -1,19 +1,21 @@
-"""
-gui_ctrl.py
-==========
+"""gui_ctrl.py
+
 This is the Controller for the GUI
+
 *Author(s): Joshua Fung
 July 30, 2019
 """
+import utime
+import _thread
+import gc
+
 import lvgl as lv
 from micropython import const
-import utime
 import lvesp32
 import TFTFeatherWing as tftwing
+
 import laser_mcu
-import gc
 import laser_ctrl
-import _thread
 
 
 DISP_BUF_SIZE = const(9600)
@@ -23,6 +25,7 @@ THICKNESS_TYPE = ("12", "5", "5.5", "6.5")
 
 class LaserGui:
     """Gui Controller"""
+    
     def __init__(self):
         # init LVGL
         lv.init()
@@ -64,7 +67,6 @@ class LaserGui:
         self._lock = _thread.allocate_lock()
         return
 
-    
     def _register_tasks(self):
         # Task to update th
         self._task_update_th = lv.task_create(None, 1000, lv.TASK_PRIO.MID, None)
@@ -189,12 +191,11 @@ class LaserGui:
         self._indev = lv.indev_drv_register(self._indev_drv)
         return
 
-    
-# Gui Elements
+
 class TextBtn(lv.btn):
+    
     def __init__(self, parent, text):
         super().__init__(parent)
-        
         self.label = lv.label(self)
         self.label.set_text(text)
         self.set_fit2(lv.FIT.TIGHT, lv.FIT.TIGHT)
@@ -202,9 +203,9 @@ class TextBtn(lv.btn):
 
     
 class NumTextArea(lv.ta):
+    
     def __init__(self, parent, cb):
         super().__init__(parent)
-
         self.set_one_line(True)
         self.set_max_length(7)
         self.set_accepted_chars("0123456789.+-")
@@ -216,6 +217,7 @@ class NumTextArea(lv.ta):
 
     
 class GuiHeader(lv.cont):
+    
     def __init__(self, scr, x_pos, y_pos, text):
         super().__init__(scr)
         
@@ -250,6 +252,7 @@ class GuiHeader(lv.cont):
 
     
 class GuiLaserMain(lv.tabview):
+    
     def __init__(self, parent, x_pos, y_pos, gui_ctrl):
         super().__init__(parent)
         self._gui_ctrl = gui_ctrl

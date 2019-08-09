@@ -1,11 +1,10 @@
-"""
-``SI7021``
-==========
+"""SI7021
+
 This is a Micropython driver for the SI7021 temeratire and humidity sensor.
 *Author(s): Joshua Fung
+2019-08-09
 
 Modified from below:
-
 ``adafruit_si7021``
 ===================
 This is a CircuitPython driver for the SI7021 temperature and humidity sensor.

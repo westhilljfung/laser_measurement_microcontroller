@@ -1,29 +1,31 @@
-""" 
-laser_mcu.py
-==========
+"""laser_mcu.py
+
 This is a Micropython driver for the Laser Measurement Controller
+
 *Author(s): Joshua Fung
 July 30, 2019
 """
 import network
-import ntptime
+import _thread
 import utime
-from micropython import const
-import machine
 import uos
 import ujson
+
+import ntptime
+import machine
+from micropython import const
+
 import si7021
-import _thread
 
-ssid = 'Westhill_2.4G'
-wp2_pass = 'Radoslav13'
-
+_ssid = 'Westhill_2.4G'
+_wp2_pass = 'Radoslav13'
 TIME_ZONE_OFFSET = const(14400)
 WIFI_CON_TIMEOUT = const(30000)
 TIME_FILE = "/time"
 SD_FILE = "/sd"
 
 class LaserMCU:
+
     def __init__(self):
         self._name = "Westhill Laser Measument System"
         self._wlan = network.WLAN(network.STA_IF)
@@ -37,7 +39,7 @@ class LaserMCU:
     def connect_wifi(self):
         if not self.is_connected():
             self._wlan.active(True)
-            self._wlan.connect(ssid, wp2_pass)
+            self._wlan.connect(_ssid, _wp2_pass)
             start = utime.ticks_ms()
             print("Connecting Wifi: [", end = '')
             while True:
@@ -128,6 +130,7 @@ class LaserMCU:
         return self._name
 
 class Buzzer:
+
     def __init__(self, pin):
         self._pin = machine.Pin(pin)
         return

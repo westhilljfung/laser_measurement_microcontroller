@@ -1,10 +1,20 @@
-from machine import UART
+"""laser_ctrl.py
+
+Controller for the laser sensor
+
+*Author(s): Joshua Fung
+2019-08-09
+"""
 import utime
-from micropython import const
 import array
-import _thread
-from laser_mcu import TIME_ZONE_OFFSET, SD_FILE
 import ujson
+import _thread
+
+from machine import UART
+from micropython import const
+
+from laser_mcu import TIME_ZONE_OFFSET, SD_FILE
+
 
 DEFAULT_PANEL_WIDTH_MM = const(1245)
 MAX_AMP_NUM = const(4)
@@ -12,11 +22,7 @@ READ_BUF_SIZE = const(36)
 MAX_PANEL_DATA = const(600)
 PANEL_WAIT_TIMEOUT = const(30000)
 
-"""
-Timing function
 
-Use @timed_function decorator
-"""
 def timed_function(f, *args, **kwargs):
     myname = str(f).split(' ')[1]
     def new_func(*args, **kwargs):
@@ -27,7 +33,9 @@ def timed_function(f, *args, **kwargs):
         return result
     return new_func
 
+
 class LaserCtrl:
+
     def __init__(self):
         self._laser = UART(2)
         self._laser.init(baudrate=38400)
@@ -37,12 +45,9 @@ class LaserCtrl:
         self._laser_on = True
         self._session = None
         self._session_file = None
-        try:
-            self.get_phrase_pvs()
-        except ValueError:
-            pass
+        self.get_phrase_pvs()
         return
-    
+
     def reset_all(self):
         self.write_all("005","0")
         self.write_all("005","1")
@@ -67,7 +72,7 @@ class LaserCtrl:
         self.write_amp(num*2 + 1, "152", "0")
         return
 
-    def get_phrase_pvs(self):      
+    def get_phrase_pvs(self):
         self._laser.write("M0\r\n")
         while not self._laser.any():
             pass
@@ -77,13 +82,13 @@ class LaserCtrl:
                 self._pvs[amp] = float(self._read_buf[amp*8+3:amp*8+10])
             except ValueError:
                 print(self._read_buf.decode("ascii"))
-                raise ValueError
+                return
             if not amp % 2:
                 self._cals[amp//2] = self._pvs[amp]
             else:
                 self._cals[amp//2] += self._pvs[amp]
         return self._cals
-    
+
     def write_all(self, cmd, data):
         self._laser.write("AW,%s,%s\r\n" % (cmd, data))
         while not self._laser.any():
@@ -101,7 +106,7 @@ class LaserCtrl:
         self._laser.write("SW,%02d,%s,%s\r\n" % (amp, cmd, data))
         while not self._laser.any():
             utime.sleep_us(1)
-            
+
         self._laser.readline()
 
     def off(self):
@@ -109,7 +114,7 @@ class LaserCtrl:
         self.write_all("155", "2")
 
     def on(self):
-        self.write_all("100", "0")        
+        self.write_all("100", "0")
         self.write_all("155", "0")
 
     def start_session(self, material, thickness):
@@ -209,7 +214,9 @@ class LaserCtrl:
                 panel._cdata2[i] = 0
         return
 
+
 class MeasurementSession:
+
     def __init__(self, material, thickness):
         self._start_time = utime.time()
         self._material = material
@@ -233,10 +240,10 @@ class MeasurementSession:
                 + self._material
                 + "_"
                 + self._thickness
-                + ".txt"                
+                + ".txt"
         )
         return str_
-    
+
     def __str__(self):
         st = utime.localtime(self._start_time - TIME_ZONE_OFFSET)
         str_ = ("Session started: "
@@ -265,15 +272,17 @@ class MeasurementSession:
 
     def re_panel(self):
         return self.panel, float(self._thickness)
-    
+
+
 class Panel:
+
     def __init__(self):
         self._creation = utime.localtime()
         self.err = None
         self._time = array.array('l', [0] * MAX_PANEL_DATA)
         self._data1 = array.array('f', [0.0] * MAX_PANEL_DATA)
-        self._data2 = array.array('f', [0.0] * MAX_PANEL_DATA)    
-        self._cdata1 = array.array('f', [0.0] * MAX_PANEL_DATA)           
+        self._data2 = array.array('f', [0.0] * MAX_PANEL_DATA)
+        self._cdata1 = array.array('f', [0.0] * MAX_PANEL_DATA)
         self._cdata2 = array.array('f', [0.0] * MAX_PANEL_DATA)
         self._data_num = 0
         self.size = 0
