@@ -29,12 +29,17 @@ class LaserGui:
     def __init__(self):
         # init LVGL
         lv.init()
-        # MCU Control
-        self.mcu = laser_mcu.LaserMCU()
         # TFT and TS driver
         # POTENTIAL: move into LaserMcu
         self._tft = tftwing.TFTFeatherWing(tft_mhz=24)
         self._tft.init()
+        # Register display buffer, driver and input device driver
+        self._register_disp_drv()
+        self._register_indev_drv()
+        blank_scr = lv.obj()
+        lv.scr_load(blank_scr)
+        # MCU Control
+        self.mcu = laser_mcu.LaserMCU()
         # Laser Measuring Control
         self._laser = laser_ctrl.LaserCtrl()
         self._laser.off()
@@ -46,9 +51,6 @@ class LaserGui:
             print("OSError: {0}".format(err))
             self.mcu.load_time()
         self.mcu.set_creation_time()
-        # Register display buffer, driver and input device driver
-        self._register_disp_drv()
-        self._register_indev_drv()
         # Create screen
         self._load_screen()
         # Register Tasks
