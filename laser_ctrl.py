@@ -267,11 +267,11 @@ class MeasurementSession:
                 + str(st[3])
                 + ":"
                 + str(st[4])
-                + "\nPanel Count: "
+                + "\nCount: "
                 + str(self.count)
-                + " Material: "
+                + ", Material: "
                 + self._material
-                + " Thickness:"
+                + ", Thickness: "
                 + self._thickness
                 + "mm"
         )
@@ -290,7 +290,6 @@ class MeasurementSession:
 class Panel:
 
     def __init__(self, thickness):
-        self._creation = utime.localtime()
         self.err = None
         self._time = array('l', [0] * MAX_PANEL_DATA)
         self._data1 = array('f', [0.0] * MAX_PANEL_DATA)
