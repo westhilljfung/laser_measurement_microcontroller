@@ -21,6 +21,8 @@ MAX_AMP_NUM = const(4)
 READ_BUF_SIZE = const(36)
 MAX_PANEL_DATA = const(600)
 PANEL_WAIT_TIMEOUT = const(30000)
+DATA_DIV = const(1)
+JUDGMENT_VALUE = 0.5
 
 _ZERO_SHIFT = "001"
 _RESET = "003"
@@ -160,7 +162,6 @@ class LaserCtrl:
         """A blocking function to wait for panel to read"""
         lock.acquire()
         cals = self.get_phrase_pvs()
-        good_panel = False
         if cals[0] > 0 or cals[1] > 0:
             panel.err = RuntimeError("Panel already under measure")
             lock.release()
@@ -183,13 +184,48 @@ class LaserCtrl:
                             lock.release()
                             return
                 self._cal_move_mean(panel)
-                # TODO Check if panel is good
+                self._judgment(panel)
                 self._write_panel(panel)
                 break
         lock.release()
-        return good_panel
+        return
+
+    def _cal_move_mean(self, panel):
+        filter_size = panel._in // 20
+        panel.s_in = panel._in - filter_size
+        for i in range(0, panel.s_in):
+            sum1 = 0
+            sum2 = 0
+            n = filter_size
+            for j in range(0, filter_size):
+                if (panel._data1[i + j] > panel.thickness + DATA_DIV
+                    or panel._data1[i + j] < panel.thickness - DATA_DIV
+                    or panel._data2[i + j] > panel.thickness + DATA_DIV
+                    or panel._data2[i + j] < panel.thickness - DATA_DIV):
+                    n -= 1
+                    continue
+                sum1 += panel._data1[i + j]
+                sum2 += panel._data2[i + j]
+            # TODO: There is a chance n will be zero
+            if n > 0:
+                panel._sdata1[i] = sum1 / n
+                panel._sdata2[i] = sum2 / n
+            else:
+                panel._sdata1[i] = 0
+                panel._sdata2[i] = 0
+        return
+
+    def _judgment(self, panel):
+        panel.good = False
+        panel.diff1 = abs(max(panel._sdata1[0:panel.s_in]) - min(panel._sdata1[0:panel.s_in]))   
+        panel.diff2 = abs(max(panel._sdata2[0:panel.s_in]) - min(panel._sdata2[0:panel.s_in]))
+        print("Diff: ", panel.diff1, panel.diff2)
+        if panel.diff1 < JUDGMENT_VALUE and panel.diff2 < JUDGMENT_VALUE:
+            panel.good = True
+        return
 
     def _write_panel(self, panel):
+        # TODO save judgement value
         print("ID: %d" % self._session.count, file = self._sess_f)
         ujson.dump(panel._time[0:panel._in], self._sess_f)
         self._sess_f.write("\n")
@@ -200,32 +236,7 @@ class LaserCtrl:
         self._sess_f.flush()
         return
 
-    def _cal_move_mean(self, panel):
-        filter_size = panel._in // 20
-        panel.size = panel._in - filter_size
-        for i in range(0, panel.size):
-            sum1 = 0
-            sum2 = 0
-            n = filter_size
-            for j in range(0, filter_size):
-                if (panel._data1[i + j] > panel.thickness + 1
-                    or panel._data1[i + j] < panel.thickness - 1
-                    or panel._data2[i + j] > panel.thickness + 1
-                    or panel._data2[i + j] < panel.thickness - 1):
-                    n -= 1
-                    continue
-                sum1 += panel._data1[i + j]
-                sum2 += panel._data2[i + j]
-            # There is a chance n will be zero
-            if n > 0:
-                panel._cdata1[i] = sum1 / n
-                panel._cdata2[i] = sum2 / n
-            else:
-                panel._cdata1[i] = 0
-                panel._cdata2[i] = 0
-        return
-
-
+    
 class MeasurementSession:
 
     def __init__(self, material, thickness):
@@ -280,25 +291,34 @@ class MeasurementSession:
     def new_panel(self):
         self.count += 1
         self.panel.err = None
+        self.good = False
+        self.diff1 = 0
+        self.diff2 = 0
         return self.panel
 
     def re_panel(self):
         self.panel.err = None
+        self.good = False
+        self.diff1 = 0
+        self.diff2 = 0
         return self.panel
 
 
 class Panel:
 
     def __init__(self, thickness):
+        self.thickness = thickness
         self.err = None
+        self.good = False
+        self.diff1 = 0
+        self.diff2 = 0
         self._time = array('l', [0] * MAX_PANEL_DATA)
         self._data1 = array('f', [0.0] * MAX_PANEL_DATA)
         self._data2 = array('f', [0.0] * MAX_PANEL_DATA)
-        self._cdata1 = array('f', [0.0] * MAX_PANEL_DATA)
-        self._cdata2 = array('f', [0.0] * MAX_PANEL_DATA)
+        self._sdata1 = array('f', [0] * MAX_PANEL_DATA)
+        self._sdata2 = array('f', [0] * MAX_PANEL_DATA)
         self._in = 0
-        self.size = 0
-        self.thickness = thickness
+        self.s_in = 0
         return
 
     def start_measure(self, points):
@@ -315,3 +335,4 @@ class Panel:
         except IndexError:
             raise
         self._in += 1
+        return

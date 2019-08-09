@@ -107,6 +107,8 @@ class LaserGui:
             self.body._re_measure_btn.set_hidden(False) 
             self.body._preload_cont.set_hidden(True)
             # Plot data
+            # TODO set chart y range
+            # TODO empty old chart
             panel = self.laser._session.panel
             filter_size = panel._in // 20
             self.body._chart.set_point_count(panel._in)
@@ -114,17 +116,22 @@ class LaserGui:
                 self.body._chart.set_next(self.body._ser1, int(d*1000))
             for d in panel._data2[0:panel._in - filter_size // 2]:
                 self.body._chart.set_next(self.body._ser2, int(d*1000))
+            # TODO set warning label and text
             if panel.err is not None:
                 self.body._start_measure_btn.set_hidden(True)
                 self.body._session_label.set_text("\n".join((str(self.laser._session), str(panel.err))))
+                self.mcu.warn()
             else:
                 self.body._start_measure_btn.set_hidden(False)
                 self.body._session_label.set_text(str(self.laser._session))
-                for d in panel._cdata1[0:panel.size]:
+                for d in panel._sdata1[0:panel.s_in]:
                     self.body._chart.set_next(self.body._ser3, int(d*1000))
-                for d in panel._cdata2[0:panel.size]:
+                for d in panel._sdata2[0:panel.s_in]:
                     self.body._chart.set_next(self.body._ser4, int(d*1000))
-            self.mcu.alt()
+                if panel.good:
+                    self.mcu.alt()
+                else:
+                    self.mcu.warn()
         return
         
     def _update_time_cb(self, data):
