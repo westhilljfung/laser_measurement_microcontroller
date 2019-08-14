@@ -10,6 +10,8 @@ import _thread
 import utime
 import uos
 import ujson
+import usocket
+import uselect
 
 import ntptime
 import machine
@@ -61,10 +63,13 @@ class LaserMCU:
     def warn(self):
         self._buzz.warn()
         return
-    
+
     def save_th_data(self):
         # Time in utc
+        et = utime.time()
         dt = utime.localtime()
+        temp = self._th_sensor.read_temperature()
+        rh = self._th_sensor.read_relative_humidity()
         filename = (("TH-%04d" % dt[0])
                     + "_"
                     + ("%02d" % dt[1])
@@ -79,13 +84,26 @@ class LaserMCU:
         if f.tell() == 0:
             print("YYYY-MM-DD-HH-MM(RTC)\tTemperature(C)\tHumidity(RH%)", file = f)
             
-        print("%04d-%02d-%02d-%02d-%02d\t%0.3f\t\t%0.3f" \
-              % (dt[0], dt[1], dt[2], dt[3], dt[4],\
-                self._th_sensor.read_temperature(),\
-                 self._th_sensor.read_relative_humidity()), file = f)
+        print("%04d-%02d-%02d-%02d-%02d\t%0.3f\t\t%0.3f" % (dt[0], dt[1], dt[2], dt[3], dt[4], temp, rh), file = f)
         f.close()
-        return
-
+        # Write to server
+        host = "192.168.0.22"
+        try:
+            addr = usocket.getaddrinfo(host, 8000)[0][-1]
+            s = usocket.socket()
+            s.connect(addr)
+            content = ('{"temp":%0.3f,"rh":%0.3f,"e_epoch":%d}' % (temp, rh, et))
+            s.send(
+                bytes(
+                    'POST /%s HTTP/1.1\r\nHost: %s\r\nContent-Type:application/json\r\nContent-Length:%d\r\n\r\n'
+                    % ("th/", host, len(content)), 'utf8')
+            )
+            s.send(bytes(content, 'utf8'))
+            s.close()
+        except:
+            pass
+        return        
+    
     def get_th_str(self):
         th_str = "T: " + str("%0.2f" % self._th_sensor.read_temperature()) + " H: " \
             + str("%0.2f" % self._th_sensor.read_relative_humidity())
