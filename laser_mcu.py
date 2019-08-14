@@ -23,8 +23,11 @@ _ssid = 'Westhill_2.4G'
 _wp2_pass = 'Radoslav13'
 TIME_ZONE_OFFSET = const(14400)
 WIFI_CON_TIMEOUT = const(30000)
+SERVER_ADDR = "192.168.0.22"
+SELECT_TIMEOUT = 100
 TIME_FILE = "/time"
 SD_FILE = "/sd"
+
 
 class LaserMCU:
 
@@ -70,12 +73,13 @@ class LaserMCU:
         dt = utime.localtime()
         temp = self._th_sensor.read_temperature()
         rh = self._th_sensor.read_relative_humidity()
-        filename = (("TH-%04d" % dt[0])
-                    + "_"
-                    + ("%02d" % dt[1])
-                    + "_"
-                    + ("%02d" % dt[2])
-                    + ".txt"
+        filename = (
+            ("TH-%04d" % dt[0])
+            + "_"
+            + ("%02d" % dt[1])
+            + "_"
+            + ("%02d" % dt[2])
+            + ".txt"
         )
         try:
             f = open(SD_FILE + "/" + filename, "a+")
@@ -86,24 +90,41 @@ class LaserMCU:
             
         print("%04d-%02d-%02d-%02d-%02d\t%0.3f\t\t%0.3f" % (dt[0], dt[1], dt[2], dt[3], dt[4], temp, rh), file = f)
         f.close()
-        # Write to server
-        host = "192.168.0.22"
-        try:
-            addr = usocket.getaddrinfo(host, 8000)[0][-1]
-            s = usocket.socket()
-            s.connect(addr)
-            content = ('{"temp":%0.3f,"rh":%0.3f,"e_epoch":%d}' % (temp, rh, et))
-            s.send(
-                bytes(
-                    'POST /%s HTTP/1.1\r\nHost: %s\r\nContent-Type:application/json\r\nContent-Length:%d\r\n\r\n'
-                    % ("th/", host, len(content)), 'utf8')
-            )
-            s.send(bytes(content, 'utf8'))
-            s.close()
-        except:
-            pass
-        return        
-    
+        
+        content = ('{"temp":%0.3f,"rh":%0.3f,"e_epoch":%d}' % (temp, rh, et))
+        self._post_json("/th/", content)
+        return
+
+    def _post_json(self, path, content):
+        s = usocket.socket()
+        s.connect((SERVER_ADDR, 8000))
+        p = uselect.poll()
+        p.register(s)
+        for so in p.poll(SELECT_TIMEOUT):
+            if so[1] | uselect.POLLOUT:
+                size = len(content)
+                so[0].send(
+                    bytes(
+                        (
+                            "POST %s HTTP/1.1\r\n"
+                            "Host: %s\r\n"
+                            "Content-Type: application/json\r\n"
+                            "Content-Length: %d\r\n\r\n"
+                        )
+                        % (path, SERVER_ADDR, size),
+                        "utf8"
+                    )
+                )
+                so[0].send(bytes(content, "utf8"))
+        for so in p.poll(SELECT_TIMEOUT):
+            if (so[1] | uselect.POLLIN):
+                ret = so[0].readline()
+                if ret.split()[1][0] != 50:
+                    so[0].close()
+                    raise OSError(ret.decode("utf8"))
+        s.close()
+        return
+            
     def get_th_str(self):
         th_str = "T: " + str("%0.2f" % self._th_sensor.read_temperature()) + " H: " \
             + str("%0.2f" % self._th_sensor.read_relative_humidity())
