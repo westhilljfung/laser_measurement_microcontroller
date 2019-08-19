@@ -18,6 +18,7 @@ import machine
 from micropython import const
 
 import si7021
+from utils import timed_function
 
 _ssid = 'Westhill_2.4G'
 _wp2_pass = 'Radoslav13'
@@ -92,9 +93,12 @@ class LaserMCU:
         f.close()
         
         content = ('{"temp":%0.3f,"rh":%0.3f,"e_epoch":%d}' % (temp, rh, et))
-        self._post_json("/th/", content)
+        try:
+            self._post_json("/th/", content)
+        except OSError as err:
+            print(OSError, err)
         return
-
+    
     def _post_json(self, path, content):
         s = usocket.socket()
         s.connect((SERVER_ADDR, 8000))

@@ -10,7 +10,7 @@ _MAIN = test.py boot.py
 MAIN = $(patsubst %,$(BUILD_DIR)/%,$(call reverse,$(_MAIN)))
 CLEAN_MAIN = $(patsubst %,CLEAN/%,$(_MAIN))
 
-_MODULES = gui_ctrl.py laser_mcu.py si7021.py laser_ctrl.py
+_MODULES = gui_ctrl.py laser_mcu.py si7021.py laser_ctrl.py utils.py myreset.py
 _MODULES_MPY =  $(patsubst %.py,%.mpy,$(_MODULES))
 MODULES_MPY = $(patsubst %,$(BUILD_DIR)/%,$(_MODULES_MPY))
 CLEAN = $(CLEAN_MAIN)
@@ -21,9 +21,9 @@ PORT ?= /dev/ttyUSB0
 BAUDRATE ?= 115200
 AMPY_BAUD ?= 115200
 
-.PHONY: deploy git dir $(CLEAN) con
+.PHONY: deploy git dir $(CLEAN) start con
 
-deploy: dir $(MODULES_MPY) $(MAIN) con
+all: dir $(MODULES_MPY) $(MAIN) start
 
 dir: $(BUILD_DIR)
 $(BUILD_DIR):
@@ -54,6 +54,11 @@ $(CLEAN): CLEAN/%:
 
 list:
 	ampy -p $(PORT) ls
+
+start:
+	echo -e "\r\x03\x03\r\x01import test\r\x04\r\x02" > $(PORT) 
+	picocom -b$(BAUDRATE) $(PORT)
+	echo -e "\r\x03\x03\r\x01from machine import reset\nreset()\r\x04\r\x03" > $(PORT) 	
 
 con:
 	picocom -b$(BAUDRATE) $(PORT)

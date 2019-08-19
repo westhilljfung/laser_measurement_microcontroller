@@ -123,7 +123,17 @@ class LaserGui:
                 self.mcu.warn()
             else:
                 self.body._start_measure_btn.set_hidden(False)
-                self.body._session_label.set_text(str(self.laser._session))
+                self.body._session_label.set_text(str(self.laser._session)
+                                                  + "\nDiff: "
+                                                  + ("%0.3f" % panel.diff1)
+                                                  + "mm("
+                                                  + ("%0.3f" % (panel.diff1 / 25.4))
+                                                  + "in), "
+                                                  + ("%0.3f" % panel.diff2)
+                                                  + "mm("
+                                                  + ("%0.3f" % (panel.diff2 / 25.4))
+                                                  + "in)"
+                )
                 for d in panel._sdata1[0:panel.s_in]:
                     self.body._chart.set_next(self.body._ser3, int(d*1000))
                 for d in panel._sdata2[0:panel.s_in]:
@@ -311,7 +321,7 @@ class GuiLaserMain(lv.tabview):
         self._session.set_fit(lv.FIT.FLOOD)
         self._session.set_layout(lv.LAYOUT.PRETTY)
 
-        self._session_label = RealignLabel(self._session, "\n\n", True)
+        self._session_label = RealignLabel(self._session, "\n\n\n", True)
 
         self._start_measure_btn = TextBtn(self._session, "New Panel", self._start_measure_cb)
         self._start_measure_btn.set_style(lv.btn.STYLE.REL, btn_style_or)
@@ -323,7 +333,7 @@ class GuiLaserMain(lv.tabview):
         self._re_measure_btn.set_style(lv.btn.STYLE.REL, btn_style_or)
 
         self._chart = lv.chart(self._session)
-        self._chart.set_height(110)
+        self._chart.set_height(90)
         self._chart.set_point_count(700)
         self._chart.set_range(11000,13000)
         self._ser1 = self._chart.add_series(lv.color_hex(0x0000b3))
@@ -423,6 +433,11 @@ class GuiLaserMain(lv.tabview):
             self._gui_ctrl.laser.on()
             self._gui_ctrl.laser.start_session(material, thickness)
             self._session_label.set_text(str(self._gui_ctrl.laser._session))
+            self._chart.set_range(int((float(thickness) - 1)*1000),int((float(thickness) + 1)*1000))     
+            self._chart.init_points(self._ser1, int(float(thickness)*1000))
+            self._chart.init_points(self._ser2, int(float(thickness)*1000))
+            self._chart.init_points(self._ser3, int(float(thickness)*1000))
+            self._chart.init_points(self._ser4, int(float(thickness)*1000))       
             self._new_sess.set_hidden(True)
             self._session.set_hidden(False)
             self._re_measure_btn.set_hidden(True) 

@@ -14,6 +14,7 @@ from machine import UART
 from micropython import const
 
 from laser_mcu import TIME_ZONE_OFFSET, SD_FILE
+from utils import timed_function
 
 
 DEFAULT_PANEL_WIDTH_MM = const(1245)
@@ -33,21 +34,6 @@ _SHIFT_VALUE = "067"
 _LASER_STOP = "100"
 _ZERO_SHIFT_MEM = "152"
 _POWER_SAVE = "155"
-
-
-def timed_function(f, *args, **kwargs):
-    """Time function
-
-    Time a function using @timed_function decorator
-    """
-    myname = str(f).split(' ')[1]
-    def new_func(*args, **kwargs):
-        t = utime.ticks_us()
-        result = f(*args, **kwargs)
-        delta = utime.ticks_diff(utime.ticks_us(), t)
-        print('Function {} Time = {:6.3f}ms'.format(myname, delta/1000))
-        return result
-    return new_func
 
 
 class LaserCtrl:
@@ -219,7 +205,6 @@ class LaserCtrl:
         panel.good = False
         panel.diff1 = abs(max(panel._sdata1[0:panel.s_in]) - min(panel._sdata1[0:panel.s_in]))   
         panel.diff2 = abs(max(panel._sdata2[0:panel.s_in]) - min(panel._sdata2[0:panel.s_in]))
-        print("Diff: ", panel.diff1, panel.diff2)
         if panel.diff1 < JUDGMENT_VALUE and panel.diff2 < JUDGMENT_VALUE:
             panel.good = True
         return
