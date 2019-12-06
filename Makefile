@@ -1,7 +1,7 @@
 # By Joshua Fung 2019/07/19
 BUILD_DIR = build
 
-MPY_CROSS = $(HOME)/Documents/laser/mymicropython/mpy-cross/mpy-cross
+MPY_CROSS = $(HOME)/Westhill/micropython/mpy-cross/mpy-cross
 MPY_CROSS_FLAG=
 
 reverse = $(if $(1),$(call reverse,$(wordlist 2,$(words $(1)),$(1)))) $(firstword $(1))
@@ -10,11 +10,9 @@ _MAIN = test.py boot.py
 MAIN = $(patsubst %,$(BUILD_DIR)/%,$(call reverse,$(_MAIN)))
 CLEAN_MAIN = $(patsubst %,CLEAN/%,$(_MAIN))
 
-_MODULES = gui_ctrl.py laser_mcu.py si7021.py laser_ctrl.py utils.py myreset.py
+_MODULES = gui_ctrl.py laser_mcu.py si7021.py laser_ctrl.py utils.py
 _MODULES_MPY =  $(patsubst %.py,%.mpy,$(_MODULES))
 MODULES_MPY = $(patsubst %,$(BUILD_DIR)/%,$(_MODULES_MPY))
-CLEAN = $(CLEAN_MAIN)
-CLEAN += $(patsubst %,CLEAN/%,$(_MODULES_MPY))
 
 V ?= 0
 PORT ?= /dev/ttyUSB0
@@ -23,7 +21,7 @@ AMPY_BAUD ?= 115200
 
 .PHONY: deploy git dir $(CLEAN) start con
 
-all: dir $(MODULES_MPY) $(MAIN) start
+all: dir $(MODULES_MPY) $(MAIN)
 
 dir: $(BUILD_DIR)
 $(BUILD_DIR):
@@ -31,13 +29,13 @@ $(BUILD_DIR):
 
 $(BUILD_DIR)/%.mpy: %.py
 	$(MPY_CROSS) $(MPY_CROSS_FLAG) -o $@ $*.py
-	ampy -p $(PORT) -b $(AMPY_BAUD) put $@
-	sleep 0.5
+#ampy -p $(PORT) -b $(AMPY_BAUD) put $@
+#sleep 0.5
 
 $(MAIN): $(BUILD_DIR)/%.py: %.py
 	cp $< $@
-	ampy -p $(PORT) put $@
-	sleep 0.5
+#ampy -p $(PORT) put $@
+#sleep 0.5
 
 test.py: main.py
 	cp $< $@
@@ -45,20 +43,14 @@ test.py: main.py
 git:
 	git pull
 
-clean: $(CLEAN)
+clean:
+	mpfshell -n -c "open ttyUSB0; mrm ./*"
 	rm -rf $(BUILD_DIR)
 
-$(CLEAN): CLEAN/%:
-	ampy -p $(PORT) rm $* && sleep 0.5 || sleep 0.5
-	rm -f $(BUILD_DIR)/$*
-
 list:
-	ampy -p $(PORT) ls
+	mpfshell -n -c "open ttyUSB0; ls"
 
 start:
-	echo -e "\r\x03\x03\r\x01import test\r\x04\r\x02" > $(PORT) 
-	picocom -b$(BAUDRATE) $(PORT)
-	echo -e "\r\x03\x03\r\x01from machine import reset\nreset()\r\x04\r\x03" > $(PORT) 	
-
+	mpfshell -n -c "open ttyUSB0; repl"
 con:
 	picocom -b$(BAUDRATE) $(PORT)

@@ -92,11 +92,11 @@ class LaserMCU:
         print("%04d-%02d-%02d-%02d-%02d\t%0.3f\t\t%0.3f" % (dt[0], dt[1], dt[2], dt[3], dt[4], temp, rh), file = f)
         f.close()
         
-        content = ('{"temp":%0.3f,"rh":%0.3f,"e_epoch":%d}' % (temp, rh, et))
-        try:
-            self._post_json("/th/", content)
-        except OSError as err:
-            print(OSError, err)
+        #content = ('{"temp":%0.3f,"rh":%0.3f,"e_epoch":%d}' % (temp, rh, et))
+        ##try:
+            ##self._post_json("/th/", content)
+        ##except OSError as err:
+            ##print(OSError, err)
         return
     
     def _post_json(self, path, content):
